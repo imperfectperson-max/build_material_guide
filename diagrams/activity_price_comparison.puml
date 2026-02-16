@@ -1,0 +1,79 @@
+@startuml
+title Building Materials Price Intelligence Platform\nPrice Comparison Workflow Activity Diagram
+
+|User|
+start
+:Access price comparison page;
+:Select material type\n(e.g., cement, steel, timber);
+
+|System|
+:Validate JWT token;
+:Check Redis cache\nfor recent queries;
+
+if (Cache hit?) then (yes)
+    :Retrieve cached results\n(<50ms response);
+else (no)
+    :Query PostgreSQL database;
+    :Fetch current prices from\nall suppliers;
+    :Calculate price statistics\n(min, max, average);
+    :Store results in Redis cache\n(TTL: 1 hour);
+endif
+
+:Sort suppliers by price;
+:Apply user preferences\n(region filter, favorites);
+
+|User|
+:View price comparison table;
+
+fork
+    :View price details\nfor each supplier;
+fork again
+    :View price history chart;
+fork again
+    :View supplier ratings/reviews;
+end fork
+
+if (User wants to filter?) then (yes)
+    |User|
+    :Apply filters\n(region, price range,\nbulk quantities);
+    
+    |System|
+    :Re-query with filters;
+    :Update results;
+    
+    |User|
+    :View filtered results;
+endif
+
+if (User wants to save?) then (yes)
+    |User|
+    :Add to favorites;
+    
+    |System|
+    :Store in user profile;
+    :Confirm action;
+endif
+
+if (View on mobile?) then (yes)
+    |User|
+    :View nearby suppliers\n(geolocation);
+    
+    |System|
+    :Calculate distances;
+    :Sort by proximity;
+    
+    |User|
+    :View map with supplier locations;
+endif
+
+:Export price comparison\n(optional);
+
+|System|
+:Generate PDF/CSV report;
+
+|User|
+:Download report;
+
+stop
+
+@enduml

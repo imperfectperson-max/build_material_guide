@@ -1,0 +1,72 @@
+@startuml
+title Building Materials Price Intelligence Platform\nUser Authentication Activity Diagram
+
+|User|
+start
+:Enter credentials\n(username/email and password);
+
+|System|
+:Receive authentication request;
+:Validate input format;
+
+if (Input valid?) then (yes)
+    :Query database for user;
+    
+    if (User exists?) then (yes)
+        :Retrieve hashed password;
+        :Compare with provided password\nusing bcrypt/Argon2;
+        
+        if (Password matches?) then (yes)
+            :Generate JWT token;
+            :Store token in Redis\n(for blacklist management);
+            
+            |User|
+            :Receive JWT token;
+            :Store token securely\n(localStorage/secure storage);
+            
+            if (Mobile app?) then (yes)
+                :Prompt for biometric\nauthentication setup;
+                
+                if (User accepts?) then (yes)
+                    |System|
+                    :Register biometric credentials;
+                    :Link to user account;
+                endif
+            endif
+            
+            :Navigate to dashboard;
+            stop
+            
+        else (no)
+            |System|
+            :Log failed attempt;
+            :Increment failed login counter;
+            
+            if (Exceeded max attempts?) then (yes)
+                :Temporarily lock account;
+                :Send security notification;
+            endif
+            
+            |User|
+            :Display error message\n"Invalid credentials";
+            :Option to reset password;
+            stop
+        endif
+        
+    else (no)
+        |System|
+        :Log attempted login;
+        
+        |User|
+        :Display error message\n"User not found";
+        :Option to register;
+        stop
+    endif
+    
+else (no)
+    |User|
+    :Display validation error\n"Invalid format";
+    stop
+endif
+
+@enduml

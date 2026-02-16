@@ -1,0 +1,86 @@
+@startuml
+title Building Materials Price Intelligence Platform\nPrice Forecasting Workflow Activity Diagram
+
+|User|
+start
+:Select material for forecast;
+:Choose forecast period\n(7-day or 30-day);
+
+|Web/Mobile App|
+:Send forecast request to API;
+:Include material ID and period;
+
+|Backend API|
+:Validate JWT token;
+:Check rate limiting\n(Redis-based);
+
+if (Rate limit exceeded?) then (yes)
+    :Return 429 error;
+    
+    |User|
+    :Display "Too many requests"\nmessage;
+    stop
+else (no)
+    :Check Redis cache\nfor recent forecast;
+    
+    if (Cache hit and fresh?) then (yes)
+        :Retrieve cached forecast\n(6-hour TTL);
+    else (no)
+        |ML Inference Service|
+        :Load historical price data\nfrom PostgreSQL;
+        :Prepare feature matrix\n(time series, seasonality,\neconomic indicators);
+        
+        fork
+            :Load XGBoost model;
+        fork again
+            :Load Random Forest model;
+        fork again
+            :Load LSTM model;
+        fork again
+            :Load Prophet model;
+        end fork
+        
+        :Generate predictions\nfrom all models;
+        :Apply ensemble method\n(weighted average);
+        :Calculate confidence intervals;
+        
+        |Backend API|
+        :Format forecast response;
+        :Store in Redis cache\n(TTL: 6 hours);
+    endif
+    
+    :Return forecast data to client;
+endif
+
+|Web/Mobile App|
+:Render forecast visualization;
+
+|User|
+:View price forecast chart;
+:View confidence intervals;
+:View model performance metrics\n(MAE, RMSE, MAPE);
+
+fork
+    :Compare with historical trends;
+fork again
+    :View anomaly alerts\n(if any detected);
+fork again
+    :Export forecast report;
+end fork
+
+if (Set price alert?) then (yes)
+    |User|
+    :Configure alert threshold;
+    :Enable notifications;
+    
+    |Backend API|
+    :Store alert preferences;
+    :Schedule notification check;
+    
+    |User|
+    :Receive confirmation;
+endif
+
+stop
+
+@enduml

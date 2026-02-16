@@ -1,0 +1,119 @@
+erDiagram
+    users ||--o{ favorites : has
+    users ||--o{ price_alerts : configures
+    materials ||--o{ prices : has
+    materials ||--o{ forecasts : has
+    materials ||--o{ favorites : in
+    materials ||--o{ price_alerts : monitors
+    suppliers ||--o{ prices : provides
+    suppliers ||--o{ scraping_jobs : scraped_by
+
+    users {
+        uuid id PK
+        varchar email UK
+        varchar password_hash
+        varchar name
+        varchar role
+        boolean active
+        boolean email_verified
+        timestamp last_login
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    materials {
+        varchar id PK
+        varchar name
+        varchar category
+        varchar unit
+        text description
+        jsonb specifications
+        text_array keywords
+        boolean active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    suppliers {
+        varchar id PK
+        varchar name
+        varchar website
+        text location_address
+        geography location_coordinates
+        varchar region
+        varchar contact_phone
+        varchar contact_email
+        decimal rating
+        integer review_count
+        text_array categories
+        jsonb opening_hours
+        text_array payment_methods
+        boolean delivery_available
+        boolean active
+        timestamp last_scraped
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    prices {
+        bigserial id PK
+        varchar material_id FK
+        varchar supplier_id FK
+        decimal price
+        integer quantity
+        varchar unit
+        varchar region
+        boolean in_stock
+        jsonb bulk_pricing
+        jsonb metadata
+        date date
+        timestamp scraped_at
+        timestamp created_at
+    }
+
+    forecasts {
+        bigserial id PK
+        varchar material_id FK
+        date forecast_date
+        decimal predicted_price
+        decimal confidence_lower
+        decimal confidence_upper
+        decimal confidence_level
+        varchar model_name
+        varchar model_version
+        varchar region
+        timestamp generated_at
+        timestamp created_at
+    }
+
+    favorites {
+        uuid user_id FK,PK
+        varchar material_id FK,PK
+        timestamp created_at
+    }
+
+    price_alerts {
+        bigserial id PK
+        uuid user_id FK
+        varchar material_id FK
+        decimal threshold_price
+        varchar threshold_type
+        boolean active
+        timestamp last_triggered
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    scraping_jobs {
+        varchar id PK
+        varchar supplier_id FK
+        varchar status
+        integer materials_found
+        integer prices_updated
+        integer errors_count
+        jsonb error_log
+        timestamp started_at
+        timestamp completed_at
+        integer duration_seconds
+        timestamp created_at
+    }

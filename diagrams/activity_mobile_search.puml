@@ -1,0 +1,127 @@
+@startuml
+title Building Materials Price Intelligence Platform\nMobile App Price Search Activity Diagram
+
+|User|
+start
+
+if (Online or Offline?) then (Online)
+    :Open mobile app;
+    :Biometric authentication\n(fingerprint/face ID);
+    
+    |App|
+    :Verify biometric credentials;
+    
+    if (Authentication successful?) then (yes)
+        |User|
+        if (Search method?) then (Manual search)
+            :Enter material name\nin search box;
+        elseif (Barcode scan) then
+            :Tap barcode scanner;
+            :Point camera at barcode;
+            
+            |ML Kit|
+            :Scan and decode barcode;
+            :Return material code;
+        elseif (Voice search) then
+            :Activate voice search;
+            :Speak material name;
+            
+            |App|
+            :Convert speech to text;
+        endif
+        
+        |App|
+        :Send search query to API;
+        
+        |Backend API|
+        :Process search query;
+        :Fetch matching materials;
+        :Get current prices;
+        :Apply geolocation filter\n(nearby suppliers);
+        :Return results;
+        
+        |App|
+        :Display search results;
+        :Show price cards;
+        :Calculate distances;
+        :Display supplier locations on map;
+        
+        |User|
+        :Browse results;
+        
+        fork
+            :View detailed price info;
+        fork again
+            :Compare multiple suppliers;
+        fork again
+            :View price trends;
+        fork again
+            :Get directions to supplier;
+        end fork
+        
+        if (Save to favorites?) then (yes)
+            |App|
+            :Save to Hive local storage;
+            :Sync with backend API;
+            :Confirm saved;
+        endif
+        
+        if (Set price alert?) then (yes)
+            |User|
+            :Configure alert threshold;
+            
+            |App|
+            :Register for push notification;
+            :Save alert preferences;
+            
+            |Backend API|
+            :Store alert configuration;
+        endif
+        
+        stop
+        
+    else (no)
+        :Display authentication error;
+        :Offer password login;
+        stop
+    endif
+    
+else (Offline)
+    |User|
+    :Open mobile app;
+    
+    |App|
+    :Check offline mode;
+    :Load data from Hive storage;
+    
+    if (Cached data available?) then (yes)
+        :Display cached prices;
+        :Show "Offline Mode" indicator;
+        :Show last sync timestamp;
+        
+        |User|
+        :Browse offline data;
+        :View saved favorites;
+        :View price history;
+        
+        note right
+            Limited functionality:
+            - No live prices
+            - No forecasts
+            - No supplier locations
+        end note
+        
+        if (User wants to sync?) then (yes)
+            :Display "Waiting for connection"\nmessage;
+        endif
+        
+        stop
+        
+    else (no)
+        :Display "No offline data"\nmessage;
+        :Prompt to connect to internet;
+        stop
+    endif
+endif
+
+@enduml

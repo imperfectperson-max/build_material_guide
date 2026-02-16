@@ -1,0 +1,102 @@
+@startuml
+title Building Materials Price Intelligence Platform\nData Collection and Processing Activity Diagram
+
+|Scheduler|
+start
+:Trigger scheduled scraping job\n(daily at 2:00 AM);
+
+|Data Scraper|
+:Load supplier configuration;
+:Retrieve list of target suppliers;
+
+repeat
+    :Select next supplier;
+    
+    fork
+        :Access supplier website;
+        :Parse HTML content;
+    fork again
+        :Download PDF price list;
+        :Apply OCR extraction;
+    end fork
+    
+    :Extract price data\n(material, price, date, region);
+    
+    if (Data valid?) then (yes)
+        :Normalize data format;
+        :Add metadata\n(timestamp, source);
+        :Store in temporary buffer;
+    else (no)
+        :Log extraction error;
+        :Add to retry queue;
+    endif
+    
+repeat while (More suppliers?) is (yes)
+->no;
+
+:Aggregate collected data;
+
+|Data Validation Service|
+:Apply validation rules;
+
+fork
+    :Check for duplicates;
+fork again
+    :Validate price ranges\n(outlier detection);
+fork again
+    :Verify material names\nagainst master list;
+fork again
+    :Check data completeness;
+end fork
+
+if (Validation passed?) then (yes)
+    |Data Processing Service|
+    :Clean and transform data;
+    :Handle missing values;
+    :Standardize formats;
+    
+    |PostgreSQL Database|
+    :Begin transaction;
+    :Insert new price records;
+    :Update material catalog;
+    :Commit transaction;
+    
+    |Redis Cache|
+    :Invalidate affected caches;
+    :Update cache keys;
+    
+    |ML Feature Pipeline|
+    :Trigger feature engineering;
+    :Calculate time-series features;
+    :Update feature store;
+    
+    |Notification Service|
+    if (Price changes > threshold?) then (yes)
+        :Identify affected users;
+        :Send price alert notifications\n(push/email);
+    endif
+    
+    |Monitoring Service|
+    :Log successful scraping;
+    :Update metrics\n(records collected, success rate);
+    :Send completion report;
+    
+    stop
+    
+else (no)
+    |Error Handler|
+    :Log validation errors;
+    :Create error report;
+    :Notify admin;
+    
+    if (Critical error?) then (yes)
+        :Trigger alert;
+        :Pause future scraping;
+    else (no)
+        :Continue with valid data;
+    endif
+    
+    stop
+endif
+
+@enduml

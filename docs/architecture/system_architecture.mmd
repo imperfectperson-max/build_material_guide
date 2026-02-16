@@ -1,0 +1,91 @@
+graph TB
+    subgraph "Client Layer"
+        WEB["🌐 Web Dashboard<br/>React + Tailwind CSS<br/>Recharts<br/><br/>Features:<br/>• Material Search<br/>• Price Comparison<br/>• Forecast Visualization<br/>• PWA Support"]
+        MOBILE["📱 Mobile App<br/>Flutter + Hive<br/><br/>Features:<br/>• Barcode Scanning<br/>• Geolocation<br/>• Offline Storage<br/>• Push Notifications"]
+    end
+
+    subgraph "API Gateway & Load Balancing"
+        LB["⚡ Fly.io Load Balancer<br/><br/>• HTTPS/TLS Termination<br/>• DDoS Protection<br/>• Health Checks<br/>• Geographic Routing"]
+    end
+
+    subgraph "Backend API Layer"
+        API["🔧 REST API<br/>Node.js + Express<br/><br/>• JWT Authentication<br/>• Rate Limiting<br/>• Input Validation<br/>• Security Headers"]
+    end
+
+    subgraph "Caching Layer"
+        REDIS["⚡ Redis Cloud<br/><br/>L1 Cache: Prices (1hr TTL)<br/>L2 Cache: Forecasts (6hr TTL)<br/>JWT Blacklist<br/>Rate Limiting Counters<br/><br/>Target: >70% Hit Rate<br/>Response: <50ms"]
+    end
+
+    subgraph "Application Services"
+        AUTH["🔐 Authentication<br/>Service<br/><br/>• User Registration<br/>• Login/Logout<br/>• JWT Generation<br/>• RBAC"]
+        PRICE["💰 Price<br/>Service<br/><br/>• Material Search<br/>• Price Comparison<br/>• Historical Data<br/>• Anomaly Detection"]
+        ML["🤖 ML Inference<br/>Service<br/><br/>• LSTM<br/>• Prophet<br/>• XGBoost<br/>• Random Forest<br/>• Ensemble"]
+        SCRAPER["🕷️ Data Collection<br/>Service<br/><br/>• Web Scraping<br/>• PDF/OCR<br/>• Data Validation<br/>• Scheduled Jobs"]
+    end
+
+    subgraph "Data Storage Layer"
+        PG[("🗄️ PostgreSQL<br/>Supabase<br/><br/>Tables:<br/>• users<br/>• materials<br/>• prices<br/>• suppliers<br/>• forecasts<br/>• favorites")]
+        HIVE[("📦 Hive DB<br/>Mobile Offline<br/><br/>• Cached Prices<br/>• Favorites<br/>• Search History")]
+    end
+
+    subgraph "ML Training Infrastructure"
+        KAGGLE["☁️ Kaggle GPU<br/>Tesla P100<br/><br/>• Model Training<br/>• Hyperparameter Tuning<br/>• Model Evaluation<br/>30hrs/week free"]
+        MODELS["📊 Model Registry<br/><br/>• LSTM v1.0<br/>• Prophet v1.0<br/>• XGBoost v1.0<br/>• Random Forest v1.0<br/><br/>Metrics: MAE, RMSE, MAPE"]
+    end
+
+    subgraph "External Systems"
+        SUPPLIERS["🏪 Supplier Websites<br/><br/>• Builders Warehouse<br/>• Cashbuild<br/>• Makro<br/>• 10+ SA Suppliers"]
+        OCR["📄 OCR Service<br/><br/>• PDF Extraction<br/>• Tesseract OCR<br/>• Text Processing"]
+        GEO["📍 Geolocation<br/><br/>• PostGIS<br/>• Distance Calc<br/>• Nearby Search"]
+    end
+
+    %% Client to Gateway
+    WEB -->|"HTTPS<br/>JSON"| LB
+    MOBILE -->|"HTTPS<br/>JSON"| LB
+    
+    %% Gateway to API
+    LB --> API
+    
+    %% API to Cache and Services
+    API -->|"Check Cache<br/>First"| REDIS
+    API --> AUTH
+    API --> PRICE
+    API --> ML
+    
+    %% Cache to Database
+    REDIS -.->|"Cache Miss<br/>~150ms"| PG
+    
+    %% Services to Database
+    AUTH --> PG
+    PRICE --> PG
+    ML --> MODELS
+    SCRAPER --> PG
+    
+    %% Scraper to External
+    SCRAPER --> SUPPLIERS
+    SCRAPER --> OCR
+    
+    %% Mobile to Local Storage
+    MOBILE -.->|"Offline<br/>Sync"| HIVE
+    
+    %% ML Training
+    KAGGLE -->|"Train<br/>Weekly"| MODELS
+    MODELS -.->|"Deploy<br/>Models"| ML
+    
+    %% Price to Geolocation
+    PRICE --> GEO
+
+    %% Styling
+    classDef client fill:#61dafb,stroke:#333,stroke-width:2px,color:#000
+    classDef api fill:#68a063,stroke:#333,stroke-width:2px,color:#fff
+    classDef cache fill:#DC382D,stroke:#333,stroke-width:2px,color:#fff
+    classDef db fill:#336791,stroke:#333,stroke-width:2px,color:#fff
+    classDef ml fill:#20BEFF,stroke:#333,stroke-width:2px,color:#000
+    classDef external fill:#FFA500,stroke:#333,stroke-width:2px,color:#000
+    
+    class WEB,MOBILE client
+    class API,AUTH,PRICE,ML,SCRAPER,LB api
+    class REDIS cache
+    class PG,HIVE db
+    class KAGGLE,MODELS ml
+    class SUPPLIERS,OCR,GEO external

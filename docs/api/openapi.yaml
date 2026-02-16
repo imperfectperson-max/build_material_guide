@@ -1,0 +1,971 @@
+openapi: 3.0.3
+info:
+  title: Building Materials Price Intelligence Platform API
+  description: |
+    RESTful API for accessing building material prices, forecasts, supplier information, and analytics.
+    
+    ## Features
+    - JWT-based authentication
+    - Redis-backed caching
+    - ML-powered price forecasting
+    - Geolocation-based supplier search
+    - Real-time price comparison
+    
+    ## Rate Limiting
+    - Standard API: 100 req/min (authenticated), 20 req/min (unauthenticated)
+    - ML Operations: 10 req/5min
+    - Authentication: 5 attempts/15min
+    
+    See full documentation at https://github.com/imperfectperson-max/build_material
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://github.com/imperfectperson-max/build_material
+  license:
+    name: TBD
+
+servers:
+  - url: https://api.buildmaterials.app
+    description: Production server
+  - url: https://staging-api.buildmaterials.app
+    description: Staging server
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization endpoints
+  - name: Materials
+    description: Building materials information and search
+  - name: Prices
+    description: Price comparison, history, and forecasting
+  - name: Suppliers
+    description: Supplier information and geolocation search
+  - name: Admin
+    description: Administrative endpoints (admin role required)
+
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Create a new user account with email and password
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitError'
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      description: Authenticate user and receive JWT token
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitError'
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout user
+      description: Revoke JWT token and logout
+      operationId: logoutUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/materials/search:
+    get:
+      tags:
+        - Materials
+      summary: Search materials
+      description: Search for building materials by name, category, or region
+      operationId: searchMaterials
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          description: Search query
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Material category
+          schema:
+            type: string
+            enum: [cement, steel, timber, sand, copper, pvc, bitumen, masonry]
+        - name: region
+          in: query
+          description: Region filter
+          schema:
+            type: string
+            enum: [Gauteng, Western Cape, KwaZulu-Natal, Eastern Cape, Free State, Limpopo, Mpumalanga, Northern Cape, North West]
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaterialsSearchResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/materials/{id}:
+    get:
+      tags:
+        - Materials
+      summary: Get material by ID
+      description: Get detailed information about a specific material
+      operationId: getMaterial
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Material ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Material details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaterialDetailResponse'
+        '404':
+          description: Material not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/materials/favorites:
+    get:
+      tags:
+        - Materials
+      summary: Get favorite materials
+      description: Get user's favorite materials
+      operationId: getFavorites
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Favorite materials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoritesResponse'
+
+  /api/materials/{id}/favorite:
+    post:
+      tags:
+        - Materials
+      summary: Add to favorites
+      description: Add a material to user's favorites
+      operationId: addFavorite
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Added to favorites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+    delete:
+      tags:
+        - Materials
+      summary: Remove from favorites
+      description: Remove a material from user's favorites
+      operationId: removeFavorite
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Removed from favorites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /api/prices/compare:
+    get:
+      tags:
+        - Prices
+      summary: Compare prices
+      description: Compare prices for a material across suppliers
+      operationId: comparePrices
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: materialId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [price, distance, rating]
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        '200':
+          description: Price comparison results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceCompareResponse'
+
+  /api/prices/history:
+    get:
+      tags:
+        - Prices
+      summary: Get price history
+      description: Get historical price data for a material
+      operationId: getPriceHistory
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: materialId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: supplierId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Price history data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceHistoryResponse'
+
+  /api/prices/forecast:
+    get:
+      tags:
+        - Prices
+      summary: Get price forecast
+      description: Get ML-powered price forecast for a material
+      operationId: getPriceForecast
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: materialId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: horizon
+          in: query
+          schema:
+            type: integer
+            enum: [7, 30]
+            default: 7
+        - name: model
+          in: query
+          schema:
+            type: string
+            enum: [lstm, prophet, xgboost, ensemble]
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Price forecast
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceForecastResponse'
+
+  /api/suppliers/nearby:
+    get:
+      tags:
+        - Suppliers
+      summary: Find nearby suppliers
+      description: Find suppliers near a geographic location
+      operationId: findNearbySuppliers
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: radius
+          in: query
+          schema:
+            type: number
+            default: 25
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Nearby suppliers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuppliersNearbyResponse'
+
+  /api/suppliers/{id}:
+    get:
+      tags:
+        - Suppliers
+      summary: Get supplier by ID
+      description: Get detailed information about a specific supplier
+      operationId: getSupplier
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Supplier details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierDetailResponse'
+        '404':
+          description: Supplier not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/admin/metrics:
+    get:
+      tags:
+        - Admin
+      summary: Get system metrics
+      description: Get system metrics and analytics (admin only)
+      operationId: getMetrics
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: System metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsResponse'
+        '403':
+          description: Forbidden - Admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/admin/users:
+    get:
+      tags:
+        - Admin
+      summary: List users
+      description: List all users (admin only)
+      operationId: listUsers
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: User list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersListResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/admin/scraping:
+    post:
+      tags:
+        - Admin
+      summary: Trigger scraping job
+      description: Trigger manual scraping job (admin only)
+      operationId: triggerScraping
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScrapingRequest'
+      responses:
+        '202':
+          description: Job queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScrapingJobResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/admin/scraping/{jobId}:
+    get:
+      tags:
+        - Admin
+      summary: Get scraping job status
+      description: Get status of a scraping job (admin only)
+      operationId: getScrapingJobStatus
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScrapingJobStatusResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login/register endpoints
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+          example: contractor@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: SecurePass123!
+        name:
+          type: string
+          example: John Contractor
+        role:
+          type: string
+          enum: [contractor, analyst, admin, guest]
+          default: contractor
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: contractor@example.com
+        password:
+          type: string
+          format: password
+          example: SecurePass123!
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            refreshToken:
+              type: string
+            expiresIn:
+              type: string
+              example: 24h
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+        email:
+          type: string
+          format: email
+          example: contractor@example.com
+        name:
+          type: string
+          example: John Contractor
+        role:
+          type: string
+          enum: [contractor, analyst, admin, guest]
+        createdAt:
+          type: string
+          format: date-time
+
+    Material:
+      type: object
+      properties:
+        id:
+          type: string
+          example: mat_001
+        name:
+          type: string
+          example: Portland Cement 42.5N
+        category:
+          type: string
+          enum: [cement, steel, timber, sand, copper, pvc, bitumen, masonry]
+        unit:
+          type: string
+          example: 50kg bag
+        description:
+          type: string
+        avgPrice:
+          type: number
+          format: double
+        priceRange:
+          type: object
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+        lastUpdated:
+          type: string
+          format: date-time
+
+    MaterialsSearchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Material'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    MaterialDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          allOf:
+            - $ref: '#/components/schemas/Material'
+            - type: object
+              properties:
+                specifications:
+                  type: object
+                priceHistory:
+                  type: object
+                suppliers:
+                  type: integer
+
+    PriceCompareResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            material:
+              type: object
+            prices:
+              type: array
+              items:
+                type: object
+            statistics:
+              type: object
+
+    PriceHistoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            material:
+              type: object
+            priceHistory:
+              type: array
+            statistics:
+              type: object
+
+    PriceForecastResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            material:
+              type: object
+            currentPrice:
+              type: number
+            forecast:
+              type: array
+            model:
+              type: object
+            recommendation:
+              type: object
+
+    SuppliersNearbyResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    SupplierDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+
+    FavoritesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    MetricsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+
+    UsersListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    ScrapingRequest:
+      type: object
+      properties:
+        supplierId:
+          type: string
+        force:
+          type: boolean
+          default: false
+
+    ScrapingJobResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            jobId:
+              type: string
+            status:
+              type: string
+            estimatedCompletion:
+              type: string
+              format: date-time
+
+    ScrapingJobStatusResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            jobId:
+              type: string
+            status:
+              type: string
+            supplier:
+              type: object
+            results:
+              type: object
+            startedAt:
+              type: string
+              format: date-time
+            completedAt:
+              type: string
+              format: date-time
+            duration:
+              type: integer
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Request validation failed
+            details:
+              type: object
+            timestamp:
+              type: string
+              format: date-time
+            requestId:
+              type: string
+
+    RateLimitError:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: RATE_LIMIT_EXCEEDED
+            message:
+              type: string
+              example: Too many requests. Please try again later.
+            retryAfter:
+              type: integer
+              example: 60
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+        hasNext:
+          type: boolean
+        hasPrev:
+          type: boolean

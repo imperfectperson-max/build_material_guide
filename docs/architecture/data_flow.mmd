@@ -1,0 +1,85 @@
+graph TB
+    subgraph "1. User Authentication Flow"
+        U1["User Submits<br/>Credentials"] --> A1["API Validates<br/>with PostgreSQL"]
+        A1 --> A2["Generate JWT<br/>Token"]
+        A2 --> A3["Return Token<br/>to Client"]
+        A3 --> A4["Client Stores<br/>Token Securely"]
+        A4 --> A5["Include Token in<br/>Authorization Header"]
+        A5 --> A6["API Validates<br/>Token per Request"]
+        A6 --> A7{"Logout?"}
+        A7 -->|Yes| A8["Add Token to<br/>Redis Blacklist"]
+    end
+
+    subgraph "2. Price Query Flow (Cache Hit)"
+        P1["Client Requests<br/>Price Data"] --> P2["API Checks<br/>Redis L1 Cache"]
+        P2 --> P3{"Cache<br/>Hit?"}
+        P3 -->|Yes| P4["Return from<br/>Redis <10ms"]
+        P4 --> P5["Client Displays<br/>Price Data"]
+    end
+
+    subgraph "3. Price Query Flow (Cache Miss)"
+        M1["Client Requests<br/>Price Data"] --> M2["API Checks<br/>Redis L1 Cache"]
+        M2 --> M3{"Cache<br/>Hit?"}
+        M3 -->|No| M4["Query<br/>PostgreSQL ~150ms"]
+        M4 --> M5["Store in Redis<br/>1hr TTL"]
+        M5 --> M6["Return Data<br/>to Client"]
+        M6 --> M7["Client Displays<br/>Price Data"]
+    end
+
+    subgraph "4. ML Forecast Flow (First Request)"
+        F1["Client Requests<br/>Forecast"] --> F2["API Checks<br/>Redis L2 Cache"]
+        F2 --> F3{"Cache<br/>Hit?"}
+        F3 -->|No| F4["Load ML Model<br/>from Registry"]
+        F4 --> F5["Execute Prediction<br/>~250ms"]
+        F5 --> F6["Store in Redis<br/>6hr TTL"]
+        F6 --> F7["Return Forecast<br/>to Client"]
+        F7 --> F8["Client Displays<br/>Visualization"]
+    end
+
+    subgraph "5. ML Forecast Flow (Cached)"
+        FC1["Client Requests<br/>Forecast"] --> FC2["API Checks<br/>Redis L2 Cache"]
+        FC2 --> FC3{"Cache<br/>Hit?"}
+        FC3 -->|Yes| FC4["Return from<br/>Redis <50ms"]
+        FC4 --> FC5["Client Displays<br/>Visualization"]
+    end
+
+    subgraph "6. Data Collection Flow (Scraping)"
+        S1["Scheduled Job OR<br/>Admin Trigger"] --> S2["Identify Target<br/>Suppliers"]
+        S2 --> S3["Fetch Web Pages<br/>or PDFs"]
+        S3 --> S4{"PDF?"}
+        S4 -->|Yes| S5["OCR Extract<br/>Text"]
+        S4 -->|No| S6["Parse HTML"]
+        S5 --> S7["Data Validation<br/>Pipeline"]
+        S6 --> S7
+        S7 --> S8{"Valid?"}
+        S8 -->|Yes| S9["Write to<br/>PostgreSQL"]
+        S8 -->|No| S10["Log Error"]
+        S9 --> S11["Invalidate<br/>Redis Cache"]
+        S11 --> S12["Job Completion<br/>Logged"]
+    end
+
+    subgraph "7. Mobile Offline Flow"
+        O1["Mobile Loses<br/>Connectivity"] --> O2["User Searches<br/>Material"]
+        O2 --> O3["Query Hive<br/>Local DB"]
+        O3 --> O4["Display Cached<br/>Data (Offline)"]
+        O4 --> O5["User Favorites<br/>Material"]
+        O5 --> O6["Store in<br/>Hive DB"]
+        O6 --> O7["Connectivity<br/>Restored"]
+        O7 --> O8["Background<br/>Sync Initiated"]
+        O8 --> O9["Upload Local<br/>Changes to API"]
+        O9 --> O10["Download Server<br/>Data to Local"]
+        O10 --> O11["Conflict Resolution<br/>(Server Wins)"]
+    end
+
+    %% Styling
+    classDef auth fill:#FF6B6B,stroke:#333,stroke-width:2px,color:#fff
+    classDef cache fill:#4ECDC4,stroke:#333,stroke-width:2px,color:#fff
+    classDef ml fill:#95E1D3,stroke:#333,stroke-width:2px,color:#000
+    classDef scrape fill:#F38181,stroke:#333,stroke-width:2px,color:#fff
+    classDef offline fill:#AA96DA,stroke:#333,stroke-width:2px,color:#fff
+    
+    class U1,A1,A2,A3,A4,A5,A6,A7,A8 auth
+    class P1,P2,P3,P4,P5,M1,M2,M3,M4,M5,M6,M7 cache
+    class F1,F2,F3,F4,F5,F6,F7,F8,FC1,FC2,FC3,FC4,FC5 ml
+    class S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12 scrape
+    class O1,O2,O3,O4,O5,O6,O7,O8,O9,O10,O11 offline

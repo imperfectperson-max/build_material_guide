@@ -1,0 +1,131 @@
+@startuml
+skinparam packageStyle rectangle
+
+title Building Materials Price Intelligence Platform\nUse Case Diagram
+
+left to right direction
+
+' Actors
+actor "Contractor/User" as User
+actor "Admin" as Admin
+actor "Data Scraper\n(System)" as Scraper
+actor "ML Engine\n(System)" as MLEngine
+actor "External Supplier\nWebsites" as Supplier
+
+' System Boundary
+rectangle "Building Materials Price Intelligence Platform" {
+    
+    ' Authentication Use Cases
+    package "Authentication & Authorization" {
+        usecase "Register Account" as UC1
+        usecase "Login" as UC2
+        usecase "Manage Profile" as UC3
+        usecase "Reset Password" as UC4
+    }
+    
+    ' Price Comparison Use Cases
+    package "Price Comparison & Search" {
+        usecase "Search Materials" as UC5
+        usecase "Compare Supplier Prices" as UC6
+        usecase "View Price History" as UC7
+        usecase "Filter by Region" as UC8
+        usecase "Add to Favorites" as UC9
+        usecase "Scan Barcode\n(Mobile)" as UC10
+    }
+    
+    ' Price Forecasting Use Cases
+    package "Price Forecasting & Analytics" {
+        usecase "View Price Forecast\n(7-30 days)" as UC11
+        usecase "Get Anomaly Alerts" as UC12
+        usecase "View Trend Analysis" as UC13
+        usecase "Export Reports" as UC14
+    }
+    
+    ' Mobile Specific Use Cases
+    package "Mobile Features" {
+        usecase "Find Nearby Suppliers" as UC15
+        usecase "Receive Push Notifications" as UC16
+        usecase "Access Offline Data" as UC17
+        usecase "Use Biometric Auth" as UC18
+    }
+    
+    ' Admin Use Cases
+    package "Administration" {
+        usecase "Manage Users" as UC19
+        usecase "Monitor System Health" as UC20
+        usecase "Configure Data Sources" as UC21
+        usecase "View Analytics Dashboard" as UC22
+    }
+    
+    ' Backend/System Use Cases
+    package "Data Processing (Backend)" {
+        usecase "Scrape Supplier Data" as UC23
+        usecase "Clean & Validate Data" as UC24
+        usecase "Store Price Records" as UC25
+        usecase "Cache Frequent Queries" as UC26
+    }
+    
+    ' ML Use Cases
+    package "Machine Learning" {
+        usecase "Train Forecasting Models" as UC27
+        usecase "Generate Predictions" as UC28
+        usecase "Detect Price Anomalies" as UC29
+        usecase "Evaluate Model Performance" as UC30
+    }
+}
+
+' User Relationships
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+User --> UC7
+User --> UC8
+User --> UC9
+User --> UC10
+User --> UC11
+User --> UC12
+User --> UC13
+User --> UC14
+User --> UC15
+User --> UC16
+User --> UC17
+User --> UC18
+
+' Admin Relationships
+Admin --> UC19
+Admin --> UC20
+Admin --> UC21
+Admin --> UC22
+
+' System Actor Relationships
+Scraper --> UC23
+Scraper --> UC24
+Scraper --> UC25
+Supplier <-- UC23 : scrapes from
+
+' ML Engine Relationships
+MLEngine --> UC27
+MLEngine --> UC28
+MLEngine --> UC29
+MLEngine --> UC30
+
+' Include Relationships
+UC2 ..> UC18 : <<include>>\n(mobile only)
+UC6 ..> UC26 : <<include>>
+UC11 ..> UC28 : <<include>>
+UC12 ..> UC29 : <<include>>
+UC15 ..> UC8 : <<extend>>
+
+' Extend Relationships
+UC5 ..> UC9 : <<extend>>
+UC7 ..> UC14 : <<extend>>
+
+' Dependencies
+UC11 ..> UC25 : <<depends on>>
+UC27 ..> UC25 : <<depends on>>
+UC6 ..> UC23 : <<depends on>>
+
+@enduml

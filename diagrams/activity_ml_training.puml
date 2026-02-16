@@ -1,0 +1,133 @@
+@startuml
+title Building Materials Price Intelligence Platform\nML Model Training and Evaluation Activity Diagram
+
+|ML Engineer|
+start
+:Initiate model training pipeline;
+
+|Data Preparation Service|
+:Load historical price data\nfrom PostgreSQL;
+:Fetch economic indicators\n(CPI, PPI, exchange rates);
+
+fork
+    :Extract time-series features\n(lag values, rolling means);
+fork again
+    :Extract seasonality features\n(day of week, month, quarter);
+fork again
+    :Extract economic features\n(inflation, exchange rate);
+fork again
+    :Extract supplier features\n(region, reliability);
+end fork
+
+:Merge feature datasets;
+:Handle missing values;
+:Normalize/scale features;
+:Split data (train 70%, validation 15%, test 15%);
+
+|Model Training|
+note right
+    Training on Kaggle GPU
+    for compute-intensive models
+end note
+
+fork
+    :Train ARIMA model\n(baseline);
+    :Tune parameters (p, d, q);
+fork again
+    :Train XGBoost model;
+    :Tune hyperparameters\n(depth, learning rate);
+    :Apply regularization;
+fork again
+    :Train Random Forest model;
+    :Tune ensemble parameters\n(trees, depth);
+fork again
+    :Train Prophet model;
+    :Configure seasonality\n(yearly, weekly);
+fork again
+    :Train LSTM model\n(deep learning);
+    :Configure architecture\n(layers, units);
+    :Train on GPU;
+end fork
+
+:Save trained models;
+
+|Model Evaluation|
+:Load validation dataset;
+
+repeat
+    :Select next model;
+    :Generate predictions;
+    
+    fork
+        :Calculate MAE\n(Mean Absolute Error);
+    fork again
+        :Calculate RMSE\n(Root Mean Squared Error);
+    fork again
+        :Calculate MAPE\n(Mean Absolute Percentage Error);
+    fork again
+        :Calculate R² score;
+    end fork
+    
+    :Store evaluation metrics;
+    
+repeat while (More models?) is (yes)
+->no;
+
+:Compare model performance;
+:Rank models by accuracy;
+
+if (Best model > 59% improvement\nover ARIMA?) then (yes)
+    :Document results;
+    :Create performance report;
+    
+    |Model Deployment|
+    :Version control models\n(MLflow/Git LFS);
+    :Deploy to inference service;
+    :Update API endpoints;
+    :Configure ensemble weights;
+    
+    |Monitoring Service|
+    :Set up performance tracking;
+    :Configure alert thresholds;
+    :Monitor prediction accuracy;
+    
+    |Redis Cache|
+    :Clear old model caches;
+    :Set cache TTL to 6 hours;
+    
+    |Documentation|
+    :Update model cards;
+    :Document feature importance;
+    :Create API documentation;
+    
+    stop
+    
+else (no)
+    |ML Engineer|
+    :Review model performance;
+    :Identify improvement areas;
+    
+    if (Retrain with more data?) then (yes)
+        :Collect additional data;
+        :Extend training period;
+        ->Data Preparation Service;
+    else (no)
+        if (Try different features?) then (yes)
+            :Engineer new features;
+            :Add external data sources;
+            ->Data Preparation Service;
+        else (no)
+            if (Adjust hyperparameters?) then (yes)
+                :Perform grid search;
+                :Apply cross-validation;
+                ->Model Training;
+            else (no)
+                :Document limitations;
+                :Deploy best available model;
+                stop
+            endif
+        endif
+    endif
+endif
+
+@enduml

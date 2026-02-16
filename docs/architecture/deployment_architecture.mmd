@@ -1,0 +1,103 @@
+graph TB
+    subgraph "User Devices"
+        BROWSER["🌐 Web Browser<br/><br/>Chrome, Firefox<br/>Safari, Edge"]
+        IOS["📱 iOS Device<br/><br/>iPhone, iPad<br/>iOS 14+"]
+        ANDROID["📱 Android Device<br/><br/>Android 6.0+"]
+    end
+
+    subgraph "CDN & Edge Network"
+        VERCEL["▲ Vercel CDN<br/><br/>• Global Edge Network<br/>• Automatic HTTPS<br/>• Asset Optimization<br/>• Preview Deployments"]
+    end
+
+    subgraph "API Infrastructure - Fly.io (Johannesburg)"
+        FLY_LB["⚡ Load Balancer<br/><br/>• SSL Termination<br/>• Health Checks<br/>• Request Routing"]
+        
+        subgraph "API Instances"
+            API1["API Instance 1<br/>Node.js + Express"]
+            API2["API Instance 2<br/>Node.js + Express"]
+            API3["API Instance 3<br/>Node.js + Express"]
+        end
+    end
+
+    subgraph "Data Layer - Cloud Services"
+        SUPABASE["🗄️ Supabase<br/>AWS Region<br/><br/>PostgreSQL 14+<br/>500MB Storage<br/>Row-Level Security<br/>Automatic Backups"]
+        
+        REDIS_CLOUD["⚡ Redis Cloud<br/><br/>30MB Storage<br/>TLS Encryption<br/>AOF Persistence"]
+    end
+
+    subgraph "ML Training - Kaggle"
+        KAGGLE_GPU["☁️ Kaggle<br/><br/>Tesla P100 GPU<br/>30 hours/week<br/>20GB Storage<br/><br/>Training Pipeline:<br/>1. Data Download<br/>2. Feature Engineering<br/>3. Model Training<br/>4. Evaluation<br/>5. Export"]
+    end
+
+    subgraph "CI/CD Pipeline - GitHub"
+        GITHUB["🔧 GitHub Actions<br/><br/>Workflow:<br/>1. Code Push<br/>2. Linting<br/>3. Testing<br/>4. Build<br/>5. Deploy"]
+    end
+
+    subgraph "Monitoring & Logging"
+        LOGS["📊 Logging<br/><br/>• API Logs<br/>• Error Tracking<br/>• Performance Metrics"]
+        ALERTS["🔔 Alerting<br/><br/>• Uptime Monitor<br/>• Error Threshold<br/>• Performance Alerts"]
+    end
+
+    subgraph "External Data Sources"
+        SUPPLIERS["🏪 Supplier Sites<br/><br/>• Builders Warehouse<br/>• Cashbuild<br/>• Makro<br/>• 10+ Suppliers"]
+    end
+
+    %% User to CDN/API
+    BROWSER -->|"HTTPS"| VERCEL
+    IOS -->|"HTTPS"| FLY_LB
+    ANDROID -->|"HTTPS"| FLY_LB
+    
+    %% Web to API for dynamic data
+    VERCEL -.->|"API Calls<br/>HTTPS"| FLY_LB
+    
+    %% Load Balancer to API Instances
+    FLY_LB --> API1
+    FLY_LB --> API2
+    FLY_LB --> API3
+    
+    %% API to Data Layer
+    API1 --> REDIS_CLOUD
+    API2 --> REDIS_CLOUD
+    API3 --> REDIS_CLOUD
+    
+    API1 --> SUPABASE
+    API2 --> SUPABASE
+    API3 --> SUPABASE
+    
+    %% Scraping to Suppliers
+    API1 -.->|"Scraping<br/>Jobs"| SUPPLIERS
+    
+    %% ML Training Pipeline
+    KAGGLE_GPU -->|"Model<br/>Export"| API1
+    SUPABASE -.->|"Training<br/>Data"| KAGGLE_GPU
+    
+    %% CI/CD
+    GITHUB -->|"Deploy"| VERCEL
+    GITHUB -->|"Deploy"| FLY_LB
+    
+    %% Monitoring
+    FLY_LB --> LOGS
+    VERCEL --> LOGS
+    LOGS --> ALERTS
+
+    %% Styling
+    classDef user fill:#4A90E2,stroke:#333,stroke-width:2px,color:#fff
+    classDef cdn fill:#00A8E8,stroke:#333,stroke-width:2px,color:#fff
+    classDef api fill:#68a063,stroke:#333,stroke-width:2px,color:#fff
+    classDef data fill:#336791,stroke:#333,stroke-width:2px,color:#fff
+    classDef ml fill:#20BEFF,stroke:#333,stroke-width:2px,color:#000
+    classDef cicd fill:#2088FF,stroke:#333,stroke-width:2px,color:#fff
+    classDef monitor fill:#FF6B6B,stroke:#333,stroke-width:2px,color:#fff
+    
+    class BROWSER,IOS,ANDROID user
+    class VERCEL cdn
+    class FLY_LB,API1,API2,API3 api
+    class SUPABASE,REDIS_CLOUD data
+    class KAGGLE_GPU ml
+    class GITHUB cicd
+    class LOGS,ALERTS monitor
+    class SUPPLIERS external
+
+    %% Environment Labels
+    VERCEL -.->|"Production<br/>Environment"| VERCEL
+    FLY_LB -.->|"Production<br/>Johannesburg"| FLY_LB

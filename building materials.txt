@@ -1,0 +1,549 @@
+Building Materials Price Intelligence Platform
+A Machine Learning–Driven Web and Mobile System for Price Forecasting and Supplier Comparison
+Informatics 3 Project Proposal
+Academy of Computer Science & Software Engineering
+Project Duration: 7 Weeks
+Team Size: 4 Members
+13 February 2026
+
+1. Introduction
+The construction industry in South Africa faces significant challenges due to volatile building material prices. 
+According to Statistics South Africa, the construction material price index rose by 6.5% year-on-year in 2024, following annual growth of 6.6% in 2023, placing substantial pressure on contractors and developers. Small contractors and independent developers particularly lack access to structured pricing intelligence, forcing them to manually compare suppliers and make purchasing decisions without predictive insight.
+This project proposes the development of a Building Materials Price Intelligence Platform—a secure, full-stack system integrating web and mobile applications with machine learning capabilities. The system aims to demonstrate how predictive analytics can provide actionable insights into material price movements while maintaining secure and scalable software architecture, addressing a critical gap in the South African construction market.
+2. Background and Motivation
+2.1 Problem Context
+Building material prices in South Africa fluctuate due to multiple factors including supply chain instability, import/export dependencies, inflationary pressures, seasonal demand changes, and regional supplier differences. The Construction Industry Development Board (CIDB) identified steel, cement, sand, copper, timber, PVC, bitumen, and masonry blocks as particularly volatile materials in the South African market. These price fluctuations pose significant challenges for construction project management, often resulting in cost overruns and project delays.
+2.2 Current Limitations
+The current state of building materials procurement in South Africa presents several critical challenges:
+• Contractors rely on manual price comparison across suppliers
+• No centralized, structured dataset of historical pricing exists
+• Absence of predictive intelligence for short-term price changes
+• Purchasing decisions are reactive rather than data-driven
+• Limited tools available for anomaly detection in pricing
+2.3 Research Foundation
+Recent research demonstrates the effectiveness of machine learning approaches for construction material price forecasting. Studies indicate that data-driven techniques, particularly machine learning models, have emerged as crucial tools for construction materials price forecasting over the past two decades. Traditional econometric methods have been challenged by their inability to capture frequent fluctuations in construction material prices, creating an opportunity for more sophisticated predictive approaches.
+A 2025 study demonstrated that LSTM models achieved RMSE values as low as 1.390 with MAPE values of 0.957, representing improvements of up to 59% over traditional ARIMA models for construction material price forecasting. Similarly, research has shown that gradient boosting algorithms like XGBoost can effectively handle the non-linearity of time series data with efficient self-learning abilities, performing exceptionally well in forecasting tasks.
+3. Research Objectives
+3.1 Primary Objective
+To evaluate whether machine learning models can accurately forecast short-term (7–30 day) building material price movements using publicly available supplier data from the South African market, thereby providing contractors with actionable pricing intelligence.
+3.2 Secondary Objectives
+• Design and implement a secure backend system for price data ingestion and processing
+• Develop a web application for analytics, supplier comparison, and price trend visualization
+• Develop a mobile application for real-time field access to pricing information
+• Implement robust authentication and API security mechanisms
+• Compare supervised machine learning models against traditional statistical baselines
+• Create a structured dataset of building material price history for the South African market
+4. Research Question
+Can supervised machine learning models outperform traditional statistical forecasting methods in predicting short-term building material price fluctuations in the South African construction market?
+5. Literature Review
+5.1 Machine Learning in Construction Price Forecasting
+The application of machine learning to construction material price forecasting has gained significant traction in recent years. A comprehensive systematic literature review analyzing publications from 2012 to 2022 identified that Vector Error Correction Model (VECM), Artificial Neural Networks (ANN), and Autoregressive Integrated Moving Average (ARIMA) were the most frequently employed forecasting models. The review noted a significant increase in research activity since 2016, indicating growing interest in applying advanced analytical techniques to construction economics.
+Research demonstrates that forecasting models can be broadly classified into causal modeling and time-series analysis categories. Causal models analyze historical data alongside independent variables such as Consumer Price Index (CPI), Producer Price Index (PPI), and Gross Domestic Product (GDP) to forecast construction material prices. Time-series models, conversely, rely primarily on historical price patterns to predict future values.
+5.2 Comparative Model Performance
+Recent comparative studies have provided valuable insights into relative model performance. A 2025 framework for construction material price forecasting demonstrated that incorporating explanatory variables significantly improves predictive performance across all model types. The study found that LSTM models consistently achieved the highest accuracy, with improvements of up to 59% over traditional ARIMA models.
+Research comparing XGBoost, Random Forest, and LSTM for time series forecasting revealed that each model has distinct advantages. XGBoost performs well at finding complex relationships between variables and includes regularization features that help avoid overfitting. Random Forest, as an ensemble method combining multiple decision trees, provides robust predictions across varied datasets. LSTM networks excel at capturing time-related patterns through their sophisticated gating mechanism, making them particularly effective for sequential data with long-term dependencies.
+A comparative analysis examining machine learning methods for forecasting in different contexts found that Random Forest with differentiated inputs proved to be the best performing method across scenarios with varying complexity, including situations with jumps, random walks, or combinations of both. The study noted that while XGBoost was competitive, machine learning algorithms generally delivered consistently better results than traditional time series methods when additional complexities were present.
+5.3 Data Acquisition and Web Scraping
+Web scraping has emerged as a critical technique for real-time market intelligence in the construction industry. Research indicates that construction companies can transform into agile entities by monitoring suppliers' websites and tracking material availability and pricing fluctuations. This approach enables proactive procurement strategies rather than reactive responses to market changes.
+Studies show that 45% of construction companies currently use basic analytics, while another 45% are transitioning to more advanced digital tools, highlighting growing recognition of data's role in cost management. Web scraping provides advantages including smarter procurement through supplier pricing trend analysis, efficient resource use through monitoring utilization patterns, and improved market timing for material purchases based on price fluctuations.
+5.4 South African Construction Market Context
+The South African construction industry faces unique challenges that make pricing intelligence particularly valuable. Market analysis indicates that the construction material price index for civil engineering rose by 7% year-on-year in early 2024, following annual growth of 4.4% in 2023. The volatility is driven by factors including exchange rate movements affecting import parity prices, seasonal variations in construction activity, and supply shocks such as mill outages or transport disruptions.
+Research examining trends in building material prices in South Africa identified that volatile materials include steel, cement, sand, copper, timber, PVC, bitumen, and masonry blocks. The study emphasized that understanding key factors contributing to price trends is essential for finding solutions to problems of project abandonment and gaps between demand and supply of basic infrastructure.
+6. System Architecture
+The proposed system consists of five major interconnected components, designed to provide end-to-end functionality from data collection to user interface delivery.
+6.1 Data Acquisition Layer
+The data acquisition layer will employ web scraping techniques to collect pricing information from South African building material suppliers. Modern web scraping tools, costing as little as $0.005 per page scrape, offer automated extraction capabilities with features including scheduled data collection, handling of dynamic content, and standardized data formatting. The system will implement:
+• Automated web scraping of supplier catalogues and online price lists
+• PDF price list extraction using optical character recognition where necessary
+• Scheduled data collection to maintain currency of pricing information
+• Data validation and cleaning pipeline to ensure data quality
+• Storage of attributes including material name, supplier, region, price, date, and bulk pricing information
+6.2 Backend Architecture
+The backend will be built using industry-standard technologies including PostgreSQL for data storage, RESTful API endpoints, JWT-based authentication, feature engineering pipelines, model inference services, and caching layers for performance optimization.
+6.3 Machine Learning Component
+The machine learning component will implement baseline models (naïve forecast, moving average, ARIMA) and advanced models (XGBoost, Random Forest, Prophet, LSTM) with evaluation using MAE, RMSE, and MAPE metrics.
+6.4 Web and Mobile Applications
+The web dashboard will provide supplier comparison, historical trends, forecasts, and anomaly alerts. The mobile application will offer quick searches, geolocation-based supplier comparison, and push notifications for price changes.
+7. Security Architecture
+Security will be implemented through JWT-based authentication, role-based access control, bcrypt/Argon2 password hashing, HTTPS encryption, rate limiting, input validation, and protection against SQL injection, XSS, and CSRF attacks.
+8. Methodology
+Week 1-2: Data collection, web scraping implementation, data cleaning, EDA
+Week 2-4: Backend development, database design, API implementation, security
+Week 3-5: ML model development, feature engineering, training, evaluation
+Week 4-6: Frontend development for web and mobile applications
+Week 6-7: Integration, testing, deployment, documentation
+9. Team Structure
+Member 1: Backend Developer & Security Lead
+Member 2: Machine Learning Engineer
+Member 3: Frontend Web Developer
+Member 4: Mobile Developer & Data Collection Lead
+10. Expected Contributions
+This project will contribute a structured dataset of South African building material prices, comparative ML model evaluation for price forecasting, secure full-stack implementation, and a deployable system demonstrating practical AI application in construction economics.
+11. Limitations
+Limitations include dependence on publicly available supplier data, limited historical depth initially, potential reduction in model predictability during market shocks, 7-week timeline constraints, and reliance on free-tier cloud infrastructure.
+12. Future Work
+Future enhancements include integration with wholesale supplier APIs, reinforcement learning for purchase timing, SMS/WhatsApp alerts, expansion to additional African markets, project management system integration, and advanced anomaly detection.
+13. Conclusion
+This project proposes a comprehensive Building Materials Price Intelligence Platform addressing a critical gap in the South African construction market. The 7-week timeline with 4 team members is feasible given the clear division of responsibilities. Research demonstrates that machine learning approaches can achieve up to 59% improvement in prediction accuracy over traditional methods. The system represents an opportunity to demonstrate how modern software engineering and machine learning can effectively solve real-world problems in construction economics.
+
+References
+Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 785–794.
+Construction Industry Development Board (CIDB). (2007). Construction materials price volatility in South Africa.
+Datamam. (2025). Web scraping in the construction industry: Real-time analysis. Retrieved from https://datamam.com/web-scraping-in-the-construction-industry/
+Frifra, M., Naouar, M., & Boudhar, A. (2024). Harnessing LSTM and XGBoost algorithms for storm prediction. Scientific Reports, 14, Article 11424.
+GlobalData. (2025). South Africa construction market analysis.
+Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735–1780.
+Hwang, S., Park, M., Lee, H. S., & Kim, H. (2012). Automated time-series cost forecasting system for construction materials. Journal of Construction Engineering and Management, 138(11), 1259–1269.
+InstantAPI. (2025). Web scraping in the construction industry: Data for better planning. Retrieved from https://web.instantapi.ai
+Lyu, B., et al. (2025). A granular framework for construction material price forecasting. arXiv preprint arXiv:2512.09360.
+Marzouk, M., & Amin, A. (2013). Predicting construction materials prices using fuzzy logic and neural networks. Journal of Construction Engineering and Management, 139(9), 1190–1198.
+Mir, M., Kabir, H. D., Nasirzadeh, F., & Khosravi, A. (2021). Neural network-based interval forecasting of construction material prices. Journal of Building Engineering, 39, 102288.
+Nguyen, T. H., Kutluer, S., & Günaydın, H. M. (2023). A systematic literature review on price forecasting models in construction industry. Engineering, Construction and Architectural Management.
+Statistics South Africa. (2024). Construction material price indices. Pretoria: Stats SA.
+Wang, Y., et al. (2024). A survey of data-driven construction materials price forecasting. Buildings, 14(10), 3156.
+Zhang, L., et al. (2025). Harnessing the power of improved deep learning for precise building material price predictions. Buildings, 15(6), 873.
+
+Building Materials Price Intelligence Platform
+A Machine Learning–Driven Web and Mobile System for Price Forecasting and Supplier Comparison
+1. Introduction
+
+The construction industry in South Africa is heavily affected by volatile building material prices. Small contractors and independent developers often lack access to structured pricing intelligence, forcing them to manually compare suppliers and make purchasing decisions without predictive insight.
+
+This project proposes the development of a Building Materials Price Intelligence Platform — a secure, full-stack system consisting of:
+
+A web dashboard for analytics and price comparison
+
+A mobile application for field access
+
+A backend API and data processing system
+
+A machine learning engine for short-term price forecasting
+
+A security-focused architecture
+
+The system aims to demonstrate how machine learning can provide actionable insights into material price movements while maintaining secure and scalable software architecture.
+
+2. Problem Statement
+
+Building material prices fluctuate due to:
+
+Supply chain instability
+
+Import/export dependencies
+
+Inflationary pressures
+
+Seasonal demand changes
+
+Regional supplier differences
+
+Currently:
+
+Contractors compare prices manually
+
+No centralized structured dataset exists
+
+There is no predictive intelligence for short-term price changes
+
+Purchasing decisions are reactive rather than data-driven
+
+There is an opportunity to apply machine learning to forecast price movements and detect pricing anomalies.
+
+3. Research Objectives
+Primary Objective
+
+To evaluate whether machine learning models can accurately forecast short-term (7–30 day) building material price movements using publicly available supplier data.
+
+Secondary Objectives
+
+Design and implement a secure backend system for price data ingestion and processing.
+
+Develop a web application for analytics and supplier comparison.
+
+Develop a mobile application for real-time field access.
+
+Implement authentication and API security mechanisms.
+
+Compare machine learning models against statistical baselines.
+
+4. Research Question
+
+Can supervised machine learning models outperform traditional statistical forecasting methods in predicting short-term building material price fluctuations?
+
+5. System Overview
+
+The proposed system consists of five major components:
+
+5.1 Data Acquisition Layer
+
+Web scraping of supplier catalogues
+
+PDF price list extraction
+
+Scheduled data collection
+
+Data validation and cleaning pipeline
+
+Collected attributes may include:
+
+Material name
+
+Supplier
+
+Region
+
+Price
+
+Date
+
+Bulk pricing information
+
+5.2 Backend Architecture
+
+The backend will provide:
+
+RESTful API endpoints
+
+Data storage
+
+Authentication and authorization
+
+Model inference endpoints
+
+Core backend features:
+
+Structured relational database (e.g., PostgreSQL)
+
+Price history storage
+
+Feature engineering pipeline
+
+Model prediction service
+
+Caching layer for frequently requested queries
+
+5.3 Machine Learning Component
+Baseline Models:
+
+Naïve forecast (previous price persistence)
+
+Moving average
+
+ARIMA
+
+Machine Learning Models:
+
+Gradient Boosting (e.g., XGBoost)
+
+Random Forest Regression
+
+Prophet (for seasonality modeling)
+
+Optional: LSTM (time-series deep learning)
+
+Evaluation Metrics:
+
+Mean Absolute Error (MAE)
+
+Root Mean Squared Error (RMSE)
+
+Mean Absolute Percentage Error (MAPE)
+
+Model performance will be compared against statistical baselines to evaluate improvement.
+
+5.4 Web Application
+
+The web dashboard will provide:
+
+Supplier price comparison interface
+
+Historical price trend visualization
+
+Forecasted price projections
+
+Anomaly detection alerts
+
+Regional filtering
+
+Technology stack may include:
+
+React or similar frontend framework
+
+Secure API integration
+
+Interactive charts
+
+Role-based authentication
+
+The web interface is intended for contractors, analysts, and business users.
+
+5.5 Mobile Application
+
+The mobile app will provide:
+
+Quick material search
+
+Nearby supplier price comparison
+
+Forecasted price alerts
+
+Push notifications for price changes
+
+The mobile component ensures usability in on-site construction environments where desktop access is limited.
+
+6. Security Architecture
+
+Security is a formal requirement of this project.
+
+6.1 Authentication & Authorization
+
+JWT-based authentication
+
+Role-based access control (RBAC)
+
+Secure password hashing (bcrypt or Argon2)
+
+6.2 API Security
+
+HTTPS encryption
+
+Rate limiting
+
+Input validation
+
+Protection against:
+
+SQL injection
+
+Cross-site scripting (XSS)
+
+Cross-site request forgery (CSRF)
+
+6.3 Data Protection
+
+Secure storage of credentials
+
+Environment variable isolation
+
+API key management
+
+Logging and monitoring for suspicious activity
+
+Security considerations will follow industry best practices.
+
+7. Deployment Architecture
+
+The system will be deployed using:
+
+Cloud-hosted backend server
+
+Managed database service
+
+Version-controlled CI/CD pipeline
+
+Environment-based configuration (development vs production)
+
+The infrastructure will prioritize:
+
+Scalability
+
+Cost efficiency
+
+Security
+
+Reliability
+
+The project is designed to operate on open-source software and free-tier cloud infrastructure, ensuring no financial dependency on institutional funding.
+
+8. Methodology
+
+Data collection over a defined period.
+
+Cleaning and preprocessing.
+
+Exploratory Data Analysis (EDA).
+
+Feature engineering.
+
+Model training and validation.
+
+Baseline comparison.
+
+System integration.
+
+Deployment and evaluation.
+
+9. Expected Contributions
+
+This project contributes:
+
+A structured dataset of building material price history.
+
+A comparative evaluation of ML models for short-term price forecasting.
+
+A secure, full-stack implementation integrating:
+
+Web
+
+Mobile
+
+Backend
+
+ML
+
+Security
+
+A deployable system demonstrating practical AI application in construction economics.
+
+10. Limitations
+
+Dependence on publicly available supplier data.
+
+Limited historical depth in early project stages.
+
+Market shocks may reduce model predictability.
+
+11. Future Work
+
+Integration with wholesale supplier APIs.
+
+Reinforcement learning for optimal purchase timing.
+
+Dynamic pricing alerts via SMS or WhatsApp.
+
+Expansion to additional African markets.
+
+12. Conclusion
+
+This project proposes a secure, full-stack machine learning system for forecasting building material prices and enabling intelligent supplier comparison. By combining data engineering, backend development, web and mobile applications, and predictive modeling, the system aims to demonstrate the real-world applicability of machine learning within construction economics.
+
+The project aligns with academic requirements for:
+
+Web application development
+
+Mobile application development
+
+Backend system implementation
+
+Security architecture integration
+
+Applied machine learning research
+
+WEEKS 1-2 (Feb 13-26): Foundation
+Focus: Data collection, infrastructure, Redis setup
+
+Week	Member 1 (Backend)	Member 2 (ML)	Member 3 (Web)	Member 4 (Mobile/Data)
+Week 1	Supabase setup, DB schema	Research models, download Stats SA data	React project setup, wireframes	Identify 10 suppliers, basic scraper
+Week 2	⭐ REDIS SETUP: Redis Cloud, basic cache service	EDA on historical data	Tailwind CSS setup, component library	PDF parser, Wayback Machine backfill
+End of Week 2 Deliverables:
+
+✅ Supabase database with tables
+
+✅ Redis Cloud instance (30MB free)
+
+✅ 3 web scrapers working
+
+✅ 500+ price records collected
+
+WEEKS 3-4 (Feb 27-Mar 12): Core Development
+Focus: API development, caching strategies, ML baseline
+
+Week	Member 1 (Backend)	Member 2 (ML)	Member 3 (Web)	Member 4 (Mobile/Data)
+Week 3	REST endpoints (/prices, /materials), rate limiting with Redis	Kaggle setup, ARIMA baseline	API service layer, React Query	Flutter setup, basic navigation
+Week 4	⭐ CACHE HIERARCHY: L1 prices, L2 forecasts, JWT blacklist	Feature engineering, XGBoost start	Price charts (Recharts), search UI	Material list view, HTTP client
+🎯 D1 (March 9) - Demo Ready:
+
+Show database with real SA price data
+
+Demonstrate API returning cached responses (5ms vs 150ms)
+
+Show web dashboard wireframes
+
+Judge takeaway: "Solid foundation, real data"
+
+🎯 ST1 (March 25) - Architecture Presentation:
+
+Present complete architecture diagram with Redis layer
+
+Show cache hit rates, performance improvements
+
+Demo basic price queries
+
+Judge takeaway: "Professional design, production-ready thinking"
+
+WEEKS 5-6 (Mar 13-26): ML & Frontend Acceleration
+Focus: Model training, web development
+
+Week	Member 1 (Backend)	Member 2 (ML)	Member 3 (Web)	Member 4 (Mobile/Data)
+Week 5	ML inference endpoints (/forecast), model caching	LSTM on Kaggle GPU, Prophet	Dashboard homepage, supplier comparison	Offline storage with Hive, price cards
+Week 6	Background retraining tasks, admin endpoints	Random Forest, model comparison	Forecast visualization, detail pages	Geolocation, favorites feature
+WEEKS 7-8 (Mar 27-Apr 9): Integration Sprint
+Focus: Connecting all components, mobile development
+
+Week	Member 1 (Backend)	Member 2 (ML)	Member 3 (Web)	Member 4 (Mobile/Data)
+Week 7	⭐ MODEL CACHING: 6-hour TTL for predictions	Ensemble model, evaluation (MAE/RMSE)	Connect web to real ML endpoints	Push notifications setup
+Week 8	Cache warming, performance tuning	Model cards, feature importance	Anomaly alerts, export functionality	Camera scan (ML Kit), biometric auth
+🎯 D2 (April 7) - Working Backend Demo:
+
+Show complete API with Redis caching
+
+Demonstrate ML predictions (7/30-day forecasts)
+
+Web app consuming real data
+
+Mobile app displaying prices
+
+Judge takeaway: "End-to-end working system, impressive progress"
+
+WEEKS 9-10 (Apr 10-23): Feature Completion
+Focus: Mobile completion, testing
+
+Week	Member 1 (Backend)	Member 2 (ML)	Member 3 (Web)	Member 4 (Mobile/Data)
+Week 9	Mobile-optimized endpoints, webhooks	Anomaly detection service	UI polish, PWA support	Complete all mobile features
+Week 10	Security audit, load testing	Model versioning, documentation	Cross-browser testing	iOS/Android testing, crash reporting
+WEEKS 11-12 (Apr 24-May 5): MVP Polish
+Focus: Final optimization, MVP readiness
+
+Week	Member 1 (Backend)	Member 2 (ML)	Member 3 (Web)	Member 4 (Mobile/Data)
+Week 11	⭐ REDIS TUNING: Optimize TTLs, hit rate >70%	Final model metrics (target: 59% improvement)	Performance optimization	Offline sync finalization
+Week 12	Deploy to Fly.io, production ready	Create benchmark vs ARIMA	Deploy to Vercel	Demo video recording
+🎯 D3 (May 5) - MVP COMPLETE!
+
+✅ Full working system with Redis caching
+
+✅ ML predictions with 59% improvement claim
+
+✅ Web dashboard + Mobile app
+
+✅ Real SA price data (2000+ records)
+
+✅ 5-minute demo ready
+
+Judge takeaway: "Complete, polished, production-ready MVP"
+
+📊 Post-MVP Timeline (May 6 - June 10)
+WEEKS 13-14 (May 6-19): Testing & Polish
+Focus: ST2 preparation, D4 final polish
+
+Week	Activities	Deliverables
+Week 13	End-to-end testing, user acceptance testing	Test reports, bug fixes
+May 13 (ST2)	Present testing results, optimization metrics	Cache hit rates: 75%, API response: <50ms
+Week 14	Final UI polish, presentation materials	Poster, slides, demo scripts
+🎯 D4 (May 19) - Final Polish Complete:
+
+Perfect demo flow
+
+Backup videos recorded
+
+Q&A preparation done
+
+Judge takeaway: "They're ready to win"
+
+WEEK 15 (May 20-June 9): Presentation Prep
+Focus: Rehearsals, refinement
+
+Day	Activity
+May 20-24	Individual rehearsals
+May 25-31	Full team rehearsals (timed, recorded)
+June 1-5	Feedback incorporation, final tweaks
+June 6-9	Final rehearsals, equipment check
