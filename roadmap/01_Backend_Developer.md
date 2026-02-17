@@ -322,7 +322,7 @@ As the Backend Developer and Security Lead, you are responsible for building the
 
 #### Tuesday (March 10)
 **Full Day (4-5 hours):**
-1. Implement database schema in Supabase:
+1. Implement database schema in Supabase (example):
    ```sql
    -- Enable PostGIS extension for geographic data support
    CREATE EXTENSION IF NOT EXISTS postgis;
