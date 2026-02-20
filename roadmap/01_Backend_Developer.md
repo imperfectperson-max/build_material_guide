@@ -235,6 +235,465 @@ module.exports = client;
 ---
 
 ## 📋 Canonical Schema Reference
+## 📅 WEEK 1: March 9-15, 2026
+### Theme: Database Foundation
+
+#### Monday (March 9)
+**Morning (2-3 hours):**
+1. Create Supabase project account
+2. Set up PostgreSQL database instance
+3. Document connection string and credentials
+4. Test connection from local machine
+
+**Afternoon (2-3 hours):**
+1. Design initial database schema:
+   - `materials` table (id, name, category, unit, description)
+   - `suppliers` table (id, name, location, contact, website)
+   - `prices` table (id, material_id, supplier_id, price, date, region)
+   - `users` table (id, email, password_hash, role, created_at)
+2. Create schema diagram using dbdiagram.io or draw.io
+3. Share schema with team for feedback
+
+**Deliverable:** Database schema design document
+
+#### Tuesday (March 10)
+**Full Day (4-5 hours):**
+1. Implement database schema in Supabase (example):
+   ```sql
+   -- Enable PostGIS extension for geographic data support
+   CREATE EXTENSION IF NOT EXISTS postgis;
+
+   -- Users table: Authentication and user management
+   CREATE TABLE users (
+     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+     email VARCHAR(255) UNIQUE NOT NULL,
+     password_hash VARCHAR(255) NOT NULL,
+     name VARCHAR(255),
+     role VARCHAR(50) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+     active BOOLEAN DEFAULT true,
+     email_verified BOOLEAN DEFAULT false,
+     last_login TIMESTAMP,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+
+   -- Materials table: Building materials catalog
+   CREATE TABLE materials (
+     id VARCHAR(50) PRIMARY KEY,  -- e.g., 'CEMENT-001'
+     name VARCHAR(255) NOT NULL,
+     category VARCHAR(100),
+     unit VARCHAR(50),
+     description TEXT,
+     specifications JSONB,  -- Detailed material specs
+     keywords TEXT[],  -- Search keywords
+     active BOOLEAN DEFAULT true,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+
+   -- Suppliers table: Supplier information and details
+   CREATE TABLE suppliers (
+     id VARCHAR(50) PRIMARY KEY,  -- e.g., 'SUP-001'
+     name VARCHAR(255) NOT NULL,
+     website VARCHAR(255),
+     location_address TEXT,
+     location_coordinates GEOGRAPHY(POINT, 4326),  -- WGS84 coordinates (latitude/longitude)
+     region VARCHAR(100),
+     contact_phone VARCHAR(50),
+     contact_email VARCHAR(255),
+     rating DECIMAL(3,2) CHECK (rating >= 0.00 AND rating <= 5.00),  -- 0.00 to 5.00
+     review_count INTEGER DEFAULT 0,
+     categories TEXT[],  -- Supplier categories
+     opening_hours JSONB,  -- Store hours
+     payment_methods TEXT[],  -- Accepted payment methods
+     delivery_available BOOLEAN DEFAULT false,
+     active BOOLEAN DEFAULT true,
+     last_scraped TIMESTAMP,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+
+   -- Prices table: Material prices from various suppliers
+   CREATE TABLE prices (
+     id BIGSERIAL PRIMARY KEY,
+     material_id VARCHAR(50) REFERENCES materials(id) ON DELETE CASCADE,
+     supplier_id VARCHAR(50) REFERENCES suppliers(id) ON DELETE CASCADE,
+     price DECIMAL(10,2) NOT NULL,
+     quantity INTEGER,
+     unit VARCHAR(50),
+     region VARCHAR(100),
+     in_stock BOOLEAN DEFAULT true,
+     bulk_pricing JSONB,
+     metadata JSONB,  -- Additional scraper data
+     date DATE NOT NULL,
+     scraped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+
+   -- Favorites table: User favorite materials
+   CREATE TABLE favorites (
+     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+     material_id VARCHAR(50) REFERENCES materials(id) ON DELETE CASCADE,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     PRIMARY KEY (user_id, material_id)
+   );
+
+   -- Price Alerts table: User price threshold alerts
+   CREATE TABLE price_alerts (
+     id BIGSERIAL PRIMARY KEY,
+     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+     material_id VARCHAR(50) REFERENCES materials(id) ON DELETE CASCADE,
+     threshold_price DECIMAL(10,2) NOT NULL,
+     threshold_type VARCHAR(20) NOT NULL CHECK (threshold_type IN ('above', 'below')),
+     active BOOLEAN DEFAULT true,
+     last_triggered TIMESTAMP,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+
+   -- Scraping Jobs table: Track web scraping jobs
+   -- Note: supplier_id uses ON DELETE SET NULL to preserve historical job records
+   -- even when suppliers are removed, useful for debugging and auditing
+   CREATE TABLE scraping_jobs (
+     id VARCHAR(50) PRIMARY KEY,
+     supplier_id VARCHAR(50) REFERENCES suppliers(id) ON DELETE SET NULL,
+     status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'running', 'completed', 'failed')),
+     materials_found INTEGER DEFAULT 0,
+     prices_updated INTEGER DEFAULT 0,
+     errors_count INTEGER DEFAULT 0,
+     error_log JSONB,
+     started_at TIMESTAMP,
+     completed_at TIMESTAMP,
+     duration_seconds INTEGER,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+   ```
+
+2. Add indexes for common queries:
+   ```sql
+   -- Materials indexes
+   CREATE INDEX idx_materials_category ON materials(category);
+   CREATE INDEX idx_materials_active ON materials(active);
+   CREATE INDEX idx_materials_keywords ON materials USING GIN(keywords);
+
+   -- Suppliers indexes
+   CREATE INDEX idx_suppliers_region ON suppliers(region);
+   CREATE INDEX idx_suppliers_active ON suppliers(active);
+   CREATE INDEX idx_suppliers_categories ON suppliers USING GIN(categories);
+
+   -- Prices indexes
+   CREATE INDEX idx_prices_material ON prices(material_id);
+   CREATE INDEX idx_prices_supplier ON prices(supplier_id);
+   CREATE INDEX idx_prices_date ON prices(date);
+   CREATE INDEX idx_prices_region ON prices(region);
+   CREATE INDEX idx_prices_scraped_at ON prices(scraped_at);
+   CREATE INDEX idx_prices_in_stock ON prices(in_stock);
+
+   -- Price Alerts indexes
+   CREATE INDEX idx_price_alerts_user ON price_alerts(user_id);
+   CREATE INDEX idx_price_alerts_material ON price_alerts(material_id);
+   CREATE INDEX idx_price_alerts_active ON price_alerts(active);
+
+   -- Scraping Jobs indexes
+   CREATE INDEX idx_scraping_jobs_supplier ON scraping_jobs(supplier_id);
+   CREATE INDEX idx_scraping_jobs_status ON scraping_jobs(status);
+   CREATE INDEX idx_scraping_jobs_created ON scraping_jobs(created_at);
+   ```
+
+3. Test all tables with sample data inserts
+
+**Deliverable:** Functional database with schema
+
+#### Wednesday (March 11)
+**Morning (2-3 hours):**
+1. Initialize Node.js backend project:
+   ```bash
+   mkdir backend
+   cd backend
+   npm init -y
+   npm install express pg dotenv cors helmet
+   npm install --save-dev nodemon
+   ```
+
+2. Create project structure:
+   ```
+   backend/
+   ├── src/
+   │   ├── config/
+   │   │   └── database.js
+   │   ├── routes/
+   │   ├── controllers/
+   │   ├── middleware/
+   │   └── server.js
+   ├── .env
+   ├── .gitignore
+   └── package.json
+   ```
+
+3. Set up database connection:
+   ```javascript
+   // src/config/database.js
+   const { Pool } = require('pg');
+   require('dotenv').config();
+
+   const pool = new Pool({
+     connectionString: process.env.DATABASE_URL,
+     ssl: { rejectUnauthorized: false }
+   });
+
+   module.exports = pool;
+   ```
+
+**Afternoon (2-3 hours):**
+1. Create basic Express server:
+   ```javascript
+   // src/server.js
+   const express = require('express');
+   const cors = require('cors');
+   const helmet = require('helmet');
+   
+   const app = express();
+   
+   app.use(helmet());
+   app.use(cors());
+   app.use(express.json());
+   
+   app.get('/health', (req, res) => {
+     res.json({ status: 'ok', timestamp: new Date() });
+   });
+   
+   const PORT = process.env.PORT || 3000;
+   app.listen(PORT, () => {
+     console.log(`Server running on port ${PORT}`);
+   });
+   ```
+
+2. Test server startup
+3. Create `.gitignore` and commit to GitHub
+
+**Deliverable:** Basic Express server running
+
+#### Thursday (March 12)
+**Morning (2-3 hours):**
+1. Create database helper functions:
+   ```javascript
+   // src/config/db-helpers.js
+   const pool = require('./database');
+
+   const query = async (text, params) => {
+     const start = Date.now();
+     const res = await pool.query(text, params);
+     const duration = Date.now() - start;
+     console.log('Executed query', { text, duration, rows: res.rowCount });
+     return res;
+   };
+
+   module.exports = { query };
+   ```
+
+2. Create materials controller with basic CRUD:
+   ```javascript
+   // src/controllers/materialsController.js
+   const { query } = require('../config/db-helpers');
+
+   const getAllMaterials = async (req, res) => {
+     try {
+       const result = await query('SELECT * FROM materials ORDER BY name');
+       res.json(result.rows);
+     } catch (error) {
+       res.status(500).json({ error: error.message });
+     }
+   };
+
+   const getMaterialById = async (req, res) => {
+     try {
+       const { id } = req.params;
+       const result = await query('SELECT * FROM materials WHERE id = $1', [id]);
+       
+       if (result.rows.length === 0) {
+         return res.status(404).json({ error: 'Material not found' });
+       }
+       
+       res.json(result.rows[0]);
+     } catch (error) {
+       res.status(500).json({ error: error.message });
+     }
+   };
+
+   module.exports = { getAllMaterials, getMaterialById };
+   ```
+
+**Afternoon (2-3 hours):**
+1. Create routes for materials:
+   ```javascript
+   // src/routes/materials.js
+   const express = require('express');
+   const router = express.Router();
+   const { getAllMaterials, getMaterialById } = require('../controllers/materialsController');
+
+   router.get('/', getAllMaterials);
+   router.get('/:id', getMaterialById);
+
+   module.exports = router;
+   ```
+
+2. Register routes in server:
+   ```javascript
+   // In server.js
+   const materialsRoutes = require('./routes/materials');
+   app.use('/api/materials', materialsRoutes);
+   ```
+
+3. Test endpoints with Postman or curl
+
+**Deliverable:** Working materials API endpoints
+
+#### Friday (March 13)
+**Full Day (4-5 hours):**
+1. Create suppliers controller and routes (similar pattern to materials)
+2. Create prices controller with query parameters:
+   ```javascript
+   // src/controllers/pricesController.js
+   const getPrices = async (req, res) => {
+     try {
+       const { material_id, supplier_id, region, start_date, end_date } = req.query;
+       
+       let queryText = `
+         SELECT p.*, m.name as material_name, s.name as supplier_name
+         FROM prices p
+         JOIN materials m ON p.material_id = m.id
+         JOIN suppliers s ON p.supplier_id = s.id
+         WHERE 1=1
+       `;
+       const params = [];
+       let paramIndex = 1;
+
+       if (material_id) {
+         queryText += ` AND p.material_id = $${paramIndex++}`;
+         params.push(material_id);
+       }
+
+       if (supplier_id) {
+         queryText += ` AND p.supplier_id = $${paramIndex++}`;
+         params.push(supplier_id);
+       }
+
+       if (region) {
+         queryText += ` AND p.region = $${paramIndex++}`;
+         params.push(region);
+       }
+
+       if (start_date) {
+         queryText += ` AND p.date >= $${paramIndex++}`;
+         params.push(start_date);
+       }
+
+       if (end_date) {
+         queryText += ` AND p.date <= $${paramIndex++}`;
+         params.push(end_date);
+       }
+
+       queryText += ' ORDER BY p.date DESC LIMIT 100';
+
+       const result = await query(queryText, params);
+       res.json(result.rows);
+     } catch (error) {
+       res.status(500).json({ error: error.message });
+     }
+   };
+   ```
+
+3. Create routes for prices
+4. Test all query parameter combinations:
+   ```bash
+   # Test with curl - Basic price query
+   curl http://localhost:3000/api/prices
+   
+   # Test with material filter
+   curl "http://localhost:3000/api/prices?material_id=1"
+   
+   # Test with date range
+   curl "http://localhost:3000/api/prices?start_date=2026-01-01&end_date=2026-03-01"
+   
+   # Test with multiple filters
+   curl "http://localhost:3000/api/prices?material_id=1&region=Gauteng&start_date=2026-01-01"
+   
+   # Test with formatted output (using jq)
+   curl -s http://localhost:3000/api/prices | jq '.[] | {material: .material_name, price: .price, date: .date}'
+   ```
+
+5. Create Postman collection for API testing:
+   ```json
+   {
+     "info": {
+       "name": "BuildMat API",
+       "description": "Building Materials Price Intelligence API",
+       "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+     },
+     "item": [
+       {
+         "name": "Health Check",
+         "request": {
+           "method": "GET",
+           "header": [],
+           "url": {
+             "raw": "{{base_url}}/health",
+             "host": ["{{base_url}}"],
+             "path": ["health"]
+           }
+         }
+       },
+       {
+         "name": "Get All Materials",
+         "request": {
+           "method": "GET",
+           "header": [],
+           "url": {
+             "raw": "{{base_url}}/api/materials",
+             "host": ["{{base_url}}"],
+             "path": ["api", "materials"]
+           }
+         }
+       },
+       {
+         "name": "Get Prices with Filters",
+         "request": {
+           "method": "GET",
+           "header": [],
+           "url": {
+             "raw": "{{base_url}}/api/prices?material_id=1&region=Gauteng",
+             "host": ["{{base_url}}"],
+             "path": ["api", "prices"],
+             "query": [
+               {
+                 "key": "material_id",
+                 "value": "1"
+               },
+               {
+                 "key": "region",
+                 "value": "Gauteng"
+               }
+             ]
+           }
+         }
+       }
+     ],
+     "variable": [
+       {
+         "key": "base_url",
+         "value": "http://localhost:3000"
+       }
+     ]
+   }
+   ```
+   Save this to `tests/postman/buildmat-api.json` and import into Postman.
+
+**Deliverable:** Prices API with filtering
+
+#### Weekend (Optional - 2-3 hours)
+1. Write API documentation for existing endpoints
+2. Create Postman collection for testing
+3. Prepare for Week 2 Redis setup
 
 Every endpoint, table, and cache key in this plan uses the same 16 fields:
 
