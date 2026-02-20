@@ -1,2284 +1,1592 @@
-# 🤖 Machine Learning Engineer - Detailed Roadmap
+# 🤖 Machine Learning Engineer — Detailed Roadmap
 
 **Team Member:** Member 2  
 **Primary Tech Stack:** Python, Scikit-learn, XGBoost, Prophet, TensorFlow/Keras, Pandas  
-**Timeline:** March 9 - June 9, 2026 (13 weeks)
+**Timeline:** March 9 – June 9, 2026 (13 Weeks)
 
 ---
 
-## 🚀 Getting Started - March 8, 2026
+## 🚀 Getting Started — March 8, 2026
 
-**Complete this comprehensive setup before Week 1 begins on March 9!**
+Complete this setup **before** Week 1 begins on March 9.
 
 ### System Requirements
-- **Operating System:** Windows 10/11, macOS 10.15+, or Ubuntu 20.04+
-- **RAM:** Minimum 8GB (16GB recommended for deep learning)
-- **Storage:** At least 20GB free space for datasets and models
-- **GPU:** Optional but recommended for LSTM training (or use Kaggle)
+- **OS:** Windows 10/11, macOS 10.15+, or Ubuntu 20.04+
+- **RAM:** Minimum 8 GB (16 GB recommended)
+- **Storage:** At least 20 GB free
+- **GPU:** Optional locally — use Kaggle's free GPU for LSTM training
 
-### Step 1: Install Python and Conda
+### Step 1 – Install Python and Conda
+
 ```bash
-# Download and install Anaconda or Miniconda
-# Visit: https://www.anaconda.com/download or https://docs.conda.io/en/latest/miniconda.html
-
-# Verify installation
-python --version  # Should show Python 3.9+ or 3.10+
-conda --version   # Should show conda 4.x or higher
+# Download from: https://www.anaconda.com/download  OR  https://docs.conda.io/en/latest/miniconda.html
+python --version   # Must be 3.9+
+conda --version    # Must be 4.x+
 ```
 
-### Step 2: Create Virtual Environment
+### Step 2 – Create Virtual Environment
+
 ```bash
-# Create a new conda environment
 conda create -n buildmat python=3.10 -y
 conda activate buildmat
-
-# Verify environment
-which python  # Should point to your conda environment
+which python   # Should point to your conda environment
 ```
 
-### Step 3: Install Core ML Libraries
+### Step 3 – Install All Libraries
+
 ```bash
-# Data manipulation and analysis
-pip install pandas numpy scipy
+# Core data science
+pip install pandas numpy scipy matplotlib seaborn plotly
 
-# Visualization
-pip install matplotlib seaborn plotly
-
-# Scientific computing
-pip install scikit-learn statsmodels
-
-# Jupyter for notebooks
-pip install jupyter jupyterlab ipykernel
-
-# Add kernel to Jupyter
-python -m ipykernel install --user --name=buildmat --display-name="BuildMat ML"
-```
-
-### Step 4: Install Machine Learning Frameworks
-```bash
-# Time series forecasting
-pip install pmdarima prophet
+# ML and time series
+pip install scikit-learn statsmodels pmdarima prophet
 
 # Gradient boosting
-pip install xgboost lightgbm catboost
+pip install xgboost lightgbm
 
-# Deep learning (TensorFlow)
+# Deep learning
 pip install tensorflow
 
-# OR install PyTorch (alternative to TensorFlow)
-# pip install torch torchvision torchaudio
+# Utilities
+pip install jupyter jupyterlab ipykernel openpyxl tqdm optuna mlflow shap kaggle
 
-# Verify TensorFlow installation
-python -c "import tensorflow as tf; print('TensorFlow version:', tf.__version__); print('GPU Available:', tf.config.list_physical_devices('GPU'))"
+# Add Jupyter kernel
+python -m ipykernel install --user --name=buildmat --display-name="BuildMat ML"
+
+# Verify TensorFlow
+python -c "import tensorflow as tf; print('TF:', tf.__version__); print('GPU:', tf.config.list_physical_devices('GPU'))"
 ```
 
-### Step 5: Install Additional Tools
+> **Prophet install note — if pip fails:**
+> ```bash
+> conda install -c conda-forge prophet   # macOS / Linux / Windows
+> ```
+
+### Step 4 – Set Up Kaggle API
+
 ```bash
-# Model evaluation and utilities
-pip install optuna  # Hyperparameter tuning
-pip install mlflow  # Experiment tracking
-pip install shap    # Model explainability
+# 1. Create account at https://www.kaggle.com/
+# 2. Settings → API → Create New Token  (downloads kaggle.json)
 
-# File handling
-pip install openpyxl xlrd
-
-# Progress bars
-pip install tqdm
-
-# Save requirements
-pip freeze > requirements.txt
-```
-
-### Step 6: Set Up Kaggle Account and API
-
-**Why Kaggle?** You'll use Kaggle's free GPU resources for training LSTM and deep learning models.
-
-#### 6.1: Create Kaggle Account
-```bash
-# 1. Go to https://www.kaggle.com/
-# 2. Click "Register" and create your account
-# 3. Verify your email address
-# 4. Complete your profile (required for API access)
-```
-
-#### 6.2: Get Kaggle API Credentials
-```bash
-# 1. Go to https://www.kaggle.com/settings/account
-# 2. Scroll to "API" section
-# 3. Click "Create New Token"
-# 4. This downloads kaggle.json to your computer
-```
-
-#### 6.3: Install and Configure Kaggle CLI
-```bash
-# Install Kaggle API
-pip install kaggle
-
-# Place API credentials in correct location
-# For macOS/Linux:
+# macOS/Linux
 mkdir -p ~/.kaggle
 mv ~/Downloads/kaggle.json ~/.kaggle/
 chmod 600 ~/.kaggle/kaggle.json
 
-# For Windows (PowerShell):
-# mkdir $env:USERPROFILE\.kaggle
-# Move-Item $env:USERPROFILE\Downloads\kaggle.json $env:USERPROFILE\.kaggle\kaggle.json
+# Windows (PowerShell)
+mkdir $env:USERPROFILE\.kaggle
+Move-Item $env:USERPROFILE\Downloads\kaggle.json $env:USERPROFILE\.kaggle\
 
-# Verify Kaggle CLI works
-kaggle --version
-kaggle datasets list
+kaggle --version        # Verify it works
+kaggle datasets list    # Should list public datasets
 ```
 
-#### 6.4: What You'll Do on Kaggle
+**Kaggle GPU usage throughout the project:**
+- Free GPU for LSTM training (30 hours/week limit — monitor under Settings)
+- Host your processed datasets with version control
+- Save trained models to the Output tab and download them
 
-**Throughout the project, you'll use Kaggle for:**
+### Step 5 – Project Structure
 
-1. **GPU Training (Weeks 5-6):** Train LSTM models using free GPU resources
-   ```python
-   # In Kaggle notebook, check GPU availability:
-   import tensorflow as tf
-   print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
-   ```
-
-2. **Dataset Hosting:** Upload and version your price datasets
-   ```bash
-   # Create a dataset on Kaggle
-   kaggle datasets init -p /path/to/data
-   # Edit dataset-metadata.json
-   kaggle datasets create -p /path/to/data
-   
-   # Update existing dataset
-   kaggle datasets version -p /path/to/data -m "Updated with new price data"
-   ```
-
-3. **Notebook Development:** Create Kaggle notebooks for model training
-   ```bash
-   # Download your notebook
-   kaggle kernels pull your-username/notebook-name
-   
-   # Push updated notebook
-   kaggle kernels push -p /path/to/notebook
-   ```
-
-4. **Model Sharing:** Save and download trained models
-   ```python
-   # In Kaggle notebook - save model
-   model.save('/kaggle/working/lstm_model.h5')
-   
-   # Download from Kaggle Output:
-   # Go to your notebook > Output tab > Download
-   ```
-
-#### 6.5: Create Your First Kaggle Notebook
 ```bash
-# 1. Go to https://www.kaggle.com/code
-# 2. Click "New Notebook"
-# 3. Choose "Notebook" (not Script)
-# 4. Select "GPU" under Settings > Accelerator
-# 5. Title it: "BuildMat Price Forecasting - LSTM"
-# 6. Save and run a test cell:
-```
-
-```python
-# Test cell for your Kaggle notebook
-import numpy as np
-import pandas as pd
-import tensorflow as tf
-
-print("✅ NumPy version:", np.__version__)
-print("✅ Pandas version:", pd.__version__)
-print("✅ TensorFlow version:", tf.__version__)
-print("✅ GPU available:", len(tf.config.list_physical_devices('GPU')) > 0)
-
-# Test GPU with simple computation
-if tf.config.list_physical_devices('GPU'):
-    with tf.device('/GPU:0'):
-        a = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
-        b = tf.constant([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
-        c = tf.matmul(a, b)
-        print("✅ GPU computation successful!")
-        print(c)
-else:
-    print("⚠️ No GPU found - make sure GPU accelerator is enabled in Settings")
-```
-
-### Step 7: Set Up Project Structure
-```bash
-# Create project directory
 mkdir -p ~/projects/buildmat-ml
 cd ~/projects/buildmat-ml
-
-# Create comprehensive folder structure
 mkdir -p data/{raw,processed,external,features}
 mkdir -p notebooks/{exploratory,modeling,evaluation}
-mkdir -p src/{data,features,models,evaluation,visualization}
-mkdir -p models/{baseline,advanced,ensemble,production}
-mkdir -p reports/{figures,metrics,presentations}
-mkdir -p tests
-mkdir -p configs
-mkdir -p scripts
-
-# Create README files
-touch data/README.md
-touch notebooks/README.md
-touch models/README.md
+mkdir -p src/{data,features,models,evaluation,visualization,api}
+mkdir -p models/{baseline,advanced,production}
+mkdir -p reports/{figures,metrics}
+mkdir -p configs scripts tests
+touch data/raw/.gitkeep data/processed/.gitkeep models/.gitkeep
 ```
 
-### Step 8: Create Requirements File
+### Step 6 – Save requirements.txt
+
 ```bash
-# Save all dependencies
-cat > requirements.txt << 'EOF'
-# Core Data Science
-pandas==2.0.3
-numpy==1.24.3
-scipy==1.11.1
-
-# Visualization
-matplotlib==3.7.2
-seaborn==0.12.2
-plotly==5.15.0
-
-# Machine Learning
-scikit-learn==1.3.0
-statsmodels==0.14.0
-pmdarima==2.0.3
-prophet==1.1.4
-
-# Gradient Boosting
-xgboost==1.7.6
-lightgbm==4.0.0
-catboost==1.2
-
-# Deep Learning
-tensorflow==2.13.0
-
-# Utilities
-jupyter==1.0.0
-jupyterlab==4.0.3
-ipykernel==6.25.0
-tqdm==4.65.0
-openpyxl==3.1.2
-
-# MLOps
-mlflow==2.5.0
-optuna==3.2.0
-shap==0.42.1
-
-# Kaggle
-kaggle==1.5.16
-EOF
-
-# Install from requirements
-pip install -r requirements.txt
+pip freeze > requirements.txt
 ```
 
-### Step 9: Set Up Git and Version Control
+### Step 7 – Git Setup
+
 ```bash
-# Initialize git
 git init
-git config user.name "Your Name"
-git config user.email "your.email@example.com"
-
-# Create .gitignore
 cat > .gitignore << 'EOF'
-# Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Jupyter Notebook
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
-
-# Environment
 .env
-.venv
-buildmat/
-
-# Kaggle
-kaggle.json
-
-# Data (large files)
+*.pyc
+*.h5
+*.keras
+*.pkl
+*.joblib
 data/raw/*
 !data/raw/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
-
-# Models (large files)
-models/*.h5
-models/*.pkl
-models/*.joblib
-*.h5
-*.pkl
-
-# IDE
-.vscode/
-.idea/
-*.swp
-
-# OS
-.DS_Store
-Thumbs.db
-
-# MLflow
 mlruns/
-mlartifacts/
-EOF
-
-# Create .gitkeep files
-touch data/raw/.gitkeep
-touch data/processed/.gitkeep
-touch models/.gitkeep
-```
-
-### Step 10: Create Initial Notebook Template
-```bash
-# Create starter notebook
-cat > notebooks/00_environment_test.ipynb << 'EOF'
-{
- "cells": [
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "# Environment Setup Test\n",
-    "Run this notebook to verify all dependencies are installed correctly."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "source": [
-    "import sys\n",
-    "print(f\"Python version: {sys.version}\")\n",
-    "\n",
-    "# Test imports\n",
-    "import pandas as pd\n",
-    "import numpy as np\n",
-    "import matplotlib.pyplot as plt\n",
-    "import seaborn as sns\n",
-    "from sklearn import __version__ as sklearn_version\n",
-    "import statsmodels.api as sm\n",
-    "import xgboost as xgb\n",
-    "from prophet import Prophet\n",
-    "import tensorflow as tf\n",
-    "\n",
-    "print(\"✅ All imports successful!\")\n",
-    "print(f\"Pandas: {pd.__version__}\")\n",
-    "print(f\"NumPy: {np.__version__}\")\n",
-    "print(f\"Scikit-learn: {sklearn_version}\")\n",
-    "print(f\"XGBoost: {xgb.__version__}\")\n",
-    "print(f\"TensorFlow: {tf.__version__}\")\n",
-    "print(f\"GPU Available: {len(tf.config.list_physical_devices('GPU')) > 0}\")"
-   ]
-  }
- ],
- "metadata": {
-  "kernelspec": {
-   "display_name": "BuildMat ML",
-   "language": "python",
-   "name": "buildmat"
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 4
-}
+kaggle.json
+.DS_Store
+.ipynb_checkpoints/
 EOF
 ```
 
-### Step 11: Test Your Setup
+### Step 8 – Place the Project Dataset
+
 ```bash
-# Activate environment
-conda activate buildmat
+# Copy SA_Building_Materials_Dataset.xlsx (generated by team) into:
+cp ~/Downloads/SA_Building_Materials_Dataset.xlsx data/raw/
 
-# Start Jupyter Lab
-jupyter lab
-
-# Open and run notebooks/00_environment_test.ipynb
-# All cells should run without errors
-
-# Test Kaggle CLI
-kaggle datasets list --sort-by votes
-
-# Expected: List of popular Kaggle datasets
-```
-
-### Step 12: Download Sample Data for Testing
-```bash
-# Create a simple test dataset
-python << 'PYTHON_SCRIPT'
+# Quick sanity check
+python -c "
 import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-
-# Generate synthetic cement prices for testing
-np.random.seed(42)
-dates = pd.date_range(start='2024-01-01', end='2026-03-01', freq='D')
-base_price = 85.50
-trend = np.linspace(0, 15, len(dates))
-seasonality = 5 * np.sin(2 * np.pi * np.arange(len(dates)) / 365)
-noise = np.random.normal(0, 3, len(dates))
-prices = base_price + trend + seasonality + noise
-
-df = pd.DataFrame({
-    'date': dates,
-    'material': 'Cement 50kg',
-    'price': prices.clip(min=50),
-    'supplier': 'Test Supplier',
-    'region': 'Gauteng'
-})
-
-df.to_csv('data/raw/test_cement_prices.csv', index=False)
-print(f"✅ Created test dataset: {len(df)} records")
-print(f"   Date range: {df['date'].min()} to {df['date'].max()}")
-print(f"   Price range: R{df['price'].min():.2f} to R{df['price'].max():.2f}")
-PYTHON_SCRIPT
+df = pd.read_excel('data/raw/SA_Building_Materials_Dataset.xlsx',
+                   sheet_name='SA Supplier Price Data')
+print(f'Rows: {len(df):,}  |  Columns: {df.columns.tolist()}')
+"
+# Expected: Rows: 13,806  |  Columns: ['record_id', 'date', ...]
 ```
 
-### Checklist - Confirm Everything Works ✅
-- [ ] Python 3.9+ and Conda installed
-- [ ] Virtual environment created and activated
-- [ ] All Python packages installed successfully
-- [ ] Jupyter Lab launches and runs notebooks
-- [ ] TensorFlow recognizes GPU (or Kaggle GPU tested)
-- [ ] Kaggle account created and verified
-- [ ] Kaggle API credentials configured
-- [ ] Kaggle CLI works (can list datasets)
-- [ ] First Kaggle notebook created with GPU enabled
+### Setup Checklist ✅
+- [ ] Python 3.10 + Conda installed
+- [ ] `buildmat` environment created and activated
+- [ ] All packages installed; TensorFlow import works
+- [ ] Kaggle account created, `kaggle.json` placed, `kaggle --version` works
 - [ ] Project directory structure created
-- [ ] Git initialized with proper .gitignore
-- [ ] Test dataset created successfully
-- [ ] requirements.txt saved
-
-### Troubleshooting Common Issues
-
-**Issue: Conda command not found**
-```bash
-# Add conda to PATH
-# For macOS/Linux, add to ~/.bashrc or ~/.zshrc:
-export PATH="/opt/anaconda3/bin:$PATH"
-source ~/.bashrc
-
-# For Windows, run Anaconda Prompt as administrator
-```
-
-**Issue: TensorFlow GPU not detected**
-```bash
-# Install CUDA and cuDNN (if you have NVIDIA GPU)
-# OR use Kaggle's free GPU instead!
-
-# Verify TensorFlow sees GPU
-python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-```
-
-**Issue: Kaggle API authentication error**
-```bash
-# Verify kaggle.json is in correct location
-# macOS/Linux: ~/.kaggle/kaggle.json
-# Windows: C:\Users\<Windows-username>\.kaggle\kaggle.json
-
-# Check file permissions
-chmod 600 ~/.kaggle/kaggle.json
-```
-
-**Issue: Prophet installation fails**
-```bash
-# Prophet requires additional dependencies
-# For macOS:
-conda install -c conda-forge prophet
-
-# For Linux:
-sudo apt-get install python3-dev
-pip install prophet
-
-# For Windows:
-conda install -c conda-forge prophet
-```
-
-**Issue: Memory errors with large datasets**
-```bash
-# Use chunking for large files
-df = pd.read_csv('large_file.csv', chunksize=10000)
-for chunk in df:
-    process(chunk)
-
-# OR use Dask for out-of-core computation
-pip install dask
-import dask.dataframe as dd
-df = dd.read_csv('large_file.csv')
-```
-
-### Kaggle-Specific Tips 💡
-
-1. **GPU Hours Limit:** Kaggle provides 30 hours/week of free GPU. Monitor usage in Settings.
-
-2. **Data Upload Methods:**
-   ```bash
-   # Method 1: Direct upload via web interface
-   # Go to Datasets > New Dataset > Upload files
-   
-   # Method 2: Via Kaggle API
-   kaggle datasets create -p /path/to/data
-   ```
-
-3. **Saving Work from Kaggle:**
-   ```python
-   # In notebook, save to /kaggle/working/
-   model.save('/kaggle/working/model.h5')
-   df.to_csv('/kaggle/working/results.csv')
-   
-   # Then download from Output tab
-   ```
-
-4. **Using External Data in Kaggle:**
-   ```python
-   # Install additional packages in notebook
-   !pip install custom-package
-   
-   # Import data from other Kaggle datasets
-   import os
-   for dirname, _, filenames in os.walk('/kaggle/input'):
-       for filename in filenames:
-           print(os.path.join(dirname, filename))
-   ```
-
-5. **Notebook Best Practices:**
-   - Save versions frequently (File > Save Version)
-   - Use clear section headers with markdown
-   - Comment your code thoroughly
-   - Keep notebooks under 2 hours runtime
-
-### Ready for Week 1! 🎉
-You're now fully set up with both local development and Kaggle cloud resources. Week 1 begins Monday, March 9, 2026.
+- [ ] Git initialised with `.gitignore`
+- [ ] `SA_Building_Materials_Dataset.xlsx` in `data/raw/`
 
 ---
 
-## 🎯 Role Overview
+## 📂 Loading the Project Dataset
 
-As the Machine Learning Engineer, you are responsible for developing and evaluating predictive models that form the intelligence core of the platform. Your work must demonstrate a **59% improvement over traditional ARIMA forecasting**.
+The team dataset **`SA_Building_Materials_Dataset.xlsx`** has 7 sheets. All ML work loads from here — never from loose CSVs.
 
-**Core Responsibilities:**
-- Data collection and exploratory data analysis
-- Feature engineering for time series prediction
-- Model development (ARIMA, XGBoost, Random Forest, Prophet, LSTM)
-- Model evaluation and comparison
-- Anomaly detection algorithms
-- Model deployment and monitoring
+```python
+# src/data/load_dataset.py
+import pandas as pd
+
+DATASET_PATH = "data/raw/SA_Building_Materials_Dataset.xlsx"
+
+def load_supplier_prices() -> pd.DataFrame:
+    """Load the main 13,806-row ML training sheet."""
+    df = pd.read_excel(DATASET_PATH, sheet_name="SA Supplier Price Data")
+    df["date"] = pd.to_datetime(df["date"])
+    return df.sort_values("date").reset_index(drop=True)
+
+def load_cmpi_index() -> pd.DataFrame:
+    """Load Stats SA CMPI monthly index (base Dec 2016 = 100)."""
+    df = pd.read_excel(DATASET_PATH, sheet_name="Stats SA CMPI Index", skiprows=2)
+    df.columns = df.columns.str.strip().str.replace("\n", " ")
+    df["date"] = pd.to_datetime(df["Date"])
+    return df
+
+def load_world_bank_zar() -> pd.DataFrame:
+    """Load World Bank commodity prices already converted to ZAR."""
+    df = pd.read_excel(DATASET_PATH, sheet_name="Derived Rand Prices", skiprows=2)
+    df["date"] = pd.to_datetime(df["Date"])
+    return df
+
+def load_zar_rate() -> pd.DataFrame:
+    """Load USD/ZAR monthly exchange rates."""
+    df = pd.read_excel(DATASET_PATH, sheet_name="ZAR Exchange Rate", skiprows=2)
+    df["date"] = pd.to_datetime(df["Date"])
+    return df
+
+if __name__ == "__main__":
+    df = load_supplier_prices()
+    print(f"Rows: {len(df):,}")
+    print(f"Date range: {df['date'].min().date()} → {df['date'].max().date()}")
+    print(f"Materials: {df['material_name'].nunique()} | Suppliers: {df['supplier_name'].nunique()}")
+```
 
 ---
 
-## 📅 WEEK 1: March 9-15, 2026
-### Theme: Data Collection & Research
+## 📋 Schema Validation
+
+The canonical dataset has exactly **16 columns**. Always validate on load — this catches issues early before training.
+
+```python
+# src/data/schema_loader.py
+import pandas as pd
+from typing import List   # ← required: List used below
+
+REQUIRED_COLUMNS: List[str] = [
+    "record_id", "date", "year", "month", "material_name", "material_category",
+    "supplier_name", "region", "province", "price_zar", "unit", "price_per_kg_zar",
+    "price_change_mom_pct", "price_change_yoy_pct", "stock_status", "bulk_discount_available"
+]
+NUMERIC_COLUMNS  = ["year", "month", "price_zar", "price_per_kg_zar",
+                    "price_change_mom_pct", "price_change_yoy_pct"]
+VALID_STOCK      = {"In Stock", "Low Stock", "Out of Stock"}
+VALID_BULK       = {"Yes", "No"}
+
+
+def load_and_validate(filepath: str,
+                      sheet: str = "SA Supplier Price Data") -> pd.DataFrame:
+    """Load from Excel and validate the 16-column schema."""
+    df = pd.read_excel(filepath, sheet_name=sheet)
+    df["date"] = pd.to_datetime(df["date"])
+
+    missing = set(REQUIRED_COLUMNS) - set(df.columns)
+    if missing:
+        raise ValueError(f"Missing columns: {missing}")
+    df = df[REQUIRED_COLUMNS]
+
+    for col in NUMERIC_COLUMNS:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    bad_stock = set(df["stock_status"].unique()) - VALID_STOCK
+    if bad_stock:
+        raise ValueError(f"Invalid stock_status values: {bad_stock}")
+    bad_bulk = set(df["bulk_discount_available"].unique()) - VALID_BULK
+    if bad_bulk:
+        raise ValueError(f"Invalid bulk_discount_available values: {bad_bulk}")
+
+    nulls = df.isnull().sum()
+    if nulls.any():
+        print(f"⚠  Nulls:\n{nulls[nulls > 0]}")
+
+    print(f"✅ Validated — {len(df):,} rows | "
+          f"{df['material_name'].nunique()} materials | "
+          f"{df['supplier_name'].nunique()} suppliers")
+    return df
+
+
+def load_by_material(filepath: str, material_name: str) -> pd.DataFrame:
+    df = load_and_validate(filepath)
+    result = df[df["material_name"] == material_name].copy().sort_values("date")
+    if result.empty:
+        raise ValueError(f"No data for: {material_name}")
+    return result
+```
+
+---
+
+## 📅 WEEK 1 — March 9–15, 2026
+### Data Collection & Exploratory Analysis
 
 #### Monday (March 9)
-**Morning (2-3 hours):**
-1. Set up development environment:
-   ```bash
-   conda create -n buildmat python=3.9
-   conda activate buildmat
-   pip install pandas numpy scikit-learn matplotlib seaborn jupyter
-   pip install statsmodels pmdarima xgboost prophet tensorflow
-   ```
 
-2. Create project structure:
-   ```
-   ml-models/
-   ├── data/
-   │   ├── raw/
-   │   ├── processed/
-   │   └── external/
-   ├── notebooks/
-   │   ├── 01_eda.ipynb
-   │   ├── 02_feature_engineering.ipynb
-   │   └── 03_modeling.ipynb
-   ├── src/
-   │   ├── data/
-   │   ├── features/
-   │   ├── models/
-   │   └── evaluation/
-   ├── models/
-   └── requirements.txt
-   ```
+**Morning — environment setup + load dataset:**
 
-**Afternoon (2-3 hours):**
-1. Research South African construction price data sources:
-   - Statistics South Africa (Stats SA) website
-   - Construction Industry Development Board (CIDB)
-   - Building cost indices
-   
-2. Download historical data:
-   ```python
-   # Example: Stats SA construction material prices
-   import pandas as pd
-   
-   # Download from Stats SA API or manual download
-   # Target: Get at least 2 years of monthly data
-   ```
+```bash
+conda activate buildmat
+cd ~/projects/buildmat-ml
+jupyter lab
+```
 
-3. Document data sources in `data/README.md`
+```python
+# notebooks/00_environment_test.ipynb
+import pandas as pd, numpy as np, matplotlib.pyplot as plt
+import seaborn as sns, tensorflow as tf, xgboost as xgb
+from prophet import Prophet
+from sklearn import __version__ as sk_ver
 
-**Deliverable:** Environment setup + initial data sources identified
+print(f"Pandas {pd.__version__} | NumPy {np.__version__} | "
+      f"sklearn {sk_ver} | XGBoost {xgb.__version__} | TF {tf.__version__}")
+print("GPU:", tf.config.list_physical_devices("GPU"))
+```
+
+**Afternoon — verify dataset:**
+
+```python
+from src.data.schema_loader import load_and_validate
+
+DATASET = "data/raw/SA_Building_Materials_Dataset.xlsx"
+df = load_and_validate(DATASET)
+print(df.describe())
+print(df["material_name"].value_counts())
+```
+
+**Deliverable:** All imports work; dataset loads and passes validation.
 
 #### Tuesday (March 10)
-**Morning (2-3 hours):**
-1. Create data collection notebook (`01_data_collection.ipynb`):
-   ```python
-   import pandas as pd
-   import numpy as np
-   from datetime import datetime, timedelta
-   
-   # Load Stats SA data
-   stats_sa = pd.read_csv('data/external/stats_sa_construction.csv')
-   
-   # Explore structure
-   print(stats_sa.info())
-   print(stats_sa.head())
-   print(stats_sa.describe())
-   ```
 
-2. Clean and standardize external data:
-   ```python
-   # Standardize column names
-   stats_sa.columns = stats_sa.columns.str.lower().str.replace(' ', '_')
-   
-   # Handle missing values
-   print("Missing values:")
-   print(stats_sa.isnull().sum())
-   
-   # Convert dates
-   stats_sa['date'] = pd.to_datetime(stats_sa['date'])
-   
-   # Sort by date
-   stats_sa = stats_sa.sort_values('date')
-   ```
+**Full day — data exploration:**
 
-**Afternoon (2-3 hours):**
-1. Create synthetic/augmented data for materials not in Stats SA:
-   ```python
-   # Generate realistic price trends based on known materials
-   def generate_synthetic_prices(base_price, start_date, periods, volatility=0.05):
-       dates = pd.date_range(start=start_date, periods=periods, freq='D')
-       
-       # Random walk with trend
-       trend = np.linspace(0, 0.1 * base_price, periods)
-       noise = np.random.normal(0, volatility * base_price, periods)
-       prices = base_price + trend + noise
-       
-       return pd.DataFrame({
-           'date': dates,
-           'price': prices.clip(min=base_price * 0.5)  # No negative prices
-       })
-   
-   # Example: Generate cement prices
-   cement_prices = generate_synthetic_prices(
-       base_price=85.50,  # R85.50 per 50kg bag
-       start_date='2024-01-01',
-       periods=365,
-       volatility=0.08
-   )
-   ```
+```python
+# notebooks/01_eda.ipynb
+import pandas as pd, matplotlib.pyplot as plt, seaborn as sns
+from statsmodels.tsa.stattools import adfuller
+from src.data.schema_loader import load_and_validate
 
-2. Save processed data:
-   ```python
-   # Save to processed folder
-   stats_sa.to_csv('data/processed/stats_sa_clean.csv', index=False)
-   cement_prices.to_csv('data/processed/cement_synthetic.csv', index=False)
-   ```
+DATASET = "data/raw/SA_Building_Materials_Dataset.xlsx"
+df = load_and_validate(DATASET)
 
-**Deliverable:** Clean historical dataset
+# Aggregate to monthly average per material (multiple suppliers → one line)
+monthly = (df.groupby(["date", "material_name"])["price_zar"]
+             .mean().reset_index())
+
+# Time series plot per material
+for mat in monthly["material_name"].unique():
+    sub = monthly[monthly["material_name"] == mat]
+    plt.figure(figsize=(12, 4))
+    plt.plot(sub["date"], sub["price_zar"])
+    plt.title(f"{mat} — Monthly Average Price (ZAR)")
+    plt.xlabel("Date"); plt.ylabel("Price (R)")
+    plt.tight_layout()
+    plt.savefig(f"reports/figures/trend_{mat.replace(' ', '_')}.png")
+    plt.close()
+```
+
+**Deliverable:** Price trend plots saved for all 18 materials.
 
 #### Wednesday (March 11)
-**Full Day (4-5 hours):**
-1. Begin Exploratory Data Analysis (EDA):
-   ```python
-   import matplotlib.pyplot as plt
-   import seaborn as sns
-   
-   # Set plotting style
-   sns.set_style("whitegrid")
-   plt.rcParams['figure.figsize'] = (12, 6)
-   
-   # Load all processed data
-   materials = {
-       'cement': pd.read_csv('data/processed/cement_synthetic.csv'),
-       'steel': pd.read_csv('data/processed/steel_synthetic.csv'),
-       'timber': pd.read_csv('data/processed/timber_synthetic.csv')
-   }
-   
-   # Time series plots for each material
-   for material, df in materials.items():
-       df['date'] = pd.to_datetime(df['date'])
-       
-       plt.figure()
-       plt.plot(df['date'], df['price'])
-       plt.title(f'{material.capitalize()} Price Trends')
-       plt.xlabel('Date')
-       plt.ylabel('Price (R)')
-       plt.xticks(rotation=45)
-       plt.tight_layout()
-       plt.savefig(f'notebooks/figures/eda_{material}_trend.png')
-       plt.close()
-   ```
 
-2. Statistical analysis:
-   ```python
-   # Calculate statistics
-   for material, df in materials.items():
-       print(f"\n{material.upper()} Statistics:")
-       print(f"Mean: R{df['price'].mean():.2f}")
-       print(f"Std Dev: R{df['price'].std():.2f}")
-       print(f"Min: R{df['price'].min():.2f}")
-       print(f"Max: R{df['price'].max():.2f}")
-       print(f"CV: {(df['price'].std() / df['price'].mean() * 100):.2f}%")
-       
-       # Check for stationarity (Augmented Dickey-Fuller test)
-       from statsmodels.tsa.stattools import adfuller
-       
-       result = adfuller(df['price'])
-       print(f"ADF Statistic: {result[0]:.4f}")
-       print(f"p-value: {result[1]:.4f}")
-       print(f"Stationary: {'Yes' if result[1] < 0.05 else 'No'}")
-   ```
+**Full day — stationarity + decomposition:**
 
-**Deliverable:** EDA notebook with insights
+```python
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+# Stationarity test (Augmented Dickey-Fuller)
+cement = (df[df["material_name"] == "PPC Cement 50kg"]
+            .groupby("date")["price_zar"].mean())
+
+result = adfuller(cement.dropna())
+print(f"ADF statistic: {result[0]:.4f}")
+print(f"p-value:       {result[1]:.4f}")
+print(f"Stationary:    {'YES' if result[1] < 0.05 else 'NO — will need differencing in ARIMA'}")
+
+# Seasonal decomposition
+cement_monthly = cement.asfreq("MS").interpolate()
+decomp = seasonal_decompose(cement_monthly, model="additive", period=12)
+decomp.plot()
+plt.tight_layout()
+plt.savefig("reports/figures/decomposition_cement.png")
+```
+
+**Deliverable:** Stationarity results documented; seasonality plots for at least 3 materials.
 
 #### Thursday (March 12)
-**Morning (2-3 hours):**
-1. Analyze seasonality and trends:
-   ```python
-   from statsmodels.tsa.seasonal import seasonal_decompose
-   
-   for material, df in materials.items():
-       df = df.set_index('date')
-       df = df.asfreq('D')  # Set daily frequency
-       df = df.interpolate(method='linear')  # Fill gaps
-       
-       # Decompose time series
-       decomposition = seasonal_decompose(
-           df['price'], 
-           model='additive', 
-           period=30  # Monthly seasonality
-       )
-       
-       # Plot components
-       fig, axes = plt.subplots(4, 1, figsize=(12, 10))
-       decomposition.observed.plot(ax=axes[0], title='Observed')
-       decomposition.trend.plot(ax=axes[1], title='Trend')
-       decomposition.seasonal.plot(ax=axes[2], title='Seasonal')
-       decomposition.resid.plot(ax=axes[3], title='Residual')
-       plt.tight_layout()
-       plt.savefig(f'notebooks/figures/decomposition_{material}.png')
-       plt.close()
-   ```
 
-**Afternoon (2-3 hours):**
-1. Correlation analysis between materials:
-   ```python
-   # Merge all material prices by date
-   merged_df = materials['cement'][['date', 'price']].rename(columns={'price': 'cement'})
-   
-   for material, df in materials.items():
-       if material != 'cement':
-           merged_df = merged_df.merge(
-               df[['date', 'price']].rename(columns={'price': material}),
-               on='date',
-               how='outer'
-           )
-   
-   # Calculate correlation matrix
-   corr_matrix = merged_df.drop('date', axis=1).corr()
-   
-   # Heatmap
-   plt.figure(figsize=(10, 8))
-   sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0)
-   plt.title('Material Price Correlations')
-   plt.tight_layout()
-   plt.savefig('notebooks/figures/correlation_matrix.png')
-   ```
+**Full day — correlations + ACF/PACF for ARIMA prep:**
 
-2. Document findings in notebook
+```python
+# Cross-material correlation heatmap
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 
-**Deliverable:** Seasonality and correlation analysis
+pivot = (df.groupby(["date", "material_category"])["price_zar"]
+           .mean().unstack("material_category"))
+corr = pivot.corr()
 
-#### Friday (March 13)
-**Morning (2-3 hours):**
-1. Create feature engineering functions:
-   ```python
-   # src/features/time_features.py
-   import pandas as pd
-   import numpy as np
-   
-   def create_time_features(df):
-       """Create time-based features"""
-       df = df.copy()
-       df['date'] = pd.to_datetime(df['date'])
-       
-       # Extract date components
-       df['year'] = df['date'].dt.year
-       df['month'] = df['date'].dt.month
-       df['day'] = df['date'].dt.day
-       df['dayofweek'] = df['date'].dt.dayofweek
-       df['quarter'] = df['date'].dt.quarter
-       df['weekofyear'] = df['date'].dt.isocalendar().week
-       
-       # Cyclical encoding
-       df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
-       df['month_cos'] = np.cos(2 * np.pi * df['month'] / 12)
-       df['dayofweek_sin'] = np.sin(2 * np.pi * df['dayofweek'] / 7)
-       df['dayofweek_cos'] = np.cos(2 * np.pi * df['dayofweek'] / 7)
-       
-       return df
-   
-   def create_lag_features(df, target_col='price', lags=[1, 7, 14, 30]):
-       """Create lagged features"""
-       df = df.copy()
-       
-       for lag in lags:
-           df[f'{target_col}_lag_{lag}'] = df[target_col].shift(lag)
-       
-       return df
-   
-   def create_rolling_features(df, target_col='price', windows=[7, 14, 30]):
-       """Create rolling statistics"""
-       df = df.copy()
-       
-       for window in windows:
-           df[f'{target_col}_rolling_mean_{window}'] = df[target_col].rolling(window).mean()
-           df[f'{target_col}_rolling_std_{window}'] = df[target_col].rolling(window).std()
-           df[f'{target_col}_rolling_min_{window}'] = df[target_col].rolling(window).min()
-           df[f'{target_col}_rolling_max_{window}'] = df[target_col].rolling(window).max()
-       
-       return df
-   ```
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr, annot=True, cmap="coolwarm", center=0, fmt=".2f")
+plt.title("Material Category Price Correlations")
+plt.tight_layout()
+plt.savefig("reports/figures/correlation_matrix.png")
 
-**Afternoon (2-3 hours):**
-1. Apply feature engineering to one material:
-   ```python
-   # Test feature engineering
-   cement_df = pd.read_csv('data/processed/cement_synthetic.csv')
-   
-   # Apply all feature engineering
-   cement_features = create_time_features(cement_df)
-   cement_features = create_lag_features(cement_features)
-   cement_features = create_rolling_features(cement_features)
-   
-   # Drop NaN rows created by lag/rolling
-   cement_features = cement_features.dropna()
-   
-   print(f"Original shape: {cement_df.shape}")
-   print(f"Features shape: {cement_features.shape}")
-   print(f"\nNew features:")
-   print(cement_features.columns.tolist())
-   
-   # Save
-   cement_features.to_csv('data/processed/cement_features.csv', index=False)
-   ```
+# ACF / PACF — use these to choose p, q for ARIMA next week
+fig, axes = plt.subplots(1, 2, figsize=(14, 4))
+plot_acf(cement_monthly.dropna(),  lags=24, ax=axes[0])
+plot_pacf(cement_monthly.dropna(), lags=24, ax=axes[1])
+plt.tight_layout()
+plt.savefig("reports/figures/acf_pacf_cement.png")
+```
 
-2. Visualize feature importance (correlation with target):
-   ```python
-   # Calculate correlation with price
-   correlations = cement_features.corr()['price'].sort_values(ascending=False)
-   
-   plt.figure(figsize=(10, 12))
-   correlations[1:21].plot(kind='barh')  # Top 20 features
-   plt.title('Top 20 Features Correlated with Price')
-   plt.xlabel('Correlation Coefficient')
-   plt.tight_layout()
-   plt.savefig('notebooks/figures/feature_correlations.png')
-   ```
+**Deliverable:** Correlation heatmap + ACF/PACF plots.
 
-**Deliverable:** Feature engineering pipeline
+#### Friday (March 13) — Feature Engineering Pipeline
 
-#### Weekend (Optional - 2-3 hours)
-1. Read research papers on price forecasting
-2. Review ARIMA, Prophet, LSTM architectures
-3. Prepare for baseline model development (Week 2)
+```python
+# src/features/engineer.py
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder
+from typing import List
+
+
+class FeatureEngineer:
+    """Build ML-ready features from the 16-column schema."""
+
+    def __init__(self):
+        self.encoders: dict = {}
+
+    def fit_transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        return self._engineer(df, fit=True)
+
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        return self._engineer(df, fit=False)
+
+    def _engineer(self, df: pd.DataFrame, fit: bool) -> pd.DataFrame:
+        df = df.copy()
+        df["date"] = pd.to_datetime(df["date"])
+
+        # ── Time features ─────────────────────────────────────────────────
+        df["day_of_week"]  = df["date"].dt.dayofweek
+        df["day_of_month"] = df["date"].dt.day
+        df["quarter"]      = df["date"].dt.quarter
+        df["is_month_end"] = df["date"].dt.is_month_end.astype(int)
+        # Cyclical: Jan(1) and Dec(12) are neighbours, not opposites
+        df["month_sin"] = np.sin(2 * np.pi * df["month"] / 12)
+        df["month_cos"] = np.cos(2 * np.pi * df["month"] / 12)
+
+        # ── Categorical encoding ──────────────────────────────────────────
+        df["stock_status_enc"]  = df["stock_status"].map(
+            {"In Stock": 2, "Low Stock": 1, "Out of Stock": 0})
+        df["bulk_discount_enc"] = (df["bulk_discount_available"] == "Yes").astype(int)
+
+        for col in ["region", "province", "supplier_name", "material_category"]:
+            enc_col = f"{col}_enc"
+            if fit:
+                self.encoders[col] = LabelEncoder().fit(df[col])
+            df[enc_col] = self.encoders[col].transform(df[col])
+
+        # ── Lag + rolling features ─────────────────────────────────────────
+        # IMPORTANT: sort within each group BEFORE lagging/rolling
+        df = df.sort_values(["material_name", "supplier_name", "date"])
+        grp = df.groupby(["material_name", "supplier_name"])["price_zar"]
+        df["price_lag_1"]  = grp.shift(1)
+        df["price_lag_7"]  = grp.shift(7)
+        df["price_lag_30"] = grp.shift(30)
+
+        df["price_roll_mean_7"]  = grp.transform(lambda x: x.rolling(7,  min_periods=1).mean())
+        df["price_roll_mean_30"] = grp.transform(lambda x: x.rolling(30, min_periods=1).mean())
+        df["price_roll_std_7"]   = grp.transform(lambda x: x.rolling(7,  min_periods=1).std().fillna(0))
+
+        return df
+
+    def get_feature_cols(self) -> List[str]:
+        return [
+            "year", "month", "day_of_week", "day_of_month", "quarter", "is_month_end",
+            "month_sin", "month_cos",
+            "price_per_kg_zar", "price_change_mom_pct", "price_change_yoy_pct",
+            "stock_status_enc", "bulk_discount_enc",
+            "region_enc", "province_enc", "supplier_name_enc", "material_category_enc",
+            "price_lag_1", "price_lag_7", "price_lag_30",
+            "price_roll_mean_7", "price_roll_mean_30", "price_roll_std_7",
+        ]
+```
+
+**Deliverable:** Feature engineering pipeline tested on cement data.
 
 ---
 
-## 📅 WEEK 2: March 16-22, 2026
-### Theme: Baseline Models (Naïve, Moving Average, ARIMA)
+## CMPI + World Bank Feature Adders
 
-#### Monday (March 16)
-**Morning (2-3 hours):**
-1. Set up model evaluation framework:
-   ```python
-   # src/evaluation/metrics.py
-   from sklearn.metrics import mean_absolute_error, mean_squared_error
-   import numpy as np
-   
-   def calculate_metrics(y_true, y_pred):
-       """Calculate MAE, RMSE, MAPE"""
-       mae = mean_absolute_error(y_true, y_pred)
-       rmse = np.sqrt(mean_squared_error(y_true, y_pred))
-       
-       # MAPE (avoid division by zero)
-       mask = y_true != 0
-       mape = np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100
-       
-       return {
-           'MAE': mae,
-           'RMSE': rmse,
-           'MAPE': mape
-       }
-   
-   def print_metrics(metrics, model_name):
-       """Pretty print metrics"""
-       print(f"\n{model_name} Performance:")
-       print(f"  MAE:  {metrics['MAE']:.4f}")
-       print(f"  RMSE: {metrics['RMSE']:.4f}")
-       print(f"  MAPE: {metrics['MAPE']:.2f}%")
-   ```
+These add external index signals as additional training features. Run them after basic feature engineering.
 
-2. Create train-test split function:
-   ```python
-   # src/data/splitting.py
-   def time_series_split(df, test_days=30):
-       """Split time series data maintaining temporal order"""
-       df = df.sort_values('date')
-       
-       split_date = df['date'].max() - pd.Timedelta(days=test_days)
-       
-       train = df[df['date'] <= split_date].copy()
-       test = df[df['date'] > split_date].copy()
-       
-       print(f"Train: {train['date'].min()} to {train['date'].max()} ({len(train)} samples)")
-       print(f"Test:  {test['date'].min()} to {test['date'].max()} ({len(test)} samples)")
-       
-       return train, test
-   ```
+```python
+# src/features/cmpi_feature_adder.py
+import pandas as pd
 
-**Afternoon (2-3 hours):**
-1. Implement Naïve Forecast baseline:
-   ```python
-   # src/models/naive.py
-   class NaiveForecast:
-       """Persistence model: tomorrow's price = today's price"""
-       
-       def __init__(self):
-           self.last_value = None
-       
-       def fit(self, y_train):
-           self.last_value = y_train.iloc[-1]
-           return self
-       
-       def predict(self, steps):
-           return np.array([self.last_value] * steps)
-   
-   # Test on cement data
-   cement_df = pd.read_csv('data/processed/cement_synthetic.csv')
-   train, test = time_series_split(cement_df, test_days=30)
-   
-   # Fit and predict
-   naive_model = NaiveForecast()
-   naive_model.fit(train['price'])
-   naive_pred = naive_model.predict(len(test))
-   
-   # Evaluate
-   naive_metrics = calculate_metrics(test['price'].values, naive_pred)
-   print_metrics(naive_metrics, "Naïve Forecast")
-   ```
+class CMPIFeatureAdder:
+    """
+    Merges Stats SA CMPI index onto price records by (year, month).
+    CMPI data comes from the 'Stats SA CMPI Index' sheet of the Excel workbook.
+    Real growth rates used in dataset: 2023=+6.6%, 2024=+6.5%, 2025=+0.7%
+    """
 
-**Deliverable:** Evaluation framework + Naïve baseline
-
-#### Tuesday (March 17)
-**Morning (2-3 hours):**
-1. Implement Moving Average model:
-   ```python
-   # src/models/moving_average.py
-   class MovingAverageModel:
-       """Simple Moving Average forecaster"""
-       
-       def __init__(self, window=7):
-           self.window = window
-           self.history = None
-       
-       def fit(self, y_train):
-           self.history = list(y_train.values)
-           return self
-       
-       def predict(self, steps):
-           predictions = []
-           
-           for _ in range(steps):
-               # Predict as average of last 'window' values
-               pred = np.mean(self.history[-self.window:])
-               predictions.append(pred)
-               self.history.append(pred)  # Use prediction for next step
-           
-           return np.array(predictions)
-   
-   # Test different window sizes
-   for window in [3, 7, 14, 30]:
-       ma_model = MovingAverageModel(window=window)
-       ma_model.fit(train['price'])
-       ma_pred = ma_model.predict(len(test))
-       
-       ma_metrics = calculate_metrics(test['price'].values, ma_pred)
-       print_metrics(ma_metrics, f"Moving Average (window={window})")
-   ```
-
-**Afternoon (2-3 hours):**
-1. Research ARIMA parameters:
-   ```python
-   from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-   
-   # ACF and PACF plots to determine p, q parameters
-   fig, axes = plt.subplots(1, 2, figsize=(14, 4))
-   
-   plot_acf(train['price'], lags=30, ax=axes[0])
-   axes[0].set_title('Autocorrelation Function (ACF)')
-   
-   plot_pacf(train['price'], lags=30, ax=axes[1])
-   axes[1].set_title('Partial Autocorrelation Function (PACF)')
-   
-   plt.tight_layout()
-   plt.savefig('notebooks/figures/acf_pacf.png')
-   ```
-
-2. Document ARIMA parameter selection process
-
-**Deliverable:** Moving Average baseline
-
-#### Wednesday (March 18)
-**Full Day (4-5 hours):**
-1. Implement ARIMA model:
-   ```python
-   # src/models/arima_model.py
-   from statsmodels.tsa.arima.model import ARIMA
-   import warnings
-   warnings.filterwarnings('ignore')
-   
-   class ARIMAForecaster:
-       """ARIMA forecasting model"""
-       
-       def __init__(self, order=(1, 1, 1)):
-           self.order = order
-           self.model = None
-           self.fitted_model = None
-       
-       def fit(self, y_train):
-           self.model = ARIMA(y_train, order=self.order)
-           self.fitted_model = self.model.fit()
-           return self
-       
-       def predict(self, steps):
-           forecast = self.fitted_model.forecast(steps=steps)
-           return forecast.values
-       
-       def get_params(self):
-           return {
-               'order': self.order,
-               'aic': self.fitted_model.aic,
-               'bic': self.fitted_model.bic
-           }
-   
-   # Test ARIMA
-   arima = ARIMAForecaster(order=(1, 1, 1))
-   arima.fit(train['price'])
-   arima_pred = arima.predict(len(test))
-   
-   arima_metrics = calculate_metrics(test['price'].values, arima_pred)
-   print_metrics(arima_metrics, "ARIMA(1,1,1)")
-   print(f"AIC: {arima.get_params()['aic']:.2f}")
-   print(f"BIC: {arima.get_params()['bic']:.2f}")
-   ```
-
-2. Auto-tune ARIMA parameters:
-   ```python
-   # Grid search for best ARIMA parameters
-   from itertools import product
-   
-   p_values = range(0, 3)
-   d_values = range(0, 2)
-   q_values = range(0, 3)
-   
-   best_aic = np.inf
-   best_order = None
-   best_model = None
-   
-   for p, d, q in product(p_values, d_values, q_values):
-       try:
-           model = ARIMA(train['price'], order=(p, d, q))
-           fitted = model.fit()
-           
-           if fitted.aic < best_aic:
-               best_aic = fitted.aic
-               best_order = (p, d, q)
-               best_model = fitted
-               
-               print(f"New best: ARIMA{best_order} - AIC: {best_aic:.2f}")
-       except:
-           continue
-   
-   print(f"\nBest ARIMA order: {best_order}")
-   print(f"Best AIC: {best_aic:.2f}")
-   
-   # Evaluate best model
-   best_pred = best_model.forecast(steps=len(test))
-   best_metrics = calculate_metrics(test['price'].values, best_pred.values)
-   print_metrics(best_metrics, f"ARIMA{best_order}")
-   ```
-
-**Deliverable:** Tuned ARIMA baseline model
-
-#### Thursday (March 19)
-**Morning (2-3 hours):**
-1. Create model comparison framework:
-   ```python
-   # src/evaluation/comparison.py
-   import pandas as pd
-   
-   class ModelComparison:
-       """Track and compare model performance"""
-       
-       def __init__(self):
-           self.results = []
-       
-       def add_result(self, model_name, metrics, params=None):
-           result = {
-               'model': model_name,
-               **metrics,
-               'params': params
-           }
-           self.results.append(result)
-       
-       def get_comparison_df(self):
-           return pd.DataFrame(self.results).sort_values('MAPE')
-       
-       def plot_comparison(self, metric='MAPE'):
-           df = self.get_comparison_df()
-           
-           plt.figure(figsize=(10, 6))
-           plt.barh(df['model'], df[metric])
-           plt.xlabel(metric)
-           plt.title(f'Model Comparison by {metric}')
-           plt.tight_layout()
-           plt.savefig(f'notebooks/figures/model_comparison_{metric}.png')
-   
-   # Compare all baseline models
-   comparison = ModelComparison()
-   
-   comparison.add_result('Naïve', naive_metrics)
-   comparison.add_result('Moving Average (7)', ma_metrics)
-   comparison.add_result(f'ARIMA{best_order}', best_metrics, best_order)
-   
-   print(comparison.get_comparison_df())
-   comparison.plot_comparison('MAPE')
-   comparison.plot_comparison('RMSE')
-   ```
-
-**Afternoon (2-3 hours):**
-1. Visualize predictions vs actual:
-   ```python
-   # Plot all models
-   plt.figure(figsize=(14, 6))
-   
-   plt.plot(test['date'], test['price'], label='Actual', linewidth=2, color='black')
-   plt.plot(test['date'], naive_pred, label='Naïve', linestyle='--', alpha=0.7)
-   plt.plot(test['date'], ma_pred, label='Moving Average', linestyle='--', alpha=0.7)
-   plt.plot(test['date'], arima_pred, label=f'ARIMA{best_order}', linestyle='--', alpha=0.7)
-   
-   plt.xlabel('Date')
-   plt.ylabel('Price (R)')
-   plt.title('Model Predictions Comparison')
-   plt.legend()
-   plt.xticks(rotation=45)
-   plt.tight_layout()
-   plt.savefig('notebooks/figures/predictions_comparison.png')
-   ```
-
-**Deliverable:** Baseline model comparison
-
-#### Friday (March 20)
-**Full Day (4-5 hours):**
-1. Apply baseline models to all materials
-2. Create results summary report
-3. Document baseline performance (this is the benchmark to beat!)
-4. Save baseline results for later comparison:
-   ```python
-   # Save baseline results
-   baseline_results = {
-       'cement': {
-           'naive': naive_metrics,
-           'ma': ma_metrics,
-           'arima': best_metrics
-       }
-   }
-   
-   import json
-   with open('models/baseline_results.json', 'w') as f:
-       json.dump(baseline_results, f, indent=2)
-   ```
-
-**Deliverable:** Complete baseline benchmark
-
-#### Weekend (Optional)
-1. Research XGBoost for time series
-2. Prepare Kaggle account for GPU access
-3. Review LSTM architectures
-
----
-
-## 📅 WEEK 3: March 23-29, 2026
-### Theme: Advanced Models - XGBoost & Random Forest
-
-#### Monday (March 23) - **Focus on D1 Prep**
-**Morning (2-3 hours):**
-1. Prepare baseline results presentation
-2. Create visualization slides
-3. Document methodology
-
-**Afternoon (2-3 hours):**
-1. Begin XGBoost implementation:
-   ```python
-   # src/models/xgboost_model.py
-   import xgboost as xgb
-   from sklearn.preprocessing import StandardScaler
-   
-   class XGBoostForecaster:
-       """XGBoost model for time series forecasting"""
-       
-       def __init__(self, n_estimators=100, max_depth=5, learning_rate=0.1):
-           self.model = xgb.XGBRegressor(
-               n_estimators=n_estimators,
-               max_depth=max_depth,
-               learning_rate=learning_rate,
-               objective='reg:squarederror',
-               random_state=42
-           )
-           self.scaler = StandardScaler()
-           self.feature_columns = None
-       
-       def prepare_features(self, df):
-           """Prepare features from engineered dataset"""
-           feature_cols = [col for col in df.columns 
-                          if col not in ['date', 'price']]
-           self.feature_columns = feature_cols
-           return df[feature_cols]
-       
-       def fit(self, X_train, y_train):
-           X_scaled = self.scaler.fit_transform(X_train)
-           self.model.fit(X_scaled, y_train)
-           return self
-       
-       def predict(self, X_test):
-           X_scaled = self.scaler.transform(X_test)
-           return self.model.predict(X_scaled)
-       
-       def get_feature_importance(self):
-           importance = pd.DataFrame({
-               'feature': self.feature_columns,
-               'importance': self.model.feature_importances_
-           }).sort_values('importance', ascending=False)
-           return importance
-   ```
-
-**Deliverable:** XGBoost starter code
-
-#### Tuesday (March 24)
-**Full Day (4-5 hours):**
-1. Prepare features for XGBoost:
-   ```python
-   # Load engineered features
-   cement_features = pd.read_csv('data/processed/cement_features.csv')
-   
-   # Split
-   train_df, test_df = time_series_split(cement_features, test_days=30)
-   
-   # Prepare X and y
-   feature_cols = [col for col in train_df.columns 
-                   if col not in ['date', 'price']]
-   
-   X_train = train_df[feature_cols]
-   y_train = train_df['price']
-   X_test = test_df[feature_cols]
-   y_test = test_df['price']
-   
-   print(f"Training features: {X_train.shape}")
-   print(f"Test features: {X_test.shape}")
-   ```
-
-2. Train XGBoost model:
-   ```python
-   # Initialize and train
-   xgb_model = XGBoostForecaster(
-       n_estimators=200,
-       max_depth=5,
-       learning_rate=0.05
-   )
-   
-   xgb_model.fit(X_train, y_train)
-   
-   # Predict
-   xgb_pred = xgb_model.predict(X_test)
-   
-   # Evaluate
-   xgb_metrics = calculate_metrics(y_test.values, xgb_pred)
-   print_metrics(xgb_metrics, "XGBoost")
-   
-   # Feature importance
-   importance = xgb_model.get_feature_importance()
-   print("\nTop 10 Important Features:")
-   print(importance.head(10))
-   
-   # Plot feature importance
-   plt.figure(figsize=(10, 8))
-   importance.head(15).plot(x='feature', y='importance', kind='barh')
-   plt.title('XGBoost Feature Importance')
-   plt.tight_layout()
-   plt.savefig('notebooks/figures/xgboost_feature_importance.png')
-   ```
-
-**Deliverable:** Trained XGBoost model
-
-#### Wednesday (March 25) - **D1 DEMO DAY** 🎯
-**Morning (2-3 hours):**
-1. Finalize D1 presentation
-2. Showcase baseline results
-3. Preview XGBoost preliminary results
-
-**Afternoon:**
-1. D1 Demo
-2. Gather feedback
-
-**Deliverable:** Successful D1 presentation
-
-#### Thursday (March 26)
-**Morning (2-3 hours):**
-1. Hyperparameter tuning for XGBoost:
-   ```python
-   from sklearn.model_selection import GridSearchCV
-   
-   param_grid = {
-       'n_estimators': [100, 200, 300],
-       'max_depth': [3, 5, 7],
-       'learning_rate': [0.01, 0.05, 0.1],
-       'subsample': [0.8, 1.0],
-       'colsample_bytree': [0.8, 1.0]
-   }
-   
-   # Time series cross-validation
-   from sklearn.model_selection import TimeSeriesSplit
-   tscv = TimeSeriesSplit(n_splits=3)
-   
-   grid_search = GridSearchCV(
-       xgb.XGBRegressor(objective='reg:squarederror', random_state=42),
-       param_grid,
-       cv=tscv,
-       scoring='neg_mean_absolute_error',
-       n_jobs=-1,
-       verbose=1
-   )
-   
-   grid_search.fit(X_train, y_train)
-   
-   print("Best parameters:", grid_search.best_params_)
-   print("Best MAE:", -grid_search.best_score_)
-   
-   # Retrain with best params
-   best_xgb = XGBoostForecaster(**grid_search.best_params_)
-   best_xgb.fit(X_train, y_train)
-   best_xgb_pred = best_xgb.predict(X_test)
-   
-   best_xgb_metrics = calculate_metrics(y_test.values, best_xgb_pred)
-   print_metrics(best_xgb_metrics, "XGBoost (Tuned)")
-   ```
-
-**Afternoon (2-3 hours):**
-1. Implement Random Forest:
-   ```python
-   # src/models/random_forest.py
-   from sklearn.ensemble import RandomForestRegressor
-   
-   class RandomForestForecaster:
-       """Random Forest model for time series"""
-       
-       def __init__(self, n_estimators=100, max_depth=None, min_samples_split=2):
-           self.model = RandomForestRegressor(
-               n_estimators=n_estimators,
-               max_depth=max_depth,
-               min_samples_split=min_samples_split,
-               random_state=42,
-               n_jobs=-1
-           )
-           self.scaler = StandardScaler()
-           self.feature_columns = None
-       
-       def fit(self, X_train, y_train):
-           X_scaled = self.scaler.fit_transform(X_train)
-           self.model.fit(X_scaled, y_train)
-           return self
-       
-       def predict(self, X_test):
-           X_scaled = self.scaler.transform(X_test)
-           return self.model.predict(X_scaled)
-       
-       def get_feature_importance(self):
-           importance = pd.DataFrame({
-               'feature': X_train.columns,
-               'importance': self.model.feature_importances_
-           }).sort_values('importance', ascending=False)
-           return importance
-   
-   # Train Random Forest
-   rf_model = RandomForestForecaster(n_estimators=200, max_depth=10)
-   rf_model.fit(X_train, y_train)
-   rf_pred = rf_model.predict(X_test)
-   
-   rf_metrics = calculate_metrics(y_test.values, rf_pred)
-   print_metrics(rf_metrics, "Random Forest")
-   ```
-
-**Deliverable:** Random Forest model
-
-#### Friday (March 27)
-**Full Day (4-5 hours):**
-1. Compare XGBoost vs Random Forest:
-   ```python
-   # Update comparison
-   comparison.add_result('XGBoost (Tuned)', best_xgb_metrics, grid_search.best_params_)
-   comparison.add_result('Random Forest', rf_metrics)
-   
-   print(comparison.get_comparison_df())
-   
-   # Calculate improvement over ARIMA
-   arima_mape = best_metrics['MAPE']
-   xgb_mape = best_xgb_metrics['MAPE']
-   improvement = ((arima_mape - xgb_mape) / arima_mape) * 100
-   
-   print(f"\nXGBoost improvement over ARIMA: {improvement:.2f}%")
-   ```
-
-2. Document results and save models:
-   ```python
-   import joblib
-   
-   # Save models
-   joblib.dump(best_xgb.model, 'models/xgboost_cement.pkl')
-   joblib.dump(rf_model.model, 'models/random_forest_cement.pkl')
-   
-   # Save scalers
-   joblib.dump(best_xgb.scaler, 'models/scaler_cement.pkl')
-   ```
-
-**Deliverable:** Complete tree-based models
-
----
-
-## 📅 WEEK 4: March 30-April 5, 2026
-### Theme: Prophet & LSTM Models + ST1 Preparation
-
-#### Monday (March 30)
-**Morning (2-3 hours):**
-1. Implement Prophet model:
-   ```python
-   # src/models/prophet_model.py
-   from prophet import Prophet
-   
-   class ProphetForecaster:
-       """Facebook Prophet model for time series"""
-       
-       def __init__(self, yearly_seasonality=True, weekly_seasonality=True):
-           self.model = Prophet(
-               yearly_seasonality=yearly_seasonality,
-               weekly_seasonality=weekly_seasonality,
-               daily_seasonality=False,
-               changepoint_prior_scale=0.05
-           )
-       
-       def prepare_data(self, df):
-           """Convert to Prophet format (ds, y)"""
-           prophet_df = pd.DataFrame({
-               'ds': pd.to_datetime(df['date']),
-               'y': df['price']
-           })
-           return prophet_df
-       
-       def fit(self, train_df):
-           prophet_data = self.prepare_data(train_df)
-           self.model.fit(prophet_data)
-           return self
-       
-       def predict(self, steps):
-           future = self.model.make_future_dataframe(periods=steps)
-           forecast = self.model.predict(future)
-           return forecast.tail(steps)
-   
-   # Train Prophet
-   prophet_model = ProphetForecaster()
-   prophet_model.fit(train_df[['date', 'price']])
-   prophet_forecast = prophet_model.predict(len(test_df))
-   
-   prophet_pred = prophet_forecast['yhat'].values
-   prophet_metrics = calculate_metrics(y_test.values, prophet_pred)
-   print_metrics(prophet_metrics, "Prophet")
-   ```
-
-**Afternoon (2-3 hours):**
-1. Visualize Prophet components:
-   ```python
-   # Plot forecast
-   fig1 = prophet_model.model.plot(prophet_forecast)
-   plt.title('Prophet Forecast')
-   plt.savefig('notebooks/figures/prophet_forecast.png')
-   
-   # Plot components (trend, seasonality)
-   fig2 = prophet_model.model.plot_components(prophet_forecast)
-   plt.savefig('notebooks/figures/prophet_components.png')
-   ```
-
-**Deliverable:** Prophet model
-
-#### Tuesday (March 31) - **ST1 DEMO DAY** 🎯
-**Morning (2-3 hours):**
-1. Prepare ST1 presentation:
-   - Model architecture slides
-   - Performance comparison table
-   - Feature importance visualizations
-   - Next steps: LSTM
-
-**Afternoon:**
-1. ST1 Presentation
-2. Showcase modeling progress
-
-**Deliverable:** Successful ST1 presentation
-
-#### Wednesday (April 2)
-**Full Day (4-5 hours):**
-
-### 🚀 Kaggle Setup for GPU-Accelerated LSTM Training
-
-**Why Use Kaggle?** Train deep learning models 10-100x faster with free GPU access!
-
-1. **Create Your Kaggle Notebook:**
-   ```bash
-   # Step 1: Go to https://www.kaggle.com/code
-   # Step 2: Click "New Notebook"
-   # Step 3: Title: "BuildMat Price Forecasting - LSTM Training"
-   # Step 4: Settings > Accelerator > Select "GPU T4 x2" (free!)
-   # Step 5: Settings > Internet > Turn ON (to install packages)
-   ```
-
-2. **Upload Your Dataset to Kaggle:**
-   ```bash
-   # Method 1: Via Web Interface
-   # Go to https://www.kaggle.com/datasets
-   # Click "New Dataset"
-   # Upload your CSV files from data/processed/
-   # Title: "SA Building Materials Price Data"
-   # Make it Private initially
-   
-   # Method 2: Via Kaggle API (from your local machine)
-   cd data/processed/
-   
-   # Create dataset-metadata.json
-   cat > dataset-metadata.json << 'EOF'
-   {
-     "title": "SA Building Materials Price Data",
-     "id": "your-username/sa-building-materials-prices",
-     "licenses": [{"name": "CC0-1.0"}]
-   }
-   EOF
-   
-   # Upload dataset
-   kaggle datasets create -p .
-   
-   # Update dataset later
-   kaggle datasets version -p . -m "Updated with Week 3 data"
-   ```
-
-3. **In Your Kaggle Notebook - Initial Setup Cell:**
-   ```python
-   # Cell 1: Environment Setup and Verification
-   import numpy as np
-   import pandas as pd
-   import tensorflow as tf
-   from tensorflow import keras
-   from tensorflow.keras.models import Sequential
-   from tensorflow.keras.layers import LSTM, Dense, Dropout, Bidirectional
-   from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-   from sklearn.preprocessing import MinMaxScaler
-   from sklearn.metrics import mean_absolute_error, mean_squared_error
-   import matplotlib.pyplot as plt
-   import seaborn as sns
-   
-   # Verify GPU
-   print("TensorFlow version:", tf.__version__)
-   print("GPU Available:", len(tf.config.list_physical_devices('GPU')) > 0)
-   print("GPU Devices:", tf.config.list_physical_devices('GPU'))
-   
-   # Set memory growth (prevents OOM errors)
-   gpus = tf.config.list_physical_devices('GPU')
-   if gpus:
-       try:
-           for gpu in gpus:
-               tf.config.experimental.set_memory_growth(gpu, True)
-           print("✅ GPU memory growth enabled")
-       except RuntimeError as e:
-           print(e)
-   
-   # Set seeds for reproducibility
-   np.random.seed(42)
-   tf.random.set_seed(42)
-   print("✅ Seeds set for reproducibility")
-   ```
-
-4. **Load Your Data in Kaggle:**
-   ```python
-   # Cell 2: Load Data
-   # After uploading dataset, it will be in /kaggle/input/
-   
-   # List available datasets
-   import os
-   for dirname, _, filenames in os.walk('/kaggle/input'):
-       for filename in filenames:
-           print(os.path.join(dirname, filename))
-   
-   # Load your price data
-   df = pd.read_csv('/kaggle/input/sa-building-materials-prices/cement_features.csv')
-   
-   print(f"✅ Loaded {len(df)} records")
-   print(f"Date range: {df['date'].min()} to {df['date'].max()}")
-   print(f"\nDataset info:")
-   print(df.info())
-   print(f"\nFirst few rows:")
-   print(df.head())
-   ```
-
-5. **Data Preprocessing on Kaggle:**
-   ```python
-   # Cell 3: Prepare Data for LSTM
-   def create_sequences(data, seq_length=30):
-       """Create sequences for LSTM input"""
-       X, y = [], []
-       
-       for i in range(len(data) - seq_length):
-           X.append(data[i:i+seq_length])
-           y.append(data[i+seq_length])
-       
-       return np.array(X), np.array(y)
-   
-   # Extract price column
-   prices = df['price'].values.reshape(-1, 1)
-   
-   # Normalize data
-   scaler = MinMaxScaler(feature_range=(0, 1))
-   prices_scaled = scaler.fit_transform(prices)
-   
-   print(f"Original price range: {prices.min():.2f} to {prices.max():.2f}")
-   print(f"Scaled price range: {prices_scaled.min():.4f} to {prices_scaled.max():.4f}")
-   
-   # Create sequences
-   SEQ_LENGTH = 30  # Use last 30 days to predict next day
-   X, y = create_sequences(prices_scaled, SEQ_LENGTH)
-   
-   print(f"\n✅ Created sequences:")
-   print(f"X shape: {X.shape}")  # (samples, timesteps, features)
-   print(f"y shape: {y.shape}")  # (samples,)
-   
-   # Train-test split (80-20)
-   train_size = int(0.8 * len(X))
-   X_train, X_test = X[:train_size], X[train_size:]
-   y_train, y_test = y[:train_size], y[train_size:]
-   
-   # Reshape for LSTM [samples, timesteps, features]
-   X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
-   X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
-   
-   print(f"\n✅ Data split:")
-   print(f"Train: {X_train.shape}, {y_train.shape}")
-   print(f"Test:  {X_test.shape}, {y_test.shape}")
-   
-   # Save scaler parameters for later use
-   scaler_params = {
-       'min': float(scaler.data_min_[0]),
-       'max': float(scaler.data_max_[0]),
-       'scale': float(scaler.scale_[0]),
-   }
-   print(f"\n✅ Scaler params saved: {scaler_params}")
-   ```
-
-6. **Build LSTM Model on Kaggle:**
-   ```python
-   # Cell 4: Build LSTM Architecture
-   def build_lstm_model(seq_length, n_features=1):
-       """Build LSTM model for time series forecasting"""
-       model = Sequential([
-           # First LSTM layer with return sequences
-           LSTM(64, return_sequences=True, input_shape=(seq_length, n_features)),
-           Dropout(0.2),
-           
-           # Second LSTM layer
-           LSTM(64, return_sequences=True),
-           Dropout(0.2),
-           
-           # Third LSTM layer
-           LSTM(32, return_sequences=False),
-           Dropout(0.2),
-           
-           # Dense layers
-           Dense(32, activation='relu'),
-           Dropout(0.2),
-           Dense(1)
-       ])
-       
-       # Compile with Adam optimizer
-       model.compile(
-           optimizer=keras.optimizers.Adam(learning_rate=0.001),
-           loss='mse',
-           metrics=['mae', 'mse']
-       )
-       
-       return model
-   
-   # Build model
-   lstm_model = build_lstm_model(SEQ_LENGTH)
-   
-   print("✅ LSTM Model Architecture:")
-   print(lstm_model.summary())
-   
-   # Count parameters
-   trainable_params = np.sum([np.prod(v.shape) for v in lstm_model.trainable_weights])
-   print(f"\nTotal trainable parameters: {trainable_params:,}")
-   ```
-
-7. **Train Model on Kaggle GPU:**
-   ```python
-   # Cell 5: Train LSTM Model
-   # Define callbacks
-   early_stop = EarlyStopping(
-       monitor='val_loss',
-       patience=15,
-       restore_best_weights=True,
-       verbose=1
-   )
-   
-   checkpoint = ModelCheckpoint(
-       '/kaggle/working/lstm_cement_best.h5',
-       monitor='val_loss',
-       save_best_only=True,
-       verbose=1
-   )
-   
-   reduce_lr = ReduceLROnPlateau(
-       monitor='val_loss',
-       factor=0.5,
-       patience=5,
-       min_lr=0.00001,
-       verbose=1
-   )
-   
-   # Train model (GPU will accelerate this!)
-   print("🚀 Starting training on GPU...")
-   history = lstm_model.fit(
-       X_train, y_train,
-       validation_split=0.2,
-       epochs=100,
-       batch_size=32,
-       callbacks=[early_stop, checkpoint, reduce_lr],
-       verbose=1
-   )
-   
-   print(f"\n✅ Training complete!")
-   print(f"Best epoch: {early_stop.best_epoch + 1}")
-   print(f"Best val_loss: {min(history.history['val_loss']):.6f}")
-   ```
-
-8. **Visualize Training Results:**
-   ```python
-   # Cell 6: Plot Training History
-   fig, axes = plt.subplots(1, 2, figsize=(15, 5))
-   
-   # Plot loss
-   axes[0].plot(history.history['loss'], label='Train Loss', linewidth=2)
-   axes[0].plot(history.history['val_loss'], label='Val Loss', linewidth=2)
-   axes[0].set_title('Model Loss During Training', fontsize=14, fontweight='bold')
-   axes[0].set_xlabel('Epoch')
-   axes[0].set_ylabel('Loss (MSE)')
-   axes[0].legend()
-   axes[0].grid(True, alpha=0.3)
-   
-   # Plot MAE
-   axes[1].plot(history.history['mae'], label='Train MAE', linewidth=2)
-   axes[1].plot(history.history['val_mae'], label='Val MAE', linewidth=2)
-   axes[1].set_title('Model MAE During Training', fontsize=14, fontweight='bold')
-   axes[1].set_xlabel('Epoch')
-   axes[1].set_ylabel('MAE')
-   axes[1].legend()
-   axes[1].grid(True, alpha=0.3)
-   
-   plt.tight_layout()
-   plt.savefig('/kaggle/working/training_history.png', dpi=300, bbox_inches='tight')
-   plt.show()
-   
-   print("✅ Training history plotted and saved")
-   ```
-
-9. **Evaluate Model Performance:**
-   ```python
-   # Cell 7: Evaluate LSTM Model
-   # Predict on test set
-   lstm_pred_scaled = lstm_model.predict(X_test, verbose=0)
-   
-   # Inverse transform to original scale
-   lstm_pred = scaler.inverse_transform(lstm_pred_scaled)
-   y_test_original = scaler.inverse_transform(y_test)
-   
-   # Calculate metrics
-   mae = mean_absolute_error(y_test_original, lstm_pred)
-   rmse = np.sqrt(mean_squared_error(y_test_original, lstm_pred))
-   mape = np.mean(np.abs((y_test_original - lstm_pred) / y_test_original)) * 100
-   
-   print("📊 LSTM Model Performance on Test Set:")
-   print(f"  MAE:  R{mae:.2f}")
-   print(f"  RMSE: R{rmse:.2f}")
-   print(f"  MAPE: {mape:.2f}%")
-   
-   # Compare with baseline ARIMA (if you have those metrics)
-   # arima_mae = 15.20  # Example from your earlier results
-   # improvement = ((arima_mae - mae) / arima_mae) * 100
-   # print(f"\n✅ Improvement over ARIMA: {improvement:.1f}%")
-   ```
-
-10. **Download Trained Model:**
-    ```python
-    # Cell 8: Save Model and Artifacts
-    # Model is already saved at /kaggle/working/lstm_cement_best.h5
-    
-    # Save predictions for analysis
-    results_df = pd.DataFrame({
-        'actual': y_test_original.flatten(),
-        'predicted': lstm_pred.flatten(),
-        'error': (y_test_original - lstm_pred).flatten()
-    })
-    results_df.to_csv('/kaggle/working/lstm_predictions.csv', index=False)
-    
-    # Save model metrics
-    metrics = {
-        'MAE': float(mae),
-        'RMSE': float(rmse),
-        'MAPE': float(mape),
-        'train_samples': int(len(X_train)),
-        'test_samples': int(len(X_test)),
-        'epochs_trained': len(history.history['loss']),
-        'best_epoch': int(early_stop.best_epoch) + 1,
+    CATEGORY_TO_CMPI = {
+        "Cement":   "Cement & Concrete Work",
+        "Steel":    "Steel & Metal Work",
+        "Copper":   "Steel & Metal Work",    # closest proxy
+        "PVC":      "Pipes & Pipelines",
+        "Timber":   "Building Construction",
+        "Bitumen":  "Civil Engineering Construction",
+        "Masonry":  "Building Construction",
+        "Sand & Aggregates": "Civil Engineering Construction",
     }
-    
-    import json
-    with open('/kaggle/working/lstm_metrics.json', 'w') as f:
-        json.dump(metrics, f, indent=2)
-    
-    print("✅ All artifacts saved to /kaggle/working/")
-    print("   - lstm_cement_best.h5 (trained model)")
-    print("   - lstm_predictions.csv (test predictions)")
-    print("   - lstm_metrics.json (performance metrics)")
-    print("   - training_history.png (visualization)")
-    print("\n📥 Download from the 'Output' tab on the right →")
-    ```
 
-11. **After Training - Download Your Results:**
-    ```bash
-    # In Kaggle notebook interface:
-    # 1. Click "Save Version" button (top right)
-    # 2. Choose "Save & Run All" (Quick Save)
-    # 3. Wait for notebook to complete
-    # 4. Go to "Output" tab on the right sidebar
-    # 5. Download:
-    #    - lstm_cement_best.h5
-    #    - lstm_predictions.csv
-    #    - lstm_metrics.json
-    #    - training_history.png
-    
-    # Then on your local machine:
-    # Move downloads to your project
-    mv ~/Downloads/lstm_cement_best.h5 ~/projects/buildmat-ml/models/
-    mv ~/Downloads/lstm_predictions.csv ~/projects/buildmat-ml/reports/
-    mv ~/Downloads/lstm_metrics.json ~/projects/buildmat-ml/reports/
-    mv ~/Downloads/training_history.png ~/projects/buildmat-ml/reports/figures/
-    ```
+    def __init__(self, excel_path: str):
+        raw = pd.read_excel(excel_path, sheet_name="Stats SA CMPI Index", skiprows=2)
+        raw.columns = raw.columns.str.strip().str.replace("\n", " ")
+        raw["date"] = pd.to_datetime(raw["Date"])
+        self.cmpi_df = raw[["date", "Year", "Month",
+                             "Total CMPI  (All Construction)",
+                             "Building  Construction",
+                             "Civil Engineering  Construction",
+                             "Cement &  Concrete Work",
+                             "Steel &  Metal Work",
+                             "Pipes &  Pipelines"]].copy()
+        self.cmpi_df.columns = ["date", "year", "month", "Total_CMPI",
+                                "Building_CMPI", "Civil_CMPI",
+                                "Cement_CMPI", "Steel_CMPI", "Pipes_CMPI"]
+        print(f"✅ Loaded CMPI index: {len(self.cmpi_df)} months")
 
-**What You Must Do on Kaggle (Summary):**
-- ✅ Create GPU-enabled notebook
-- ✅ Upload your processed price dataset
-- ✅ Build and train LSTM model using free GPU (10-100x faster!)
-- ✅ Monitor training with callbacks and visualizations
-- ✅ Evaluate model performance
-- ✅ Save and download trained model + predictions
-- ✅ Use the downloaded model in your backend API
+    def add_cmpi_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        df = df.copy()
+        df = df.merge(self.cmpi_df[["year", "month", "Total_CMPI",
+                                     "Cement_CMPI", "Steel_CMPI",
+                                     "Pipes_CMPI", "Building_CMPI"]],
+                      on=["year", "month"], how="left")
 
-**Kaggle Tips for Success:**
-1. **Save versions frequently** - Don't lose your work!
-2. **Monitor GPU usage** - You get 30 hours/week free
-3. **Use callbacks** - EarlyStopping prevents overfitting
-4. **Check output size** - Keep under 20GB to download easily
-5. **Private notebooks** - Keep your work private until project completion
+        # Category-specific CMPI column
+        col_map = {"Cement": "Cement_CMPI", "Steel": "Steel_CMPI",
+                   "Copper": "Steel_CMPI",  "PVC":   "Pipes_CMPI"}
+        df["category_cmpi"] = df["material_category"].map(col_map).fillna("Building_CMPI")
+        df["category_cmpi"] = df.apply(
+            lambda r: r[r["category_cmpi"]] if r["category_cmpi"] in df.columns else r["Building_CMPI"],
+            axis=1
+        )
 
-2. Prepare LSTM data (locally for comparison):
-   ```python
-   # src/data/lstm_preprocessing.py
-   import numpy as np
-   
-   def create_sequences(data, seq_length=30):
-       """Create sequences for LSTM input"""
-       X, y = [], []
-       
-       for i in range(len(data) - seq_length):
-           X.append(data[i:i+seq_length])
-           y.append(data[i+seq_length])
-       
-       return np.array(X), np.array(y)
-   
-   # Normalize data
-   from sklearn.preprocessing import MinMaxScaler
-   
-   scaler = MinMaxScaler()
-   prices_scaled = scaler.fit_transform(cement_df[['price']])
-   
-   # Create sequences
-   SEQ_LENGTH = 30  # Use last 30 days to predict next day
-   X, y = create_sequences(prices_scaled, SEQ_LENGTH)
-   
-   # Split
-   train_size = int(0.8 * len(X))
-   X_train_lstm, X_test_lstm = X[:train_size], X[train_size:]
-   y_train_lstm, y_test_lstm = y[:train_size], y[train_size:]
-   
-   # Reshape for LSTM [samples, timesteps, features]
-   X_train_lstm = X_train_lstm.reshape(X_train_lstm.shape[0], X_train_lstm.shape[1], 1)
-   X_test_lstm = X_test_lstm.reshape(X_test_lstm.shape[0], X_test_lstm.shape[1], 1)
-   
-   print(f"LSTM Training shape: {X_train_lstm.shape}")
-   print(f"LSTM Test shape: {X_test_lstm.shape}")
-   ```
+        # MoM CMPI change per material/supplier group
+        df = df.sort_values(["material_name", "supplier_name", "date"])
+        df["cmpi_change_mom"] = (df.groupby(["material_name", "supplier_name"])["Total_CMPI"]
+                                   .pct_change() * 100)
+        print("✅ Added CMPI features")
+        return df
 
-**Deliverable:** LSTM data preparation
 
-#### Thursday (April 3)
-**Full Day (4-5 hours):**
-1. Build LSTM architecture:
-   ```python
-   # src/models/lstm_model.py
-   from tensorflow.keras.models import Sequential
-   from tensorflow.keras.layers import LSTM, Dense, Dropout
-   from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-   
-   def build_lstm_model(seq_length, n_features=1):
-       """Build LSTM architecture"""
-       model = Sequential([
-           LSTM(50, return_sequences=True, input_shape=(seq_length, n_features)),
-           Dropout(0.2),
-           LSTM(50, return_sequences=False),
-           Dropout(0.2),
-           Dense(25),
-           Dense(1)
-       ])
-       
-       model.compile(optimizer='adam', loss='mse', metrics=['mae'])
-       return model
-   
-   # Build model
-   lstm_model = build_lstm_model(SEQ_LENGTH)
-   print(lstm_model.summary())
-   
-   # Callbacks
-   early_stop = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
-   checkpoint = ModelCheckpoint('models/lstm_cement_best.h5', save_best_only=True)
-   
-   # Train
-   history = lstm_model.fit(
-       X_train_lstm, y_train_lstm,
-       validation_split=0.2,
-       epochs=100,
-       batch_size=32,
-       callbacks=[early_stop, checkpoint],
-       verbose=1
-   )
-   
-   # Plot training history
-   plt.figure(figsize=(12, 4))
-   
-   plt.subplot(1, 2, 1)
-   plt.plot(history.history['loss'], label='Train Loss')
-   plt.plot(history.history['val_loss'], label='Val Loss')
-   plt.title('Model Loss')
-   plt.xlabel('Epoch')
-   plt.ylabel('Loss')
-   plt.legend()
-   
-   plt.subplot(1, 2, 2)
-   plt.plot(history.history['mae'], label='Train MAE')
-   plt.plot(history.history['val_mae'], label='Val MAE')
-   plt.title('Model MAE')
-   plt.xlabel('Epoch')
-   plt.ylabel('MAE')
-   plt.legend()
-   
-   plt.tight_layout()
-   plt.savefig('notebooks/figures/lstm_training_history.png')
-   ```
+# Usage
+DATASET = "data/raw/SA_Building_Materials_Dataset.xlsx"
+cmpi_adder = CMPIFeatureAdder(DATASET)
+df_with_cmpi = cmpi_adder.add_cmpi_features(df_features)
+```
 
-**Deliverable:** Trained LSTM model
+```python
+# src/features/world_bank_feature_adder.py
+import pandas as pd
 
-#### Friday (April 4)
-**Full Day (4-5 hours):**
-1. Evaluate LSTM:
-   ```python
-   # Predict
-   lstm_pred_scaled = lstm_model.predict(X_test_lstm)
-   
-   # Inverse transform to original scale
-   lstm_pred = scaler.inverse_transform(lstm_pred_scaled)
-   y_test_original = scaler.inverse_transform(y_test_lstm)
-   
-   # Calculate metrics
-   lstm_metrics = calculate_metrics(y_test_original.flatten(), lstm_pred.flatten())
-   print_metrics(lstm_metrics, "LSTM")
-   
-   # Add to comparison
-   comparison.add_result('LSTM', lstm_metrics)
-   ```
+class WorldBankFeatureAdder:
+    """
+    Merges World Bank commodity prices (already in ZAR) onto price records.
+    Source: 'Derived Rand Prices' sheet in SA_Building_Materials_Dataset.xlsx.
+    Commodities: Copper, Steel Rebar, Timber
+    """
 
-2. Multi-step LSTM forecasting:
-   ```python
-   def lstm_multi_step_forecast(model, last_sequence, steps, scaler):
-       """Forecast multiple steps ahead"""
-       current_sequence = last_sequence.copy()
-       predictions = []
-       
-       for _ in range(steps):
-           # Predict next value
-           next_pred_scaled = model.predict(current_sequence.reshape(1, SEQ_LENGTH, 1), verbose=0)
-           
-           # Store prediction
-           predictions.append(next_pred_scaled[0, 0])
-           
-           # Update sequence (remove first, add prediction)
-           current_sequence = np.append(current_sequence[1:], next_pred_scaled[0, 0])
-       
-       # Inverse transform
-       predictions = np.array(predictions).reshape(-1, 1)
-       predictions_original = scaler.inverse_transform(predictions)
-       
-       return predictions_original.flatten()
-   
-   # Forecast next 30 days
-   last_seq = prices_scaled[-SEQ_LENGTH:]
-   lstm_forecast = lstm_multi_step_forecast(lstm_model, last_seq, 30, scaler)
-   
-   print(f"30-day LSTM forecast:")
-   print(lstm_forecast)
-   ```
+    def __init__(self, excel_path: str):
+        raw = pd.read_excel(excel_path, sheet_name="Derived Rand Prices", skiprows=2)
+        raw.columns = raw.columns.str.strip().str.replace("\n", " ")
+        raw["date"] = pd.to_datetime(raw["Date"])
+        self.wb_df = raw[["date", "Year", "Month",
+                           "Copper ZAR/mt", "Steel ZAR/mt", "Timber ZAR/m³"]].copy()
+        self.wb_df.columns = ["date", "year", "month",
+                               "Copper_ZAR", "Steel_ZAR", "Timber_ZAR"]
+        print(f"✅ Loaded World Bank ZAR prices: {len(self.wb_df)} months")
 
-**Deliverable:** Complete LSTM implementation
+    def add_world_bank_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        df = df.copy()
+        df = df.merge(self.wb_df[["year", "month",
+                                   "Copper_ZAR", "Steel_ZAR", "Timber_ZAR"]],
+                      on=["year", "month"], how="left")
+        print("✅ Added World Bank ZAR commodity features")
+        return df
+
+
+# Usage
+wb_adder = WorldBankFeatureAdder(DATASET)
+df_enriched = wb_adder.add_world_bank_features(df_with_cmpi)
+```
 
 ---
 
-## 📅 WEEK 5: April 6-12, 2026
-### Theme: Model Ensemble & D2 Preparation
+## 📅 WEEK 2 — March 16–22, 2026
+### Baseline Models — Naïve, Moving Average, ARIMA
 
-#### Monday (April 6)
-**Full Day (4-5 hours):**
-1. Create ensemble model:
-   ```python
-   # src/models/ensemble.py
-   class EnsembleForecaster:
-       """Weighted ensemble of multiple models"""
-       
-       def __init__(self, models, weights=None):
-           self.models = models
-           self.weights = weights if weights else [1/len(models)] * len(models)
-       
-       def predict(self, X_test=None, steps=None):
-           """Get weighted predictions from all models"""
-           predictions = []
-           
-           for model, weight in zip(self.models, self.weights):
-               if hasattr(model, 'predict'):
-                   if X_test is not None:
-                       pred = model.predict(X_test)
-                   else:
-                       pred = model.predict(steps)
-               predictions.append(pred * weight)
-           
-           # Weighted average
-           ensemble_pred = np.sum(predictions, axis=0)
-           return ensemble_pred
-   
-   # Create ensemble
-   ensemble_models = [best_xgb, rf_model, prophet_model]
-   
-   # Optimize weights (simple grid search)
-   from itertools import product
-   
-   weights_range = np.arange(0, 1.1, 0.1)
-   best_weights = None
-   best_ensemble_mae = np.inf
-   
-   for w1 in weights_range:
-       for w2 in weights_range:
-           w3 = 1 - w1 - w2
-           if w3 < 0 or w3 > 1:
-               continue
-           
-           weights = [w1, w2, w3]
-           
-           # Get predictions
-           xgb_p = best_xgb.predict(X_test)
-           rf_p = rf_model.predict(X_test)
-           prophet_p = prophet_pred
-           
-           ensemble_p = xgb_p * w1 + rf_p * w2 + prophet_p * w3
-           
-           mae = mean_absolute_error(y_test, ensemble_p)
-           
-           if mae < best_ensemble_mae:
-               best_ensemble_mae = mae
-               best_weights = weights
-   
-   print(f"Best weights: {best_weights}")
-   print(f"Ensemble MAE: {best_ensemble_mae}")
-   
-   # Final ensemble predictions
-   final_ensemble_pred = (
-       best_xgb.predict(X_test) * best_weights[0] +
-       rf_model.predict(X_test) * best_weights[1] +
-       prophet_pred * best_weights[2]
-   )
-   
-   ensemble_metrics = calculate_metrics(y_test.values, final_ensemble_pred)
-   print_metrics(ensemble_metrics, "Ensemble")
-   
-   comparison.add_result('Ensemble', ensemble_metrics, {'weights': best_weights})
-   ```
+#### Monday (March 16) — Evaluation Framework
 
-**Deliverable:** Ensemble model
+```python
+# src/evaluation/metrics.py
+import numpy as np
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+from typing import Dict
 
-#### Tuesday (April 7)
-**Full Day (4-5 hours):**
-1. Create comprehensive model comparison:
-   ```python
-   # Final comparison
-   results_df = comparison.get_comparison_df()
-   print("\n=== FINAL MODEL COMPARISON ===")
-   print(results_df.to_string())
-   
-   # Calculate improvement over ARIMA baseline
-   arima_mape = results_df[results_df['model'].str.contains('ARIMA')]['MAPE'].values[0]
-   
-   for idx, row in results_df.iterrows():
-       if 'ARIMA' not in row['model']:
-           improvement = ((arima_mape - row['MAPE']) / arima_mape) * 100
-           print(f"{row['model']}: {improvement:.2f}% improvement over ARIMA")
-   
-   # Visualize all models
-   plt.figure(figsize=(16, 8))
-   
-   plt.subplot(1, 2, 1)
-   results_df.plot(x='model', y='MAPE', kind='bar', ax=plt.gca())
-   plt.title('Model MAPE Comparison')
-   plt.ylabel('MAPE (%)')
-   plt.xticks(rotation=45, ha='right')
-   
-   plt.subplot(1, 2, 2)
-   results_df.plot(x='model', y='RMSE', kind='bar', ax=plt.gca())
-   plt.title('Model RMSE Comparison')
-   plt.ylabel('RMSE')
-   plt.xticks(rotation=45, ha='right')
-   
-   plt.tight_layout()
-   plt.savefig('notebooks/figures/final_model_comparison.png', dpi=300)
-   ```
 
-**Deliverable:** Model performance report
+def evaluate(y_true: np.ndarray, y_pred: np.ndarray,
+             model_name: str = "") -> Dict[str, float]:
+    mae  = mean_absolute_error(y_true, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+    mask = y_true != 0
+    mape = float(np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100)
+    metrics = {"MAE": round(mae, 4), "RMSE": round(rmse, 4), "MAPE": round(mape, 2)}
+    if model_name:
+        print(f"{model_name:25s}  MAE={mae:.2f}  RMSE={rmse:.2f}  MAPE={mape:.2f}%")
+    return metrics
 
-#### Wednesday (April 8) - **D2 DEMO DAY** 🎯
-**Morning (2-3 hours):**
-1. Prepare D2 demo:
-   - Show all models
-   - Demonstrate 59% improvement claim
-   - Live prediction demo
-   - Explain ensemble approach
 
-**Afternoon:**
-1. D2 Presentation
-2. Showcase working ML system
+def time_series_split(df: "pd.DataFrame", test_months: int = 3):
+    """
+    Temporal split — NEVER split randomly on time-series data.
+    Uses the last `test_months` months as the test set.
+    """
+    import pandas as pd
+    df = df.sort_values("date")
+    cutoff = df["date"].max() - pd.DateOffset(months=test_months)
+    train = df[df["date"] <= cutoff].copy()
+    test  = df[df["date"] >  cutoff].copy()
+    print(f"Train: {train['date'].min().date()} → {train['date'].max().date()} ({len(train):,})")
+    print(f"Test:  {test['date'].min().date()}  → {test['date'].max().date()}  ({len(test):,})")
+    return train, test
+```
 
-**Deliverable:** Successful D2 demo
+#### Tuesday (March 17) — Naïve + Moving Average
 
-#### Thursday-Friday (April 9-11)
-**Full Days:**
-1. Integrate models with backend API (Member 1)
-2. Create model inference endpoint
-3. Test prediction API
-4. Optimize inference speed
+```python
+# src/models/naive.py
+import numpy as np
 
----
+class NaiveForecast:
+    """Persistence model — next price = last known price."""
+    def fit(self, y_train):
+        self._last = float(y_train.iloc[-1])
+        return self
+    def predict(self, steps: int) -> np.ndarray:
+        return np.full(steps, self._last)
 
-## 📅 WEEKS 6-8: April 13-May 3, 2026
-### Theme: Production Integration & MVP
 
-**Key Activities:**
-1. Deploy models to production
-2. Create anomaly detection system
-3. Model monitoring and logging
-4. API performance optimization
-5. Documentation
+# src/models/moving_average.py
+class MovingAverageModel:
+    def __init__(self, window: int = 7):
+        self.window = window
 
-**D3 (May 1) - MVP COMPLETE** 🎉
+    def fit(self, y_train):
+        self._history = list(y_train.values)
+        return self
 
----
+    def predict(self, steps: int) -> np.ndarray:
+        history = self._history.copy()
+        preds = []
+        for _ in range(steps):
+            p = float(np.mean(history[-self.window:]))
+            preds.append(p)
+            history.append(p)   # use prediction for next step
+        return np.array(preds)
+```
 
-## 📅 WEEKS 9-13: May 4-June 9, 2026
-### Theme: Testing, Optimization, & Presentation
+#### Wednesday (March 18) — ARIMA
 
-**ST2 (May 6)** - Testing Results  
-**D4 (May 13)** - Final Polish  
-**Final (June 10)** - Championship Presentation
+```python
+# src/models/arima_model.py
+from statsmodels.tsa.arima.model import ARIMA
+from itertools import product
+import warnings, numpy as np
+warnings.filterwarnings("ignore")   # convergence warnings are normal here
 
-**Focus:**
-1. Model retraining pipeline
-2. Performance benchmarking
-3. Documentation finalization
-4. Presentation preparation
+
+class ARIMAForecaster:
+    def __init__(self, order=(1, 1, 1)):
+        self.order = order
+        self._fitted = None
+
+    def fit(self, y_train):
+        self._fitted = ARIMA(y_train, order=self.order).fit()
+        return self
+
+    def predict(self, steps: int) -> np.ndarray:
+        return self._fitted.forecast(steps=steps).values
+
+    @property
+    def aic(self):
+        return self._fitted.aic
+
+
+def auto_arima(y_train, max_p=2, max_d=1, max_q=2) -> ARIMAForecaster:
+    """Grid-search for best (p,d,q) by AIC."""
+    best_aic, best_order = np.inf, None
+    for p, d, q in product(range(max_p + 1), range(max_d + 1), range(max_q + 1)):
+        try:
+            m = ARIMA(y_train, order=(p, d, q)).fit()
+            if m.aic < best_aic:
+                best_aic, best_order = m.aic, (p, d, q)
+        except Exception:
+            continue
+    print(f"Best ARIMA order: {best_order}  AIC: {best_aic:.2f}")
+    return ARIMAForecaster(best_order).fit(y_train)
+```
+
+#### Thursday–Friday — Run All Baselines + Save Benchmark
+
+```python
+# notebooks/02_baseline_models.ipynb
+import pandas as pd, json
+from src.data.schema_loader import load_and_validate
+from src.evaluation.metrics import evaluate, time_series_split
+from src.models.naive import NaiveForecast
+from src.models.moving_average import MovingAverageModel
+from src.models.arima_model import auto_arima
+
+DATASET = "data/raw/SA_Building_Materials_Dataset.xlsx"
+df = load_and_validate(DATASET)
+
+# Monthly average per date (collapse suppliers)
+cement = (df[df["material_name"] == "PPC Cement 50kg"]
+            .groupby("date")["price_zar"].mean()
+            .reset_index().rename(columns={"price_zar": "price"}))
+
+train, test = time_series_split(cement, test_months=3)
+results = {}
+
+# Naïve
+naive = NaiveForecast().fit(train["price"])
+results["Naive"] = evaluate(test["price"].values, naive.predict(len(test)), "Naïve")
+
+# Moving Average (try 3 windows)
+for w in [3, 7, 14]:
+    ma = MovingAverageModel(w).fit(train["price"])
+    results[f"MA_w{w}"] = evaluate(test["price"].values, ma.predict(len(test)), f"MA(w={w})")
+
+# ARIMA (auto-tune by AIC)
+arima = auto_arima(train["price"])
+results["ARIMA"] = evaluate(test["price"].values, arima.predict(len(test)), "ARIMA")
+
+# Save benchmark — this is the bar every advanced model must beat
+with open("models/baseline/baseline_results.json", "w") as f:
+    json.dump(results, f, indent=2)
+print("✅ Baseline benchmark saved.")
+```
+
+**Deliverable:** `baseline_results.json` with Naïve, MA (3 windows), ARIMA metrics.
 
 ---
 
-## 🎯 Key Performance Targets
+## 📅 WEEK 3 — March 23–29, 2026
+### Advanced Models — XGBoost & Random Forest
 
-| Model | MAPE Target | RMSE Target | Status |
-|-------|-------------|-------------|--------|
-| Naïve | ~15% | Baseline | ✅ |
-| Moving Average | ~12% | Baseline | ✅ |
-| ARIMA | ~10% | Baseline | ✅ |
-| XGBoost | <6% | 59% better | 🎯 |
-| Random Forest | <7% | 50% better | 🎯 |
-| Prophet | <8% | 40% better | 🎯 |
-| LSTM | <6% | 59% better | 🎯 |
-| Ensemble | <5% | >59% better | 🏆 |
+#### Monday (March 23) — D1 Prep + Start XGBoost
+
+Prepare D1 slides showing baseline results (MAPE table, trend plots, methodology). Also start XGBoost implementation.
+
+#### D1 Demo — Wednesday (March 25) 🎯
+
+Show baseline results, preliminary XGBoost numbers, and feature importance charts.
+
+#### Tuesday–Thursday — XGBoost
+
+```python
+# src/models/xgboost_model.py
+import numpy as np, pandas as pd, xgboost as xgb, joblib
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
+from typing import List
+
+
+class XGBoostForecaster:
+    def __init__(self, **params):
+        defaults = dict(n_estimators=200, max_depth=5, learning_rate=0.05,
+                        subsample=0.8, colsample_bytree=0.8,
+                        objective="reg:squarederror", random_state=42)
+        defaults.update(params)
+        self.model  = xgb.XGBRegressor(**defaults)
+        self.scaler = StandardScaler()
+        self.feature_cols: List[str] = []
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.feature_cols = list(X.columns)   # store BEFORE training
+        Xs = self.scaler.fit_transform(X)
+        # NOTE: early_stopping_rounds moved to fit() in XGBoost ≥ 2.0
+        self.model.fit(Xs, y,
+                       eval_set=[(Xs, y)],
+                       verbose=False)
+        return self
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict(self.scaler.transform(X[self.feature_cols]))
+
+    def feature_importance(self) -> pd.DataFrame:
+        return (pd.DataFrame({"feature": self.feature_cols,
+                               "importance": self.model.feature_importances_})
+                  .sort_values("importance", ascending=False))
+
+    def save(self, path: str):
+        joblib.dump(self, path)
+
+    @staticmethod
+    def load(path: str) -> "XGBoostForecaster":
+        return joblib.load(path)
+
+
+def tune_xgboost(X_train: pd.DataFrame, y_train: pd.Series) -> dict:
+    param_grid = {
+        "n_estimators":     [100, 200, 300],
+        "max_depth":        [3, 5, 7],
+        "learning_rate":    [0.01, 0.05, 0.1],
+        "subsample":        [0.8, 1.0],
+        "colsample_bytree": [0.8, 1.0],
+    }
+    tscv = TimeSeriesSplit(n_splits=5)
+    gs = GridSearchCV(
+        xgb.XGBRegressor(objective="reg:squarederror", random_state=42),
+        param_grid, cv=tscv, scoring="neg_mean_absolute_error", n_jobs=-1
+    )
+    gs.fit(X_train, y_train)
+    print(f"Best params: {gs.best_params_}")
+    print(f"Best CV MAE: {-gs.best_score_:.2f}")
+    return gs.best_params_
+```
+
+#### Thursday (March 26) — Random Forest
+
+```python
+# src/models/random_forest.py
+import numpy as np, pandas as pd, joblib
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import StandardScaler
+from typing import List
+
+
+class RandomForestForecaster:
+    def __init__(self, n_estimators=200, max_depth=10, **kwargs):
+        self.model  = RandomForestRegressor(n_estimators=n_estimators,
+                                             max_depth=max_depth,
+                                             random_state=42, n_jobs=-1, **kwargs)
+        self.scaler = StandardScaler()
+        self.feature_cols: List[str] = []
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.feature_cols = list(X.columns)   # store BEFORE training
+        self.model.fit(self.scaler.fit_transform(X), y)
+        return self
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict(self.scaler.transform(X[self.feature_cols]))
+
+    def feature_importance(self) -> pd.DataFrame:
+        # Use self.feature_cols — NOT X_train.columns (which may be out of scope)
+        return (pd.DataFrame({"feature": self.feature_cols,
+                               "importance": self.model.feature_importances_})
+                  .sort_values("importance", ascending=False))
+
+    def save(self, path: str):
+        joblib.dump(self, path)
+```
+
+#### Friday (March 27) — Train + Compare
+
+```python
+# notebooks/03_tree_models.ipynb
+import joblib, json, pandas as pd
+from src.data.schema_loader import load_and_validate
+from src.features.engineer import FeatureEngineer
+from src.evaluation.metrics import evaluate, time_series_split
+from src.models.xgboost_model import XGBoostForecaster, tune_xgboost
+from src.models.random_forest import RandomForestForecaster
+
+DATASET = "data/raw/SA_Building_Materials_Dataset.xlsx"
+df = load_and_validate(DATASET)
+
+eng = FeatureEngineer()
+df_feat = eng.fit_transform(df)
+feat_cols = eng.get_feature_cols()
+df_feat = df_feat.dropna(subset=feat_cols)   # drop NaN rows from lagging
+
+train, test = time_series_split(df_feat, test_months=3)
+X_train, y_train = train[feat_cols], train["price_zar"]
+X_test,  y_test  = test[feat_cols],  test["price_zar"]
+
+# XGBoost — tune then train
+best_params  = tune_xgboost(X_train, y_train)
+xgb_model    = XGBoostForecaster(**best_params).fit(X_train, y_train)
+xgb_metrics  = evaluate(y_test.values, xgb_model.predict(X_test), "XGBoost (tuned)")
+
+# Random Forest
+rf_model     = RandomForestForecaster().fit(X_train, y_train)
+rf_metrics   = evaluate(y_test.values, rf_model.predict(X_test), "Random Forest")
+
+# Compare improvement over ARIMA baseline
+with open("models/baseline/baseline_results.json") as f:
+    baseline = json.load(f)
+arima_mape = baseline["ARIMA"]["MAPE"]
+
+for name, m in [("XGBoost", xgb_metrics), ("Random Forest", rf_metrics)]:
+    pct = (arima_mape - m["MAPE"]) / arima_mape * 100
+    print(f"{name}: {pct:.1f}% improvement over ARIMA")
+
+# Persist
+joblib.dump(xgb_model, "models/advanced/xgboost.pkl")
+joblib.dump(rf_model,  "models/advanced/random_forest.pkl")
+joblib.dump(eng,       "models/advanced/feature_engineer.pkl")
+```
+
+**Deliverable:** Both models trained, saved, and compared vs ARIMA baseline.
+
+---
+
+## 📅 WEEK 4 — March 30–April 5, 2026
+### Prophet + LSTM (Local CPU + Kaggle GPU)
+
+#### ST1 Demo — Wednesday (April 1) 🎯
+
+Show architecture diagram, all model metrics so far, feature importance charts, and live Prophet forecast.
+
+#### Monday (March 30) — Prophet
+
+```python
+# src/models/prophet_model.py
+import pandas as pd, numpy as np
+from prophet import Prophet
+
+
+class ProphetForecaster:
+    def __init__(self, changepoint_prior_scale=0.05):
+        self.model = Prophet(
+            yearly_seasonality=True,
+            weekly_seasonality=False,   # monthly data — no weekly pattern
+            daily_seasonality=False,
+            changepoint_prior_scale=changepoint_prior_scale,
+        )
+
+    def fit(self, df: pd.DataFrame):
+        """df must have columns: date, price_zar"""
+        prophet_df = df.rename(columns={"date": "ds", "price_zar": "y"})[["ds", "y"]]
+        self.model.fit(prophet_df)
+        return self
+
+    def predict(self, steps: int) -> np.ndarray:
+        # freq="MS" = Month Start — required for monthly price data
+        future = self.model.make_future_dataframe(periods=steps, freq="MS")
+        return self.model.predict(future).tail(steps)["yhat"].values
+
+    def plot_components(self, steps: int = 12):
+        future = self.model.make_future_dataframe(periods=steps, freq="MS")
+        forecast = self.model.predict(future)
+        self.model.plot_components(forecast)
+```
+
+#### Tuesday–Friday — LSTM Training on Kaggle GPU
+
+> ⚠️ **Do NOT train LSTM locally.** Use Kaggle's free GPU (30 hrs/week). Steps below.
+
+**Step 1 — Export the supplier prices sheet to CSV for Kaggle upload:**
+
+```python
+# Run locally before uploading
+import pandas as pd
+df = pd.read_excel("data/raw/SA_Building_Materials_Dataset.xlsx",
+                   sheet_name="SA Supplier Price Data")
+df.to_csv("data/processed/supplier_prices.csv", index=False)
+print(f"Exported {len(df):,} rows")
+```
+
+**Step 2 — Upload to Kaggle:**
+
+```bash
+cd data/processed/
+
+# Create metadata file
+cat > dataset-metadata.json << 'EOF'
+{
+  "title": "SA Building Materials Prices",
+  "id": "your-username/sa-building-materials-prices",
+  "licenses": [{"name": "CC0-1.0"}]
+}
+EOF
+
+kaggle datasets create -p .
+# To update later: kaggle datasets version -p . -m "Version 2 — added scraper data"
+```
+
+**Step 3 — Create Kaggle Notebook:**
+1. Go to `kaggle.com/code` → New Notebook
+2. Settings → Accelerator → **GPU T4 x2** (free!)
+3. Settings → Internet → **On**
+4. Add Data → your uploaded dataset
+
+**Step 4 — Full LSTM Notebook (paste into Kaggle cells):**
+
+```python
+# ── Cell 1: Setup ─────────────────────────────────────────────────────────────
+import os, json
+import numpy as np, pandas as pd, matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout, Bidirectional
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+np.random.seed(42); tf.random.set_seed(42)
+
+# Prevent OOM errors
+for gpu in tf.config.list_physical_devices("GPU"):
+    tf.config.experimental.set_memory_growth(gpu, True)
+
+print("TF:", tf.__version__)
+print("GPUs:", tf.config.list_physical_devices("GPU"))
+```
+
+```python
+# ── Cell 2: Load Data ─────────────────────────────────────────────────────────
+# List all input files
+for d, _, files in os.walk("/kaggle/input"):
+    for f in files:
+        print(os.path.join(d, f))
+
+df = pd.read_csv("/kaggle/input/sa-building-materials-prices/supplier_prices.csv",
+                 parse_dates=["date"])
+
+MATERIAL = "PPC Cement 50kg"
+mat_df = (df[df["material_name"] == MATERIAL]
+            .groupby("date")["price_zar"].mean()
+            .reset_index().sort_values("date"))
+
+print(f"Records for {MATERIAL}: {len(mat_df)}")
+print(mat_df.head())
+```
+
+```python
+# ── Cell 3: Preprocessing ────────────────────────────────────────────────────
+SEQ_LEN = 12   # 12 months lookback (data is monthly)
+
+scaler = MinMaxScaler(feature_range=(0, 1))
+prices_scaled = scaler.fit_transform(mat_df[["price_zar"]].values)
+
+def create_sequences(data, seq_len):
+    X, y = [], []
+    for i in range(len(data) - seq_len):
+        X.append(data[i : i + seq_len])
+        y.append(data[i + seq_len])
+    return np.array(X), np.array(y)
+
+X, y = create_sequences(prices_scaled, SEQ_LEN)
+
+# Temporal split — NO shuffle
+split = int(0.8 * len(X))
+X_train, X_test = X[:split], X[split:]
+y_train, y_test = y[:split], y[split:]
+
+print(f"X_train: {X_train.shape}  X_test: {X_test.shape}")
+```
+
+```python
+# ── Cell 4: Build Model ──────────────────────────────────────────────────────
+def build_lstm(seq_len, n_features=1):
+    model = Sequential([
+        Bidirectional(LSTM(64, return_sequences=True),
+                      input_shape=(seq_len, n_features)),
+        Dropout(0.2),
+        LSTM(64, return_sequences=True),
+        Dropout(0.2),
+        LSTM(32, return_sequences=False),
+        Dropout(0.2),
+        Dense(32, activation="relu"),
+        Dense(1),
+    ])
+    model.compile(optimizer=tf.keras.optimizers.Adam(1e-3),
+                  loss="mse", metrics=["mae"])
+    model.summary()
+    return model
+
+lstm = build_lstm(SEQ_LEN)
+```
+
+```python
+# ── Cell 5: Train ────────────────────────────────────────────────────────────
+callbacks = [
+    EarlyStopping(monitor="val_loss", patience=15,
+                  restore_best_weights=True, verbose=1),
+    ModelCheckpoint("/kaggle/working/lstm_best.keras",
+                    monitor="val_loss", save_best_only=True, verbose=1),
+    ReduceLROnPlateau(monitor="val_loss", factor=0.5,
+                      patience=5, min_lr=1e-6, verbose=1),
+]
+
+history = lstm.fit(
+    X_train, y_train,
+    validation_split=0.2,
+    epochs=150,
+    batch_size=16,    # keep small — monthly data has few samples
+    callbacks=callbacks,
+    verbose=1,
+)
+
+# Epochs actually trained (EarlyStopping may have stopped early)
+epochs_trained = len(history.history["loss"])
+print(f"Epochs trained: {epochs_trained}")
+```
+
+```python
+# ── Cell 6: Evaluate ─────────────────────────────────────────────────────────
+y_pred_scaled = lstm.predict(X_test, verbose=0)
+y_pred = scaler.inverse_transform(y_pred_scaled)
+y_true = scaler.inverse_transform(y_test)
+
+mae  = mean_absolute_error(y_true, y_pred)
+rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+mape = float(np.mean(np.abs((y_true - y_pred) / y_true)) * 100)
+print(f"LSTM  MAE={mae:.2f}  RMSE={rmse:.2f}  MAPE={mape:.2f}%")
+
+plt.figure(figsize=(12, 4))
+plt.plot(y_true, label="Actual")
+plt.plot(y_pred, label="LSTM Predicted", linestyle="--")
+plt.title(f"LSTM Forecast — {MATERIAL}")
+plt.legend(); plt.tight_layout()
+plt.savefig("/kaggle/working/lstm_forecast.png", dpi=200)
+plt.show()
+```
+
+```python
+# ── Cell 7: Save Artifacts ───────────────────────────────────────────────────
+metrics = {
+    "MAE": float(mae), "RMSE": float(rmse), "MAPE": float(mape),
+    "material": MATERIAL, "seq_len": SEQ_LEN,
+    "epochs_trained": epochs_trained,    # use history length, NOT early_stop.best_epoch
+    "train_samples": int(len(X_train)), "test_samples": int(len(X_test)),
+}
+with open("/kaggle/working/lstm_metrics.json", "w") as f:
+    json.dump(metrics, f, indent=2)
+
+np.save("/kaggle/working/scaler_min.npy", scaler.data_min_)
+np.save("/kaggle/working/scaler_max.npy", scaler.data_max_)
+
+print("✅ Saved: lstm_best.keras, lstm_metrics.json, lstm_forecast.png")
+print("   → Download from the Output tab on the right →")
+```
+
+**After training — move downloads locally:**
+
+```bash
+mv ~/Downloads/lstm_best.keras       models/advanced/
+mv ~/Downloads/lstm_metrics.json     reports/
+mv ~/Downloads/lstm_forecast.png     reports/figures/
+```
+
+---
+
+#### Thursday (April 3) — Local LSTM (CPU/GPU) for Comparison & Iteration
+
+> **Why both?** Use Kaggle for serious training (full epochs, GPU speed). Use local for rapid architecture experiments and debugging — shorter epochs, instant feedback.
+
+```python
+# src/models/lstm_model.py
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+from typing import Tuple
+import json
+
+
+class LSTMForecaster:
+    """
+    Lightweight LSTM for local training and quick iteration.
+    Use the Kaggle version (Bidirectional, deeper) for production.
+    """
+
+    def __init__(self, seq_len: int = 12, units: int = 50):
+        self.seq_len = seq_len
+        self.units   = units
+        self.scaler  = MinMaxScaler(feature_range=(0, 1))
+        self.model   = None
+
+    def _build(self) -> tf.keras.Model:
+        model = Sequential([
+            LSTM(self.units, return_sequences=True,
+                 input_shape=(self.seq_len, 1)),
+            Dropout(0.2),
+            LSTM(self.units, return_sequences=False),
+            Dropout(0.2),
+            Dense(25, activation="relu"),
+            Dense(1),
+        ])
+        model.compile(optimizer="adam", loss="mse", metrics=["mae"])
+        return model
+
+    @staticmethod
+    def create_sequences(data: np.ndarray,
+                         seq_len: int) -> Tuple[np.ndarray, np.ndarray]:
+        X, y = [], []
+        for i in range(len(data) - seq_len):
+            X.append(data[i : i + seq_len])
+            y.append(data[i + seq_len])
+        return np.array(X), np.array(y)
+
+    def fit(self, prices: pd.Series,
+            save_path: str = "models/advanced/lstm_local_best.keras",
+            epochs: int = 100, batch_size: int = 16) -> dict:
+        """
+        prices: a pandas Series of price values, sorted by date.
+        Returns training history metrics.
+        """
+        values = prices.values.reshape(-1, 1)
+        scaled = self.scaler.fit_transform(values)
+
+        X, y = self.create_sequences(scaled, self.seq_len)
+
+        # Temporal split — 80/20, NO shuffle
+        split      = int(0.8 * len(X))
+        X_train, X_test = X[:split], X[split:]
+        y_train, y_test = y[:split], y[split:]
+
+        print(f"LSTM Train: {X_train.shape}  Test: {X_test.shape}")
+
+        self.model = self._build()
+        self.model.summary()
+
+        callbacks = [
+            EarlyStopping(monitor="val_loss", patience=10,
+                          restore_best_weights=True, verbose=1),
+            ModelCheckpoint(save_path, monitor="val_loss",
+                            save_best_only=True, verbose=1),
+        ]
+
+        history = self.model.fit(
+            X_train, y_train,
+            validation_split=0.2,
+            epochs=epochs,
+            batch_size=batch_size,
+            callbacks=callbacks,
+            verbose=1,
+        )
+
+        # Evaluate on held-out test
+        y_pred_s = self.model.predict(X_test, verbose=0)
+        y_pred   = self.scaler.inverse_transform(y_pred_s)
+        y_true   = self.scaler.inverse_transform(y_test)
+
+        mae  = float(mean_absolute_error(y_true, y_pred))
+        rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
+        mape = float(np.mean(np.abs((y_true - y_pred) / y_true)) * 100)
+
+        # epochs_trained from history length — NOT early_stop.best_epoch (doesn't exist)
+        epochs_trained = len(history.history["loss"])
+
+        metrics = {"MAE": round(mae, 4), "RMSE": round(rmse, 4),
+                   "MAPE": round(mape, 2), "epochs_trained": epochs_trained}
+        print(f"\nLocal LSTM  MAE={mae:.2f}  RMSE={rmse:.2f}  MAPE={mape:.2f}%")
+        return metrics
+
+    def predict_steps(self, last_sequence: np.ndarray,
+                      steps: int) -> np.ndarray:
+        """
+        Multi-step forecast: feed predictions back as input.
+        last_sequence: last `seq_len` raw (unscaled) price values.
+        """
+        seq = self.scaler.transform(
+            last_sequence.reshape(-1, 1)).flatten()
+        preds = []
+
+        for _ in range(steps):
+            x = seq[-self.seq_len:].reshape(1, self.seq_len, 1)
+            p = self.model.predict(x, verbose=0)[0, 0]
+            preds.append(p)
+            seq = np.append(seq, p)
+
+        return self.scaler.inverse_transform(
+            np.array(preds).reshape(-1, 1)).flatten()
+```
+
+```python
+# notebooks/04b_lstm_local.ipynb
+import pandas as pd, matplotlib.pyplot as plt, json
+from src.data.schema_loader import load_and_validate
+from src.evaluation.metrics import evaluate, time_series_split
+from src.models.lstm_model import LSTMForecaster
+
+DATASET = "data/raw/SA_Building_Materials_Dataset.xlsx"
+df = load_and_validate(DATASET)
+
+# Monthly average across all suppliers for one material
+cement = (df[df["material_name"] == "PPC Cement 50kg"]
+            .groupby("date")["price_zar"].mean()
+            .reset_index().sort_values("date"))
+
+lstm_local = LSTMForecaster(seq_len=12, units=50)
+local_metrics = lstm_local.fit(
+    cement["price_zar"],
+    save_path="models/advanced/lstm_local_best.keras",
+    epochs=100,
+    batch_size=16,
+)
+
+# 30-day multi-step forecast
+last_30 = cement["price_zar"].values[-12:]
+forecast = lstm_local.predict_steps(last_30, steps=6)
+print("\n6-month price forecast:")
+for i, p in enumerate(forecast, 1):
+    print(f"  Month +{i}: R{p:.2f}")
+
+# Save local metrics
+with open("reports/lstm_local_metrics.json", "w") as f:
+    json.dump(local_metrics, f, indent=2)
+
+# Plot
+plt.figure(figsize=(12, 4))
+plt.plot(cement["date"].values, cement["price_zar"].values, label="Historical")
+plt.title("LSTM Local — Cement Price with 6-Month Forecast")
+plt.legend(); plt.tight_layout()
+plt.savefig("reports/figures/lstm_local_forecast.png")
+print("✅ Local LSTM training complete.")
+```
+
+#### Friday (April 4) — Compare Local vs Kaggle LSTM + Plot Training History
+
+```python
+# notebooks/04c_lstm_comparison.ipynb
+import json, matplotlib.pyplot as plt
+
+# Load both metric files
+with open("reports/lstm_local_metrics.json")  as f: local  = json.load(f)
+with open("reports/lstm_metrics.json")         as f: kaggle = json.load(f)
+
+print("=" * 40)
+print(f"{'Metric':<12} {'Local CPU':>12} {'Kaggle GPU':>12}")
+print("=" * 40)
+for k in ["MAE", "RMSE", "MAPE"]:
+    print(f"{k:<12} {local[k]:>12.4f} {kaggle[k]:>12.4f}")
+print(f"{'Epochs':<12} {local['epochs_trained']:>12} {kaggle['epochs_trained']:>12}")
+print("=" * 40)
+print("\n→ Use the Kaggle model in production (deeper architecture + GPU training).")
+print("→ Local model is for fast debugging and architecture experiments.")
+```
+
+**When to use which:**
+
+| | Local LSTM | Kaggle LSTM |
+|---|---|---|
+| Architecture | 2-layer LSTM | Bidirectional + 3-layer LSTM |
+| Training time | ~5–15 min (CPU) | ~2–5 min (GPU) |
+| Use for | Debugging, quick iterations | Production model |
+| Saved as | `lstm_local_best.keras` | `lstm_best.keras` |
+| Deployed to API | ❌ | ✅ |
+
+---
+
+**Deliverable:** Prophet model + local LSTM (`lstm_local_best.keras`) + Kaggle LSTM (`lstm_best.keras`) all trained, metrics compared.
+
+---
+
+## 📅 WEEK 5 — April 6–12, 2026
+### Ensemble Model + D2 Demo
+
+#### D2 Demo — Wednesday (April 8) 🎯
+
+Show all five models, claim the 59% improvement over ARIMA with evidence, and run a live prediction.
+
+#### Monday–Tuesday — Ensemble
+
+```python
+# src/models/ensemble.py
+import numpy as np
+from typing import List
+
+
+class WeightedEnsemble:
+    """
+    Combines XGBoost, Random Forest, and Prophet.
+    Weights are optimised on the test/validation set by grid search.
+    """
+
+    def __init__(self, models: list, weights: List[float] = None):
+        self.models  = models
+        self.weights = weights
+
+    def _predict_all(self, X=None, steps=None) -> np.ndarray:
+        preds = []
+        for m in self.models:
+            p = m.predict(X) if X is not None else m.predict(steps)
+            preds.append(np.asarray(p).flatten())
+        return np.stack(preds, axis=0)   # shape: (n_models, n_samples)
+
+    def optimise_weights(self, X_val, y_val: np.ndarray, steps=None):
+        """Grid-search weights (0.0–1.0 in 0.1 steps) to minimise MAE."""
+        all_preds = self._predict_all(X_val, steps)
+        best_mae, best_w = np.inf, None
+
+        for w0 in np.arange(0, 1.01, 0.1):
+            for w1 in np.arange(0, 1.01 - w0, 0.1):
+                w2 = round(1.0 - w0 - w1, 1)
+                if w2 < 0:
+                    continue
+                w = np.array([w0, w1, w2])
+                pred = (all_preds * w[:, None]).sum(axis=0)
+                mae  = float(np.mean(np.abs(y_val - pred)))
+                if mae < best_mae:
+                    best_mae, best_w = mae, w
+
+        self.weights = best_w
+        print(f"Optimal weights: {best_w}  |  Val MAE: {best_mae:.2f}")
+
+    def predict(self, X=None, steps=None) -> np.ndarray:
+        if self.weights is None:
+            raise ValueError("Call optimise_weights() first.")
+        return (self._predict_all(X, steps) * np.array(self.weights)[:, None]).sum(axis=0)
+```
+
+```python
+# Usage — notebooks/04_ensemble.ipynb
+from src.models.ensemble import WeightedEnsemble
+from src.evaluation.metrics import evaluate
+import json
+
+ensemble = WeightedEnsemble([xgb_model, rf_model, prophet_model])
+ensemble.optimise_weights(X_test, y_test.values)
+ens_preds   = ensemble.predict(X_test)
+ens_metrics = evaluate(y_test.values, ens_preds, "Ensemble")
+
+print("\n=== Improvement over ARIMA ===")
+for name, m in [("XGBoost", xgb_metrics),
+                ("Random Forest", rf_metrics),
+                ("Ensemble", ens_metrics)]:
+    pct = (arima_mape - m["MAPE"]) / arima_mape * 100
+    print(f"  {name}: {pct:.1f}% improvement")
+```
+
+#### Thursday–Friday — Backend Integration
+
+Work with Member 1 (backend) to wire up the model inference endpoint. See `InferenceService` in Weeks 6–8 section below.
+
+---
+
+## 📅 WEEKS 6–8 — April 13–May 3, 2026
+### Anomaly Detection + Backend Integration + MVP
+
+#### Anomaly Detection
+
+```python
+# src/models/anomaly_detector.py
+import numpy as np, pandas as pd
+from sklearn.ensemble import IsolationForest
+from sklearn.preprocessing import StandardScaler
+
+
+class PriceAnomalyDetector:
+    """
+    Two detection methods:
+    1. Z-score — fast and interpretable
+    2. Isolation Forest — catches multivariate anomalies
+    """
+
+    def __init__(self, z_threshold: float = 2.5, contamination: float = 0.05):
+        self.z_threshold   = z_threshold
+        self._iso          = IsolationForest(contamination=contamination, random_state=42)
+        self._scaler       = StandardScaler()
+        self._fitted       = False
+
+    def flag_zscore(self, series: pd.Series) -> pd.Series:
+        mu, sigma = series.mean(), series.std()
+        if sigma == 0:
+            return pd.Series(False, index=series.index)
+        return (series - mu).abs() / sigma > self.z_threshold
+
+    def fit(self, X: pd.DataFrame):
+        self._scaler.fit(X)
+        self._iso.fit(self._scaler.transform(X))
+        self._fitted = True
+        return self
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        """Returns 1 (normal) or -1 (anomaly)."""
+        if not self._fitted:
+            raise RuntimeError("Call fit() before predict()")
+        return self._iso.predict(self._scaler.transform(X))
+
+    def detect(self, df: pd.DataFrame, price_col: str = "price_zar") -> pd.DataFrame:
+        """Convenience: label the full DataFrame with anomaly flags."""
+        df = df.copy()
+        df["zscore_anomaly"] = self.flag_zscore(df[price_col])
+
+        df["mom_pct"]   = df[price_col].pct_change() * 100
+        df["mom_spike"] = df["mom_pct"].abs() > 10   # >10% MoM = spike alert
+
+        df["anomaly_flag"] = df["zscore_anomaly"] | df["mom_spike"]
+        return df
+
+
+# Usage
+detector = PriceAnomalyDetector(z_threshold=2.5)
+cement_monthly = (df[df["material_name"] == "PPC Cement 50kg"]
+                    .groupby("date")["price_zar"].mean().reset_index())
+cement_flagged = detector.detect(cement_monthly)
+alerts = cement_flagged[cement_flagged["anomaly_flag"]]
+print(f"Anomalies detected: {len(alerts)}")
+print(alerts[["date", "price_zar", "mom_pct"]].to_string())
+```
+
+#### Model Inference Service (for Member 1's backend)
+
+```python
+# src/api/inference_service.py
+"""
+Load once at API startup; share across requests.
+Member 1 calls predict_price() from the Express/FastAPI route handler.
+"""
+import joblib, numpy as np, pandas as pd, tensorflow as tf
+from src.features.engineer import FeatureEngineer
+
+
+class InferenceService:
+    def __init__(self, models_dir: str = "models/production"):
+        self.xgb_model  = joblib.load(f"{models_dir}/xgboost.pkl")
+        self.rf_model   = joblib.load(f"{models_dir}/random_forest.pkl")
+        self.engineer   = joblib.load(f"{models_dir}/feature_engineer.pkl")
+        self.lstm_model = tf.keras.models.load_model(f"{models_dir}/lstm_best.keras")
+        print("✅ All models loaded.")
+
+    def predict_price(self, record: dict, horizon_days: int = 7) -> dict:
+        """
+        record: dict with the 16 canonical schema fields.
+        Returns XGBoost, RF, and ensemble price predictions.
+        """
+        df   = pd.DataFrame([record])
+        df   = self.engineer.transform(df)
+        feat = self.engineer.get_feature_cols()
+        X    = df[feat].dropna()
+
+        if X.empty:
+            raise ValueError("Not enough history to generate features "
+                             "(need at least 30 prior rows for lag features).")
+
+        xgb_pred = float(self.xgb_model.predict(X)[0])
+        rf_pred  = float(self.rf_model.predict(X)[0])
+        ensemble = round(xgb_pred * 0.5 + rf_pred * 0.5, 2)
+
+        return {
+            "material":     record["material_name"],
+            "supplier":     record["supplier_name"],
+            "xgb_pred":    round(xgb_pred, 2),
+            "rf_pred":      round(rf_pred, 2),
+            "ensemble":     ensemble,
+            "horizon_days": horizon_days,
+        }
+```
+
+**D3 (May 1) — MVP Complete** 🎉
+
+---
+
+## 📅 WEEKS 9–13 — May 4–June 9, 2026
+### Testing, Optimisation & Final Presentation
+
+**ST2 (May 6)** — Present test results and full metrics table  
+**D4 (May 13)** — Final polish  
+**Final (June 10)** — Championship presentation
+
+**Focus areas:**
+- Retrain models as new scraped data arrives from Member 4
+- Rolling retraining pipeline (`scripts/retrain.py`)
+- Document all model cards (inputs, outputs, metrics, known limitations)
+- Final comparison chart — all 8 models, MAPE side-by-side
+- Presentation slides with 59% improvement claim backed by `baseline_results.json`
+
+---
+
+## 🎯 Performance Targets
+
+| Model | MAPE Target | vs ARIMA | Week Due |
+|---|---|---|---|
+| Naïve | ~15% | baseline | 2 |
+| Moving Average | ~12% | baseline | 2 |
+| ARIMA | ~10% | baseline | 2 |
+| XGBoost (tuned) | < 6% | −40% | 3 |
+| Random Forest | < 7% | −30% | 3 |
+| Prophet | < 8% | −20% | 4 |
+| LSTM (Kaggle) | < 6% | −40% | 4 |
+| **Ensemble** | **< 5%** | **−50%+** | **5 🏆** |
+
+> The 59% MAPE improvement target is over ARIMA. XGBoost + LSTM ensemble should comfortably achieve this on CMPI-calibrated data.
+
+---
+
+## ⚠️ Common Bugs & Fixes
+
+| Bug | Cause | Fix |
+|---|---|---|
+| `NameError: name 'List' is not defined` | Missing import | Add `from typing import List` at the top of every file that uses it |
+| `AttributeError: 'EarlyStopping' object has no attribute 'best_epoch'` | Wrong attribute name | Use `len(history.history['loss'])` to get epochs trained |
+| `feature_importances_` uses wrong column names in RF | `X_train.columns` referenced after `fit()` call in wrong scope | Store `self.feature_cols = list(X.columns)` **inside** `fit()` before training |
+| Rolling features return all NaN | `.groupby().transform()` called before sorting | Always `sort_values(["material_name", "supplier_name", "date"])` **before** groupby |
+| ARIMA throws convergence warnings | Normal for short series | Add `warnings.filterwarnings("ignore")` at top of arima module |
+| Prophet fails on monthly data | Frequency not specified | Use `freq="MS"` (Month Start) in `make_future_dataframe()` |
+| LSTM predicts a flat horizontal line | Scaler mismatch | `inverse_transform` must use the **exact same scaler instance** used in `fit_transform` — never create a new one |
+| LSTM out-of-memory on Kaggle | Batch size too large for GPU RAM | Use `batch_size=16` — monthly data has few samples, large batches waste memory |
+| Local LSTM trains but metrics are poor | Architecture too shallow for patterns | Switch to the Kaggle Bidirectional model for production; local model is only for debugging |
+| `early_stopping_rounds` param error in XGBoost | Moved to `.fit()` in XGBoost ≥ 2.0 | Pass it inside `.fit()` not in the constructor: `model.fit(X, y, early_stopping_rounds=10, ...)` |
+| Excel sheet loads with wrong column names | Header rows skipped incorrectly | Use `skiprows=2` for CMPI/World Bank sheets; 0 for `SA Supplier Price Data` |
 
 ---
 
 **Last Updated:** March 9, 2026  
-**Status:** 🟢 Active | **Next Milestone:** D1 (March 25, 2026)
+**Status:** 🟢 Active | **Next Milestone:** D1 — March 25, 2026
