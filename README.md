@@ -1,4 +1,4 @@
-# 🏗️ Building Materials Price Intelligence Platform
+# 🏗️ Building Materials Price Intelligence Platform (Locked for Honours, ml research and experimentation is primed for this System)
 
 [![Project Status](https://img.shields.io/badge/status-in%20development-yellow.svg)](https://github.com/imperfectperson-max/build_material)
 [![License](https://img.shields.io/badge/license-TBD-blue.svg)](LICENSE)
