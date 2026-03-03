@@ -1,2152 +1,2225 @@
-# 🎨 Frontend Developer — Expanded Code Blocks
-**CySentinel | Debug Ninjas | UJ IFM03A3 | 2026**
+# 🎨 Frontend Web Developer — Detailed Roadmap
 
-> Every block is copy-paste ready.  
-> `[WITH LIBS]` = React + axios + react-router-dom + Recharts (standard stack).  
-> `[NO LIBS / MINIMAL]` = plain `fetch`, CSS variables, no external UI libraries — safe if axios/recharts are restricted.  
-> Tests: React Testing Library (CRA default) `[WITH LIBS]` + manual DOM assertions `[MINIMAL]`.
+**Team Member:** Member 3  
+**Primary Tech Stack:** React, TypeScript, Tailwind CSS, Recharts, TanStack Query v5  
+**Timeline:** March 9 – June 9, 2026 (13 Weeks)
 
 ---
 
-## 🗓️ PLANNING WEEK
+## 🚀 Getting Started — March 8, 2026
 
-### Monday — CRA Setup
+Complete this setup before Week 1 begins on March 9.
+
+### System Requirements
+- **OS:** Windows 10/11, macOS 10.15+, or Ubuntu 20.04+
+- **RAM:** Minimum 8 GB (16 GB recommended)
+- **Storage:** At least 5 GB free (node_modules)
+- **Browser:** Chrome 90+, Firefox 88+, Edge 90+, or Safari 14+
+
+### Step 1 – Install Node.js
 
 ```bash
-node --version   # must be v18+
+# Download LTS from: https://nodejs.org/ (v20.x recommended)
+node --version   # Must be v18.x or v20.x
+npm --version    # Must be 9.x+
+```
 
-npx create-react-app cysentinel-web
-cd cysentinel-web
+### Step 2 – Install Git
 
-# [WITH LIBS] — full stack
-npm install recharts react-router-dom axios
-npm install --save-dev @testing-library/react @testing-library/jest-dom @testing-library/user-event
+```bash
+# macOS
+brew install git
 
-# [MINIMAL] — only react-router-dom (routing is needed; recharts and axios replaceable)
+# Ubuntu/Debian
+sudo apt update && sudo apt install git
+
+git --version
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
+
+### Step 3 – Create React Project (TypeScript)
+
+```bash
+mkdir -p ~/projects/buildmat-web
+cd ~/projects/buildmat-web
+
+npx create-react-app buildmat-dashboard --template typescript
+cd buildmat-dashboard
+```
+
+### Step 4 – Install All Dependencies
+
+```bash
+# Styling
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+
+# Routing
 npm install react-router-dom
 
-npm start   # opens http://localhost:3000
+# API state — IMPORTANT: pin to v5; hooks API changed from v4
+npm install @tanstack/react-query@5
+
+# HTTP
+npm install axios
+
+# Charts
+npm install recharts
+
+# UI utilities
+npm install @headlessui/react @heroicons/react
+
+# Date formatting
+npm install date-fns
+
+# Forms
+npm install react-hook-form
+
+# Dev tooling
+npm install --save-dev @testing-library/react @testing-library/jest-dom prettier eslint-plugin-react
 ```
 
-### Tuesday — Folder Structure
+### Step 5 – Configure Tailwind
+
+```javascript
+// tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50:  '#eff6ff',
+          100: '#dbeafe',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+        },
+      },
+      fontFamily: {
+        sans: ['DM Sans', 'Inter', 'sans-serif'],
+      },
+    },
+  },
+  plugins: [],
+};
+```
+
+```css
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+    font-family: 'DM Sans', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary   { @apply px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium; }
+  .btn-secondary { @apply px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium; }
+  .card          { @apply bg-white rounded-[10px] p-6; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+}
+```
+
+### Step 6 – Project Structure
 
 ```bash
-mkdir -p src/{components,pages,services,hooks}
-
-# Components
-touch src/components/ProtectedRoute.jsx
-touch src/components/NavBar.jsx src/components/NavBar.module.css
-touch src/components/RiskBadge.jsx src/components/RiskBadge.module.css
-touch src/components/IncidentTable.jsx src/components/IncidentTable.module.css
-touch src/components/IncidentForm.jsx src/components/IncidentForm.module.css
-touch src/components/ChecklistPanel.jsx src/components/ChecklistPanel.module.css
-touch src/components/RiskSummaryCard.jsx src/components/RiskSummaryCard.module.css
-
-# Pages
-touch src/pages/LoginPage.jsx src/pages/LoginPage.module.css
-touch src/pages/RegisterPage.jsx
-touch src/pages/Setup2FAPage.jsx
-touch src/pages/DashboardPage.jsx src/pages/DashboardPage.module.css
-touch src/pages/IncidentsPage.jsx src/pages/IncidentsPage.module.css
-touch src/pages/IncidentDetailPage.jsx
-touch src/pages/QuickLogPage.jsx
-touch src/pages/ConsultantEscalationPage.jsx
-touch src/pages/CVETrackerPage.jsx
-touch src/pages/ReportsPage.jsx src/pages/ReportsPage.module.css
-touch src/pages/OrgSettingsPage.jsx
-
-# Services
-touch src/services/api.js
-touch src/services/authService.js
-touch src/services/incidentService.js
-touch src/services/dashboardService.js
-touch src/services/cveService.js
-
-# Hooks
-touch src/hooks/useAuth.js
-touch src/hooks/useIncidents.js
-touch src/hooks/useDarkMode.js
-
-# Env files
-echo "REACT_APP_API_URL=http://localhost:5000" > .env.development
-echo "REACT_APP_API_URL=https://cysentinel-backend-production.up.railway.app" > .env.production
+mkdir -p src/{components/{common,charts,layout,features},pages,services,hooks,utils,types,contexts,assets}
+touch src/types/PriceRecord.ts
+touch src/services/apiService.ts
+touch src/hooks/usePrices.ts
+touch src/hooks/useForecasts.ts
+touch src/config/queryClient.ts
 ```
 
-### Thursday — API Service Layer
+### Step 7 – Environment Variables
 
-#### [WITH LIBS] src/services/api.js — axios instance
+```bash
+cat > .env << 'EOF'
+REACT_APP_API_URL=http://localhost:3000/api
+REACT_APP_ENV=development
+EOF
 
-```javascript
-// src/services/api.js
-import axios from 'axios';
+cp .env .env.example
+echo ".env" >> .gitignore
+```
 
-const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000',
+### Step 8 – React Query Client (TanStack Query v5)
+
+```typescript
+// src/config/queryClient.ts
+import { QueryClient } from '@tanstack/react-query';
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000,  // 5 minutes
+      gcTime:    10 * 60 * 1000, // 10 minutes — v5 renamed cacheTime → gcTime
+    },
+  },
 });
+```
 
-// Attach JWT to every request
-api.interceptors.request.use(config => {
-  const token = sessionStorage.getItem('cysentinel_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+```tsx
+// src/index.tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter } from 'react-router-dom';
+import { queryClient } from './config/queryClient';
+import App from './App';
+import './index.css';
 
-// Handle 401 globally
-api.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      sessionStorage.removeItem('cysentinel_token');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+root.render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
-
-export default api;
 ```
 
-#### [NO LIBS] src/services/api.no-libs.js — plain fetch wrapper
+### Step 9 – Test Setup
 
-```javascript
-// src/services/api.no-libs.js
-// Drop-in fetch wrapper — no axios. Same interface as api.js above.
+```bash
+npm start
+# Should open http://localhost:3000 — default React app
+npm run build
+# Should succeed with no errors
+```
 
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+### Setup Checklist ✅
+- [ ] Node.js v18+ installed
+- [ ] React project created (TypeScript template)
+- [ ] All packages installed — `npm list --depth=0` shows recharts, @tanstack/react-query@5, axios
+- [ ] Tailwind configured — `DM Sans` font loading in browser
+- [ ] `.env` created
+- [ ] `npm start` and `npm run build` both succeed
 
-function getToken() {
-  return sessionStorage.getItem('cysentinel_token');
+---
+
+## 📋 Canonical Schema & API Contract
+
+### TypeScript Types (16 Fields)
+
+```typescript
+// src/types/PriceRecord.ts
+
+/**
+ * PriceRecord matches the canonical 16-column schema exactly.
+ * This is the shared contract: Member 4's scraper → Member 1's DB → Member 3's UI.
+ *
+ * All API endpoints use material_name (string), not material_id.
+ */
+export interface PriceRecord {
+  record_id:               string;
+  date:                    string;   // "YYYY-MM-DD"
+  year:                    number;
+  month:                   number;
+  material_name:           string;
+  material_category:       string;   // "Cement" | "Building" | "Steel" | "Timber" | "Electrical"
+  supplier_name:           string;
+  region:                  string;
+  province:                string;
+  price_zar:               number;
+  unit:                    string;
+  price_per_kg_zar:        number;
+  price_change_mom_pct:    number;
+  price_change_yoy_pct:    number;
+  stock_status:            'In Stock' | 'Low Stock' | 'Out of Stock';
+  bulk_discount_available: 'Yes' | 'No';
 }
 
-async function request(method, path, body = null, options = {}) {
-  const headers = { 'Content-Type': 'application/json' };
-  const token = getToken();
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-
-  const config = {
-    method,
-    headers,
-    ...(body ? { body: JSON.stringify(body) } : {}),
-    ...options,
+export interface PricesResponse {
+  success:    boolean;
+  data:       PriceRecord[];
+  pagination: {
+    page:        number;
+    per_page:    number;
+    total:       number;
+    total_pages: number;
   };
-
-  const response = await fetch(`${BASE_URL}${path}`, config);
-
-  if (response.status === 401) {
-    sessionStorage.removeItem('cysentinel_token');
-    window.location.href = '/login';
-    return;
-  }
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({ error: response.statusText }));
-    throw Object.assign(new Error(err.error || 'Request failed'), { response: { data: err, status: response.status } });
-  }
-
-  // Handle blob responses (CSV/PDF downloads)
-  const contentType = response.headers.get('Content-Type') || '';
-  if (contentType.includes('text/csv') || contentType.includes('application/pdf')) {
-    return { data: await response.blob() };
-  }
-
-  return { data: await response.json() };
 }
 
-const api = {
-  get:    (path)         => request('GET',    path),
-  post:   (path, body, options)  => request('POST',   path, body, options),
-  patch:  (path, body)   => request('PATCH',  path, body),
-  delete: (path)         => request('DELETE', path),
-};
-
-export default api;
-```
-
-### Saturday — ProtectedRoute + App Router
-
-#### src/components/ProtectedRoute.jsx
-
-```jsx
-// src/components/ProtectedRoute.jsx
-import { Navigate } from 'react-router-dom';
-
-function ProtectedRoute({ children, allowedRoles }) {
-  const token = sessionStorage.getItem('cysentinel_token');
-  if (!token) return <Navigate to="/login" replace />;
-
-  // Decode JWT payload (client-side only — not verification)
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    if (allowedRoles && !allowedRoles.includes(payload.role)) {
-      return <Navigate to="/dashboard" replace />;
-    }
-  } catch {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
+export interface CompareResponse {
+  success:       boolean;
+  material_name: string;
+  region:        string;
+  suppliers:     PriceRecord[];  // one record per supplier, sorted cheapest first
 }
 
-export default ProtectedRoute;
-```
-
-#### src/App.jsx — Month 1 (eager loading)
-
-```jsx
-// src/App.jsx
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage               from './pages/LoginPage';
-import RegisterPage            from './pages/RegisterPage';
-import Setup2FAPage            from './pages/Setup2FAPage';
-import DashboardPage           from './pages/DashboardPage';
-import IncidentsPage           from './pages/IncidentsPage';
-import IncidentDetailPage      from './pages/IncidentDetailPage';
-import QuickLogPage            from './pages/QuickLogPage';
-import ConsultantEscalationPage from './pages/ConsultantEscalationPage';
-import CVETrackerPage          from './pages/CVETrackerPage';
-import ReportsPage             from './pages/ReportsPage';
-import OrgSettingsPage         from './pages/OrgSettingsPage';
-import ProtectedRoute          from './components/ProtectedRoute';
-
-const ROLES = {
-  dash:    ['admin','analyst','consultant','viewer'],
-  analyst: ['admin','analyst'],
-  admin:   ['admin'],
-  cve:     ['admin','analyst'],
-};
-
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/login"     element={<LoginPage />} />
-        <Route path="/register"  element={<RegisterPage />} />
-        <Route path="/setup-2fa" element={<Setup2FAPage />} />
-
-        <Route path="/dashboard" element={
-          <ProtectedRoute allowedRoles={ROLES.dash}><DashboardPage /></ProtectedRoute>
-        } />
-        <Route path="/incidents" element={
-          <ProtectedRoute allowedRoles={ROLES.dash}><IncidentsPage /></ProtectedRoute>
-        } />
-        <Route path="/incidents/:id" element={
-          <ProtectedRoute allowedRoles={ROLES.dash}><IncidentDetailPage /></ProtectedRoute>
-        } />
-        <Route path="/incidents/:id/escalate" element={
-          <ProtectedRoute allowedRoles={ROLES.analyst}><ConsultantEscalationPage /></ProtectedRoute>
-        } />
-        <Route path="/quick-log" element={
-          <ProtectedRoute allowedRoles={ROLES.analyst}><QuickLogPage /></ProtectedRoute>
-        } />
-        <Route path="/cve-tracker" element={
-          <ProtectedRoute allowedRoles={ROLES.cve}><CVETrackerPage /></ProtectedRoute>
-        } />
-        <Route path="/reports" element={
-          <ProtectedRoute allowedRoles={ROLES.dash}><ReportsPage /></ProtectedRoute>
-        } />
-        <Route path="/settings" element={
-          <ProtectedRoute allowedRoles={ROLES.admin}><OrgSettingsPage /></ProtectedRoute>
-        } />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </Router>
-  );
+export interface HistoryResponse {
+  success:       boolean;
+  material_name: string;
+  history: Array<{
+    date:         string;
+    avg_price:    number;
+    min_price:    number;
+    max_price:    number;
+    sample_count: number;
+  }>;
 }
 
-export default App;
-```
-
-#### src/App.jsx — Month 6 update (lazy loading for performance)
-
-```jsx
-// src/App.jsx — Month 6 performance update
-import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage    from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import Setup2FAPage from './pages/Setup2FAPage';
-import ProtectedRoute from './components/ProtectedRoute';
-
-// Lazy-loaded routes — each becomes a separate JS chunk
-const DashboardPage           = lazy(() => import('./pages/DashboardPage'));
-const IncidentsPage           = lazy(() => import('./pages/IncidentsPage'));
-const IncidentDetailPage      = lazy(() => import('./pages/IncidentDetailPage'));
-const QuickLogPage            = lazy(() => import('./pages/QuickLogPage'));
-const ConsultantEscalationPage = lazy(() => import('./pages/ConsultantEscalationPage'));
-const CVETrackerPage          = lazy(() => import('./pages/CVETrackerPage'));
-const ReportsPage             = lazy(() => import('./pages/ReportsPage'));
-const OrgSettingsPage         = lazy(() => import('./pages/OrgSettingsPage'));
-
-const Loading = () => <div style={{ padding: 40, textAlign: 'center', color: '#6b7280' }}>Loading...</div>;
-
-function App() {
-  return (
-    <Router>
-      <Suspense fallback={<Loading />}>
-        <Routes>
-          <Route path="/login"     element={<LoginPage />} />
-          <Route path="/register"  element={<RegisterPage />} />
-          <Route path="/setup-2fa" element={<Setup2FAPage />} />
-          <Route path="/dashboard" element={
-            <ProtectedRoute allowedRoles={['admin','analyst','consultant','viewer']}>
-              <DashboardPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/incidents" element={
-            <ProtectedRoute allowedRoles={['admin','analyst','consultant','viewer']}>
-              <IncidentsPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/incidents/:id" element={
-            <ProtectedRoute allowedRoles={['admin','analyst','consultant','viewer']}>
-              <IncidentDetailPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/quick-log" element={
-            <ProtectedRoute allowedRoles={['admin','analyst']}><QuickLogPage /></ProtectedRoute>
-          } />
-          <Route path="/incidents/:id/escalate" element={
-            <ProtectedRoute allowedRoles={['admin','analyst']}><ConsultantEscalationPage /></ProtectedRoute>
-          } />
-          <Route path="/cve-tracker" element={
-            <ProtectedRoute allowedRoles={['admin','analyst']}><CVETrackerPage /></ProtectedRoute>
-          } />
-          <Route path="/reports" element={
-            <ProtectedRoute allowedRoles={['admin','analyst','consultant','viewer']}>
-              <ReportsPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/settings" element={
-            <ProtectedRoute allowedRoles={['admin']}><OrgSettingsPage /></ProtectedRoute>
-          } />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Suspense>
-    </Router>
-  );
+/**
+ * NOTE FOR MEMBER 1: Frontend uses confidence_interval_lower / confidence_interval_upper
+ * (more readable). Please rename the DB columns from confidence_lower / confidence_upper
+ * to match, or add aliased column names in the SELECT query.
+ */
+export interface ForecastPoint {
+  forecast_date:              string;
+  predicted_price:            number;
+  confidence_interval_lower:  number;
+  confidence_interval_upper:  number;
+  confidence_level:           number;
+  model_name:                 string;
+  model_version:              string;
+  region:                     string | null;
+  generated_at:               string;
 }
 
-export default App;
+export interface ForecastResponse {
+  success:       boolean;
+  material_name: string;
+  forecasts:     ForecastPoint[];
+}
+
+export type StockStatus = PriceRecord['stock_status'];
+export type Category    = 'Cement' | 'Building' | 'Steel' | 'Timber' | 'Electrical';
 ```
 
 ---
 
-## 🗓️ MONTH 1 — MVP 1: Auth Pages
+## 🔌 API Service Layer
 
-### src/hooks/useAuth.js
+```typescript
+// src/services/apiService.ts
+import axios, { AxiosInstance } from 'axios';
+import {
+  PriceRecord, PricesResponse, CompareResponse,
+  HistoryResponse, ForecastResponse,
+} from '../types/PriceRecord';
 
-```javascript
-// src/hooks/useAuth.js
-import { useMemo } from 'react';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
-export function useAuth() {
-  const token = sessionStorage.getItem('cysentinel_token');
+class ApiService {
+  private client: AxiosInstance;
 
-  const user = useMemo(() => {
-    if (!token) return null;
-    try {
-      // Decode JWT payload — client-side only (not verification)
-      return JSON.parse(atob(token.split('.')[1]));
-    } catch {
-      return null;
-    }
-  }, [token]);
+  constructor() {
+    this.client = axios.create({
+      baseURL: API_BASE_URL,
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 10_000,
+    });
 
-  const logout = () => {
-    sessionStorage.removeItem('cysentinel_token');
-    window.location.href = '/login';
-  };
+    // Attach JWT on every request
+    this.client.interceptors.request.use((config) => {
+      const token = localStorage.getItem('authToken');
+      if (token) config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    });
 
-  return { user, isAuthenticated: !!token, logout };
-}
-```
-
-### src/services/authService.js
-
-```javascript
-// src/services/authService.js
-import api from './api';
-
-export const login = async (email, password) => {
-  const { data } = await api.post('/api/auth/login', { email, password });
-  if (data.token) sessionStorage.setItem('cysentinel_token', data.token);
-  return data;   // may include requires_2fa: true + partial_token
-};
-
-export const register = async (email, password, full_name, organisation_name) => {
-  const { data } = await api.post('/api/auth/register',
-    { email, password, full_name, organisation_name });
-  return data;
-};
-
-export const setup2FA = async () => {
-  const { data } = await api.post('/api/auth/2fa/setup');
-  return data;   // { secret, qr }
-};
-
-export const verify2FA = async (partial_token, token) => {
-  const { data } = await api.post('/api/auth/2fa/verify', { partial_token, token });
-  if (data.token) sessionStorage.setItem('cysentinel_token', data.token);
-  return data;
-};
-
-export const logout = () => {
-  sessionStorage.removeItem('cysentinel_token');
-  window.location.href = '/login';
-};
-```
-
-### src/pages/LoginPage.jsx — Full
-
-```jsx
-// src/pages/LoginPage.jsx
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../services/authService';
-import styles from './LoginPage.module.css';
-
-function LoginPage() {
-  const navigate = useNavigate();
-  const [email, setEmail]     = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError]     = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    if (!email || !password) {
-      setError('Email and password are required.');
-      return;
-    }
-    setLoading(true);
-    try {
-      const data = await login(email, password);
-      if (data.requires_2fa) {
-        // Store partial token for 2FA verification step
-        sessionStorage.setItem('cysentinel_partial_token', data.partial_token);
-        navigate('/setup-2fa');
-      } else {
-        navigate('/dashboard');
+    // Handle 401 globally
+    this.client.interceptors.response.use(
+      (res) => res,
+      (err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem('authToken');
+          window.location.href = '/login';
+        }
+        return Promise.reject(err);
       }
-    } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Check your credentials.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>🛡️ CySentinel</h1>
-        <p className={styles.subtitle}>Sign in to your account</p>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <label className={styles.label} htmlFor="email">Email</label>
-          <input
-            id="email"
-            className={styles.input}
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="you@company.com"
-            aria-label="Email address"
-            disabled={loading}
-          />
-          <label className={styles.label} htmlFor="password">Password</label>
-          <input
-            id="password"
-            className={styles.input}
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="••••••••"
-            aria-label="Password"
-            disabled={loading}
-          />
-          {error && <p className={styles.error} role="alert">{error}</p>}
-          <button className={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-        <p className={styles.link}>
-          Don't have an account? <Link to="/register">Register</Link>
-        </p>
-      </div>
-    </div>
-  );
-}
-
-export default LoginPage;
-```
-
-```css
-/* src/pages/LoginPage.module.css */
-.container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f3f4f6;
-}
-.card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 40px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-}
-.title    { font-size: 1.75rem; font-weight: 800; color: #1e3a5f; text-align: center; margin: 0 0 4px; }
-.subtitle { text-align: center; color: #6b7280; margin: 0 0 24px; }
-.form     { display: flex; flex-direction: column; gap: 12px; }
-.label    { font-size: 0.875rem; font-weight: 600; color: #374151; }
-.input    { padding: 11px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; }
-.input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
-.error    { color: #dc2626; font-size: 0.875rem; padding: 8px 12px; background: #fee2e2; border-radius: 6px; margin: 0; }
-.button   { background: #1e3a5f; color: #fff; border: none; padding: 13px; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 4px; }
-.button:hover:not(:disabled) { background: #162e4d; }
-.button:disabled { opacity: 0.6; cursor: not-allowed; }
-.link     { text-align: center; margin-top: 16px; font-size: 0.875rem; color: #6b7280; }
-.link a   { color: #3b82f6; text-decoration: none; font-weight: 600; }
-```
-
-### src/pages/RegisterPage.jsx
-
-```jsx
-// src/pages/RegisterPage.jsx
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { register } from '../services/authService';
-import styles from './LoginPage.module.css';   // reuse login styles
-
-function RegisterPage() {
-  const navigate = useNavigate();
-  const [form, setForm]     = useState({ email: '', password: '', full_name: '', organisation_name: '' });
-  const [error, setError]   = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const update = (key) => (e) => setForm(prev => ({ ...prev, [key]: e.target.value }));
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    const { email, password, full_name, organisation_name } = form;
-    if (!email || !password || !full_name || !organisation_name) {
-      setError('All fields are required.');
-      return;
-    }
-    if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
-
-    setLoading(true);
-    try {
-      await register(email, password, full_name, organisation_name);
-      navigate('/login');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>🛡️ CySentinel</h1>
-        <p className={styles.subtitle}>Create your organisation account</p>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {[
-            { id: 'full_name',         label: 'Full Name',           type: 'text',     placeholder: 'Jane Doe' },
-            { id: 'organisation_name', label: 'Organisation Name',   type: 'text',     placeholder: 'ACME Security Ltd' },
-            { id: 'email',             label: 'Work Email',          type: 'email',    placeholder: 'jane@acme.com' },
-            { id: 'password',          label: 'Password (min 8 chars)', type: 'password', placeholder: '••••••••' },
-          ].map(({ id, label, type, placeholder }) => (
-            <div key={id}>
-              <label className={styles.label} htmlFor={id}>{label}</label>
-              <input
-                id={id}
-                className={styles.input}
-                type={type}
-                value={form[id]}
-                onChange={update(id)}
-                placeholder={placeholder}
-                aria-label={label}
-                disabled={loading}
-              />
-            </div>
-          ))}
-          {error && <p className={styles.error} role="alert">{error}</p>}
-          <button className={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-        </form>
-        <p className={styles.link}>
-          Already have an account? <Link to="/login">Sign in</Link>
-        </p>
-      </div>
-    </div>
-  );
-}
-
-export default RegisterPage;
-```
-
-### src/pages/Setup2FAPage.jsx
-
-```jsx
-// src/pages/Setup2FAPage.jsx
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { setup2FA, verify2FA } from '../services/authService';
-import styles from './LoginPage.module.css';
-
-function Setup2FAPage() {
-  const navigate = useNavigate();
-  const [qr, setQr]         = useState('');
-  const [secret, setSecret] = useState('');
-  const [token, setToken]   = useState('');
-  const [error, setError]   = useState('');
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setup2FA()
-      .then(data => { setQr(data.qr); setSecret(data.secret); })
-      .catch(() => setError('Failed to load QR code. Please try again.'));
-  }, []);
-
-  const handleVerify = async (e) => {
-    e.preventDefault();
-    if (token.length !== 6) { setError('Enter the 6-digit code.'); return; }
-    setLoading(true);
-    try {
-      const partial = sessionStorage.getItem('cysentinel_partial_token') || '';
-      await verify2FA(partial, token);
-      sessionStorage.removeItem('cysentinel_partial_token');
-      navigate('/dashboard');
-    } catch {
-      setError('Invalid code. Check your authenticator app and try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>🔐 Two-Factor Auth</h1>
-        <p className={styles.subtitle}>Scan with Google Authenticator or Authy</p>
-        {qr && (
-          <img
-            src={qr}
-            alt="TOTP QR Code"
-            style={{ display: 'block', margin: '0 auto 12px', width: 180, height: 180 }}
-          />
-        )}
-        {secret && (
-          <p style={{ textAlign: 'center', fontSize: '0.78rem', color: '#6b7280', marginBottom: 16 }}>
-            Manual key: <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: 4 }}>{secret}</code>
-          </p>
-        )}
-        <form onSubmit={handleVerify} className={styles.form}>
-          <label className={styles.label} htmlFor="totp">6-Digit Code</label>
-          <input
-            id="totp"
-            className={styles.input}
-            type="text"
-            inputMode="numeric"
-            maxLength={6}
-            value={token}
-            onChange={e => setToken(e.target.value.replace(/\D/g, ''))}
-            placeholder="123456"
-            aria-label="TOTP code"
-          />
-          {error && <p className={styles.error} role="alert">{error}</p>}
-          <button className={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Verifying...' : 'Verify & Continue'}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-export default Setup2FAPage;
-```
-
-### src/components/NavBar.jsx + CSS
-
-```jsx
-// src/components/NavBar.jsx
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import styles from './NavBar.module.css';
-
-function NavBar() {
-  const { user, logout } = useAuth();
-  const location = useLocation();
-
-  const navLinks = [
-    { path: '/dashboard', label: 'Dashboard' },
-    { path: '/incidents', label: 'Incidents' },
-    { path: '/reports',   label: 'Reports'   },
-  ];
-
-  if (user?.role === 'analyst' || user?.role === 'admin') {
-    navLinks.push({ path: '/cve-tracker', label: 'CVE Tracker' });
-  }
-  if (user?.role === 'admin') {
-    navLinks.push({ path: '/settings', label: 'Settings' });
+    );
   }
 
-  return (
-    <nav className={styles.nav} role="navigation" aria-label="Main navigation">
-      <div className={styles.brand}>🛡️ CySentinel</div>
-      <ul className={styles.links}>
-        {navLinks.map(link => (
-          <li key={link.path}>
-            <Link
-              to={link.path}
-              className={`${styles.link} ${location.pathname === link.path ? styles.active : ''}`}
-              aria-current={location.pathname === link.path ? 'page' : undefined}
-            >
-              {link.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <div className={styles.userSection}>
-        {user && (
-          <>
-            <span className={styles.email}>{user.email || user.sub}</span>
-            <span className={`${styles.roleBadge} ${styles[user.role]}`}>
-              {user.role}
-            </span>
-          </>
-        )}
-        <button className={styles.logoutBtn} onClick={logout} aria-label="Logout">
-          Logout
-        </button>
-      </div>
-    </nav>
-  );
+  /**
+   * GET /api/prices
+   * All filters use material_name (string), not material_id.
+   */
+  async getPrices(filters?: {
+    material_name?:           string;
+    material_category?:       string;
+    supplier_name?:           string;
+    region?:                  string;
+    province?:                string;
+    stock_status?:            PriceRecord['stock_status'];
+    bulk_discount_available?: 'Yes' | 'No';
+    start_date?:              string;
+    end_date?:                string;
+    page?:                    number;
+    per_page?:                number;
+    limit?:                   number;
+  }): Promise<PricesResponse> {
+    const { data } = await this.client.get<PricesResponse>('/prices', { params: filters });
+    return data;
+  }
+
+  /**
+   * GET /api/prices/history?material_name=...&days=...&supplier_name=...
+   * Uses `days` (not `months`) — matches backend parameter name.
+   */
+  async getPriceHistory(
+    materialName: string,
+    days: number = 90,
+    supplierName?: string
+  ): Promise<HistoryResponse> {
+    const { data } = await this.client.get<HistoryResponse>('/prices/history', {
+      params: { material_name: materialName, days, supplier_name: supplierName },
+    });
+    return data;
+  }
+
+  /**
+   * GET /api/prices/compare?material_name=...&region=...
+   * Returns one PriceRecord per supplier, sorted cheapest first.
+   */
+  async compareSuppliers(materialName: string, region?: string): Promise<CompareResponse> {
+    const { data } = await this.client.get<CompareResponse>('/prices/compare', {
+      params: { material_name: materialName, region },
+    });
+    return data;
+  }
+
+  /**
+   * GET /api/forecast?material_name=...&days=...
+   * Endpoint is /forecast (no trailing s) — matches backend route.
+   */
+  async getForecast(materialName: string, days: number = 30): Promise<ForecastResponse> {
+    const { data } = await this.client.get<ForecastResponse>('/forecast', {
+      params: { material_name: materialName, days },
+    });
+    return data;
+  }
+
+  // Auth
+  async login(email: string, password: string) {
+    const { data } = await this.client.post('/auth/login', { email, password });
+    return data;
+  }
+  async register(email: string, password: string, name?: string) {
+    const { data } = await this.client.post('/auth/register', { email, password, name });
+    return data;
+  }
+  async logout() {
+    await this.client.post('/auth/logout');
+    localStorage.removeItem('authToken');
+  }
 }
 
-export default NavBar;
-```
-
-```css
-/* src/components/NavBar.module.css */
-.nav {
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  height: 60px;
-  background: #1e3a5f;
-  color: #fff;
-  gap: 24px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.brand { font-size: 1.1rem; font-weight: 800; flex-shrink: 0; }
-.links { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; flex: 1; }
-.link {
-  color: #cbd5e1;
-  text-decoration: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 0.88rem;
-  transition: background 0.15s;
-}
-.link:hover  { background: rgba(255,255,255,0.10); color: #fff; }
-.active      { background: rgba(255,255,255,0.15); color: #fff; font-weight: 700; }
-.userSection { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.email       { font-size: 0.82rem; color: #cbd5e1; }
-.roleBadge   { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #3b82f6; color: #fff; }
-.admin       { background: #dc2626; }
-.analyst     { background: #d97706; }
-.consultant  { background: #059669; }
-.viewer      { background: #6366f1; }
-.logoutBtn   {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.3);
-  color: #cbd5e1;
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.82rem;
-}
-.logoutBtn:hover { background: rgba(255,255,255,0.10); color: #fff; }
+export const apiService = new ApiService();
 ```
 
 ---
 
-## 🗓️ MONTH 2 — MVP 2: Incident CRUD
+## 🪝 React Query Hooks (TanStack Query v5)
 
-### src/components/RiskBadge.jsx + CSS
+> **v5 breaking change:** `useQuery` no longer accepts positional arguments. All hooks use the options-object form: `useQuery({ queryKey, queryFn, ...options })`. `cacheTime` was renamed `gcTime`.
 
-```jsx
-// src/components/RiskBadge.jsx
-import styles from './RiskBadge.module.css';
+```typescript
+// src/hooks/usePrices.ts
+import { useQuery } from '@tanstack/react-query';
+import { apiService } from '../services/apiService';
+import { PriceRecord } from '../types/PriceRecord';
 
-const SEV_MAP = { critical: 'critical', high: 'high', medium: 'medium', low: 'low' };
+interface PriceFilters {
+  material_name?:           string;
+  material_category?:       string;
+  supplier_name?:           string;
+  region?:                  string;
+  province?:                string;
+  stock_status?:            PriceRecord['stock_status'];
+  bulk_discount_available?: 'Yes' | 'No';
+  page?:                    number;
+  per_page?:                number;
+}
 
-function RiskBadge({ level }) {
-  const cls = SEV_MAP[level] || 'low';
+/** Fetch paginated/filtered price records. */
+export const usePrices = (filters: PriceFilters = {}) => {
+  return useQuery({
+    queryKey:  ['prices', filters],
+    queryFn:   () => apiService.getPrices(filters),
+    staleTime: 5 * 60 * 1000,
+    gcTime:    10 * 60 * 1000,
+  });
+};
+
+/**
+ * Fetch daily aggregate price history for a material.
+ * Uses material_name (string) — not material_id.
+ * Uses `days` param — not `months` (backend accepts days only).
+ */
+export const usePriceHistory = (materialName: string, days: number = 90, supplierName?: string) => {
+  return useQuery({
+    queryKey:  ['priceHistory', materialName, days, supplierName],
+    queryFn:   () => apiService.getPriceHistory(materialName, days, supplierName),
+    enabled:   !!materialName,
+    staleTime: 60 * 1000,
+    gcTime:    5 * 60 * 1000,
+  });
+};
+
+/**
+ * Compare latest prices across suppliers for a material.
+ * Returns one PriceRecord per supplier.
+ */
+export const usePriceComparison = (materialName: string, region?: string) => {
+  return useQuery({
+    queryKey:  ['priceComparison', materialName, region],
+    queryFn:   () => apiService.compareSuppliers(materialName, region),
+    enabled:   !!materialName,
+    staleTime: 5 * 60 * 1000,
+    gcTime:    10 * 60 * 1000,  // v5: gcTime (not cacheTime)
+  });
+};
+```
+
+```typescript
+// src/hooks/useForecasts.ts
+import { useQuery } from '@tanstack/react-query';
+import { apiService } from '../services/apiService';
+
+/**
+ * Fetch ML price forecasts.
+ * Uses material_name (string) — not material_id.
+ * 6-hour staleTime matches the backend's forecast cache TTL.
+ */
+export const useForecasts = (materialName: string, days: number = 30) => {
+  return useQuery({
+    queryKey:  ['forecasts', materialName, days],
+    queryFn:   () => apiService.getForecast(materialName, days),
+    enabled:   !!materialName,
+    staleTime: 6 * 60 * 60 * 1000,   // 6 hours — matches backend cache
+    gcTime:    7 * 60 * 60 * 1000,
+  });
+};
+```
+
+---
+
+## 🧩 Common Components
+
+### Button
+
+```tsx
+// src/components/common/Button.tsx
+import React from 'react';
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  size?:    'sm' | 'md' | 'lg';
+}
+
+export const Button: React.FC<ButtonProps> = ({
+  children, variant = 'primary', size = 'md', className = '', ...props
+}) => {
+  const variants = {
+    primary:   'bg-primary-600 text-white hover:bg-primary-700 disabled:bg-gray-300',
+    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
+    outline:   'border-2 border-primary-600 text-primary-600 hover:bg-primary-50',
+    danger:    'bg-red-600 text-white hover:bg-red-700',
+  };
+  const sizes = { sm: 'px-3 py-1.5 text-sm', md: 'px-4 py-2', lg: 'px-6 py-3 text-lg' };
+
   return (
-    <span className={`${styles.badge} ${styles[cls]}`} aria-label={`Severity: ${level}`}>
-      {level ? level.charAt(0).toUpperCase() + level.slice(1) : 'Unknown'}
+    <button
+      className={`font-medium transition-colors rounded-lg ${variants[variant]} ${sizes[size]} ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+```
+
+### Card
+
+```tsx
+// src/components/common/Card.tsx
+import React from 'react';
+
+interface CardProps {
+  children:     React.ReactNode;
+  title?:       string;
+  subtitle?:    string;
+  headerAction?: React.ReactNode;
+  className?:   string;
+}
+
+export const Card: React.FC<CardProps> = ({ children, title, subtitle, headerAction, className = '' }) => (
+  <div
+    className={`bg-white rounded-[10px] ${className}`}
+    style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+  >
+    {(title || headerAction) && (
+      <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <div>
+          {title    && <h3 className="text-lg font-semibold text-gray-900">{title}</h3>}
+          {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+        </div>
+        {headerAction && <div>{headerAction}</div>}
+      </div>
+    )}
+    <div className="p-6">{children}</div>
+  </div>
+);
+```
+
+### LoadingSpinner
+
+```tsx
+// src/components/common/LoadingSpinner.tsx
+import React from 'react';
+
+export const LoadingSpinner: React.FC<{ size?: 'sm' | 'md' | 'lg'; className?: string }> = ({
+  size = 'md', className = ''
+}) => {
+  const sizes = { sm: 'h-4 w-4', md: 'h-8 w-8', lg: 'h-12 w-12' };
+  return (
+    <div className={`flex justify-center items-center p-8 ${className}`}>
+      <div className={`${sizes[size]} border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin`} />
+    </div>
+  );
+};
+```
+
+### ErrorMessage
+
+```tsx
+// src/components/common/ErrorMessage.tsx
+import React from 'react';
+
+export const ErrorMessage: React.FC<{ message: string; onRetry?: () => void }> = ({ message, onRetry }) => (
+  <div className="flex flex-col items-center justify-center p-12 text-center">
+    <div className="text-red-400 text-5xl mb-4">⚠️</div>
+    <p className="text-red-600 mb-4">{message}</p>
+    {onRetry && (
+      <button onClick={onRetry} className="btn-primary">
+        Try Again
+      </button>
+    )}
+  </div>
+);
+```
+
+---
+
+## 🏷️ Badge Components
+
+```tsx
+// src/components/common/StockBadge.tsx
+import React from 'react';
+import { StockStatus } from '../../types/PriceRecord';
+
+const STYLES: Record<StockStatus, { bg: string; color: string }> = {
+  'In Stock':     { bg: '#dcfce7', color: '#16a34a' },
+  'Low Stock':    { bg: '#fef3c7', color: '#f59e0b' },
+  'Out of Stock': { bg: '#fee2e2', color: '#dc2626' },
+};
+
+export const StockBadge: React.FC<{ status: StockStatus }> = ({ status }) => {
+  const s = STYLES[status] ?? { bg: '#f3f4f6', color: '#6b7280' };
+  return (
+    <span
+      className="px-3 py-1 rounded-full text-xs font-semibold"
+      style={{ backgroundColor: s.bg, color: s.color }}
+    >
+      {status}
     </span>
   );
+};
+```
+
+```tsx
+// src/components/common/BulkDiscountTag.tsx
+import React from 'react';
+
+export const BulkDiscountTag: React.FC = () => (
+  <span
+    className="px-3 py-1 rounded-full text-xs font-semibold"
+    style={{ backgroundColor: '#eff6ff', color: '#2563eb' }}
+  >
+    Bulk Discount
+  </span>
+);
+```
+
+---
+
+## 💳 PriceCard Component
+
+```tsx
+// src/components/features/PriceCard.tsx
+import React from 'react';
+import { PriceRecord } from '../../types/PriceRecord';
+import { StockBadge } from '../common/StockBadge';
+import { BulkDiscountTag } from '../common/BulkDiscountTag';
+
+interface PriceCardProps {
+  record:   PriceRecord;
+  onClick?: () => void;
 }
 
-export default RiskBadge;
-```
+export const PriceCard: React.FC<PriceCardProps> = ({ record, onClick }) => {
+  const momUp = record.price_change_mom_pct >= 0;
+  const yoyUp = record.price_change_yoy_pct >= 0;
 
-```css
-/* src/components/RiskBadge.module.css */
-.badge    { padding: 3px 10px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; }
-.critical { background: #fee2e2; color: #991b1b; }
-.high     { background: #ffedd5; color: #9a3412; }
-.medium   { background: #fef9c3; color: #854d0e; }
-.low      { background: #dcfce7; color: #166534; }
-```
-
-### src/services/incidentService.js
-
-```javascript
-// src/services/incidentService.js
-import api from './api';
-
-export const getIncidents = async (filters = {}) => {
-  // Remove empty filter values before building query string
-  const params = new URLSearchParams(
-    Object.fromEntries(Object.entries(filters).filter(([, v]) => v))
-  ).toString();
-  const { data } = await api.get(`/api/incidents${params ? '?' + params : ''}`);
-  return data;   // { data: [...], total, page, limit }
-};
-
-export const getIncident = async (id) => {
-  const { data } = await api.get(`/api/incidents/${id}`);
-  return data;
-};
-
-export const createIncident = async (incident) => {
-  const { data } = await api.post('/api/incidents', incident);
-  return data;   // full 16-field incident object
-};
-
-export const updateIncident = async (id, updates) => {
-  const { data } = await api.patch(`/api/incidents/${id}`, updates);
-  return data;
-};
-
-export const uploadPhoto = async (file) => {
-  const formData = new FormData();
-  formData.append('photo', file);
-  // FormData must bypass JSON Content-Type header
-  const token = sessionStorage.getItem('cysentinel_token');
-  const res = await fetch(
-    `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/files/upload`,
-    {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    }
+  const changeChip = (label: string, isUp: boolean) => (
+    <span
+      className="px-2 py-1 rounded-lg text-xs font-semibold"
+      style={{
+        backgroundColor: isUp ? '#fee2e2' : '#dcfce7',
+        color:           isUp ? '#dc2626' : '#16a34a',
+      }}
+    >
+      {label}
+    </span>
   );
-  if (!res.ok) throw new Error('Upload failed');
-  const json = await res.json();
-  return json.url;   // Cloudinary URL
-};
-```
-
-### src/hooks/useIncidents.js
-
-```javascript
-// src/hooks/useIncidents.js
-import { useState, useEffect, useCallback } from 'react';
-import { getIncidents } from '../services/incidentService';
-
-export function useIncidents(filters = {}) {
-  const [incidents, setIncidents] = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [error, setError]         = useState(null);
-
-  const fetchIncidents = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const result = await getIncidents(filters);
-      // API returns { data: [], total, page, limit } OR flat array
-      setIncidents(Array.isArray(result) ? result : result.data ?? []);
-    } catch (err) {
-      setError(err.message || 'Failed to load incidents');
-    } finally {
-      setLoading(false);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.severity, filters.incident_type, filters.status]);
-
-  useEffect(() => { fetchIncidents(); }, [fetchIncidents]);
-
-  return { incidents, loading, error, refresh: fetchIncidents };
-}
-```
-
-### src/components/IncidentTable.jsx + CSS
-
-```jsx
-// src/components/IncidentTable.jsx
-import RiskBadge from './RiskBadge';
-import styles from './IncidentTable.module.css';
-
-function IncidentTable({ incidents, onRowClick }) {
-  if (!incidents || incidents.length === 0) {
-    return <p className={styles.empty}>No incidents found.</p>;
-  }
-
-  const fmt = (d) => d
-    ? new Date(d).toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric' })
-    : '—';
 
   return (
-    <div className={styles.tableWrapper} role="region" aria-label="Incidents list">
-      <table className={styles.table}>
-        <thead>
+    <div
+      className="bg-white rounded-[10px] p-6 cursor-pointer hover:shadow-xl transition-shadow"
+      style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+      onClick={onClick}
+    >
+      <h3 className="text-xl font-bold text-gray-900 mb-1">{record.material_name}</h3>
+      <p className="text-sm text-gray-500 mb-3">{record.material_category}</p>
+
+      <div className="flex items-baseline mb-1">
+        <span className="text-3xl font-bold" style={{ color: '#2563eb' }}>
+          R{record.price_zar.toFixed(2)}
+        </span>
+        <span className="ml-2 text-sm text-gray-500">/ {record.unit}</span>
+      </div>
+      <p className="text-xs text-gray-400 mb-3">R{record.price_per_kg_zar.toFixed(2)} per kg</p>
+
+      <div className="flex gap-2 mb-3">
+        {changeChip(`MoM: ${momUp ? '+' : ''}${record.price_change_mom_pct.toFixed(1)}%`, momUp)}
+        {changeChip(`YoY: ${yoyUp ? '+' : ''}${record.price_change_yoy_pct.toFixed(1)}%`, yoyUp)}
+      </div>
+
+      <div className="flex gap-2 mb-3">
+        <StockBadge status={record.stock_status} />
+        {record.bulk_discount_available === 'Yes' && <BulkDiscountTag />}
+      </div>
+
+      <p className="text-xs text-gray-400">
+        🏪 {record.supplier_name} · {record.province}, {record.region}
+      </p>
+    </div>
+  );
+};
+```
+
+---
+
+## 📊 Chart Components
+
+### PriceHistoryChart
+
+```tsx
+// src/components/charts/PriceHistoryChart.tsx
+import React from 'react';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer,
+} from 'recharts';
+import { format, parseISO } from 'date-fns';
+
+interface HistoryPoint {
+  date:         string;
+  avg_price:    number;
+  min_price:    number;
+  max_price:    number;
+  sample_count: number;
+}
+
+interface PriceHistoryChartProps {
+  data:         HistoryPoint[];
+  materialName: string;
+  showRange?:   boolean;   // show min/max bands
+}
+
+const CustomTooltip = ({ active, payload }: any) => {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload as HistoryPoint;
+  return (
+    <div className="bg-white p-3 rounded-lg border border-gray-200 text-sm"
+         style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+      <p className="font-semibold mb-1">{format(parseISO(d.date), 'MMM d, yyyy')}</p>
+      <p style={{ color: '#2563eb' }}>Avg: R{d.avg_price.toFixed(2)}</p>
+      <p className="text-gray-400">Min: R{d.min_price.toFixed(2)}</p>
+      <p className="text-gray-400">Max: R{d.max_price.toFixed(2)}</p>
+      <p className="text-gray-400">Samples: {d.sample_count}</p>
+    </div>
+  );
+};
+
+export const PriceHistoryChart: React.FC<PriceHistoryChartProps> = ({
+  data, materialName, showRange = false,
+}) => (
+  <div className="bg-white rounded-[10px] p-6" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+    <h3 className="text-lg font-bold text-gray-900 mb-4">Price History: {materialName}</h3>
+    <ResponsiveContainer width="100%" height={350}>
+      <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+        <XAxis
+          dataKey="date"
+          tickFormatter={(d) => format(parseISO(d), 'MMM d')}
+          tick={{ fill: '#6b7280', fontSize: 12 }}
+        />
+        <YAxis
+          tickFormatter={(v) => `R${v}`}
+          tick={{ fill: '#6b7280', fontSize: 12 }}
+        />
+        <Tooltip content={<CustomTooltip />} />
+        <Legend />
+        <Line
+          type="monotone"
+          dataKey="avg_price"
+          stroke="#2563eb"
+          strokeWidth={2}
+          dot={{ r: 3, fill: '#2563eb' }}
+          activeDot={{ r: 6 }}
+          name="Avg Price (ZAR)"
+        />
+        {showRange && (
+          <>
+            <Line type="monotone" dataKey="min_price" stroke="#16a34a" strokeWidth={1}
+                  strokeDasharray="4 4" dot={false} name="Min Price" />
+            <Line type="monotone" dataKey="max_price" stroke="#dc2626" strokeWidth={1}
+                  strokeDasharray="4 4" dot={false} name="Max Price" />
+          </>
+        )}
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
+);
+```
+
+### SupplierComparisonChart
+
+```tsx
+// src/components/charts/SupplierComparisonChart.tsx
+import React from 'react';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, Cell,
+} from 'recharts';
+import { PriceRecord } from '../../types/PriceRecord';
+
+interface SupplierComparisonChartProps {
+  data:         PriceRecord[];   // one record per supplier from /prices/compare
+  materialName: string;
+}
+
+export const SupplierComparisonChart: React.FC<SupplierComparisonChartProps> = ({
+  data, materialName,
+}) => {
+  // data already sorted cheapest-first by the backend; show as-is
+  const chartData = data.map((r) => ({
+    supplier:    r.supplier_name,
+    price:       r.price_zar,        // ← uses price_zar, not price
+    hasBulk:     r.bulk_discount_available === 'Yes',
+    stock:       r.stock_status,
+  }));
+
+  return (
+    <div className="bg-white rounded-[10px] p-6" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+      <h3 className="text-lg font-bold text-gray-900 mb-4">
+        Supplier Comparison: {materialName}
+      </h3>
+      <ResponsiveContainer width="100%" height={350}>
+        <BarChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 60 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis
+            dataKey="supplier"
+            angle={-35}
+            textAnchor="end"
+            height={70}
+            tick={{ fill: '#6b7280', fontSize: 11 }}
+          />
+          <YAxis
+            tickFormatter={(v) => `R${v}`}
+            tick={{ fill: '#6b7280', fontSize: 12 }}
+          />
+          <Tooltip
+            contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: 8 }}
+            formatter={(v: number) => [`R${v.toFixed(2)}`, 'Price']}
+          />
+          <Bar dataKey="price" radius={[6, 6, 0, 0]} name="Price (ZAR)">
+            {chartData.map((entry, i) => (
+              <Cell
+                key={`cell-${i}`}
+                fill={entry.hasBulk ? '#16a34a' : '#2563eb'}
+                opacity={entry.stock === 'Out of Stock' ? 0.4 : 1}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+      <div className="flex justify-center gap-6 mt-3 text-xs text-gray-500">
+        <span>🟦 Standard price</span>
+        <span>🟩 Bulk discount available</span>
+        <span style={{ opacity: 0.5 }}>Faded = Out of Stock</span>
+      </div>
+    </div>
+  );
+};
+```
+
+### ForecastChart
+
+```tsx
+// src/components/charts/ForecastChart.tsx
+import React from 'react';
+import {
+  ComposedChart, Line, Area, XAxis, YAxis,
+  CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+} from 'recharts';
+import { format, parseISO } from 'date-fns';
+import { PriceRecord, ForecastPoint } from '../../types/PriceRecord';
+
+interface ForecastChartProps {
+  historical:   Pick<PriceRecord, 'date' | 'price_zar'>[];
+  forecasts:    ForecastPoint[];
+  materialName: string;
+}
+
+export const ForecastChart: React.FC<ForecastChartProps> = ({
+  historical, forecasts, materialName,
+}) => {
+  // Merge historical and forecast into one series for a seamless line
+  const histData = historical.map((r) => ({
+    date:        r.date,
+    actual:      r.price_zar,
+    predicted:   undefined as number | undefined,
+    ci_upper:    undefined as number | undefined,
+    ci_lower:    undefined as number | undefined,
+    isForecast:  false,
+  }));
+
+  const foreData = forecasts.map((f) => ({
+    date:       f.forecast_date,
+    actual:     undefined as number | undefined,
+    predicted:  f.predicted_price,
+    // FIX: confidence band rendered correctly with separate upper + lower Areas.
+    // Both areas stacked from 0 — lower clips the bottom, upper shows the band.
+    // We render ci_upper first (full band) then ci_lower as a white fill to create
+    // the visual gap. Using one color for both is wrong — the lower would erase the upper.
+    ci_upper:   f.confidence_interval_upper,
+    ci_lower:   f.confidence_interval_lower,
+    isForecast: true,
+  }));
+
+  const combined = [...histData, ...foreData].sort((a, b) => a.date.localeCompare(b.date));
+
+  return (
+    <div className="bg-white rounded-[10px] p-6" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+      <h3 className="text-lg font-bold text-gray-900 mb-4">Price Forecast: {materialName}</h3>
+      <ResponsiveContainer width="100%" height={380}>
+        <ComposedChart data={combined} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis
+            dataKey="date"
+            tickFormatter={(d) => format(parseISO(d), 'MMM d')}
+            tick={{ fill: '#6b7280', fontSize: 12 }}
+          />
+          <YAxis tickFormatter={(v) => `R${v}`} tick={{ fill: '#6b7280', fontSize: 12 }} />
+          <Tooltip
+            contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: 8 }}
+            formatter={(v: number, name: string) => {
+              const labels: Record<string, string> = {
+                actual: 'Actual', predicted: 'Forecast',
+                ci_upper: 'CI Upper', ci_lower: 'CI Lower',
+              };
+              return [`R${v?.toFixed(2)}`, labels[name] ?? name];
+            }}
+            labelFormatter={(d) => format(parseISO(d as string), 'MMM d, yyyy')}
+          />
+          <Legend />
+
+          {/* Confidence band: upper area filled purple, lower area white — creates the gap */}
+          <Area
+            type="monotone"
+            dataKey="ci_upper"
+            stroke="none"
+            fill="#7c3aed"
+            fillOpacity={0.15}
+            name="ci_upper"
+            legendType="none"
+          />
+          <Area
+            type="monotone"
+            dataKey="ci_lower"
+            stroke="none"
+            fill="white"      // ← white fill erases the bottom of the purple band correctly
+            fillOpacity={1}
+            name="ci_lower"
+            legendType="none"
+          />
+
+          {/* Actual historical prices */}
+          <Line
+            type="monotone"
+            dataKey="actual"
+            stroke="#2563eb"
+            strokeWidth={2}
+            dot={{ r: 3, fill: '#2563eb' }}
+            activeDot={{ r: 6 }}
+            name="Actual Price"
+            connectNulls={false}
+          />
+
+          {/* ML forecast */}
+          <Line
+            type="monotone"
+            dataKey="predicted"
+            stroke="#7c3aed"
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            dot={{ r: 3, fill: '#7c3aed' }}
+            name="Forecast"
+            connectNulls={false}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+```
+
+---
+
+## 📋 MaterialsTable Component
+
+```tsx
+// src/components/features/MaterialsTable.tsx
+import React, { useState, useMemo } from 'react';
+import { PriceRecord } from '../../types/PriceRecord';
+import { StockBadge } from '../common/StockBadge';
+
+type SortKey = keyof Pick<PriceRecord,
+  'material_name' | 'material_category' | 'supplier_name' | 'region' |
+  'province' | 'price_zar' | 'price_per_kg_zar' |
+  'price_change_mom_pct' | 'price_change_yoy_pct' | 'date'>;
+
+export const MaterialsTable: React.FC<{ records: PriceRecord[] }> = ({ records }) => {
+  const [sortKey,   setSortKey]   = useState<SortKey>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const sorted = useMemo(() => {
+    return [...records].sort((a, b) => {
+      const av = a[sortKey], bv = b[sortKey];
+      if (typeof av === 'string' && typeof bv === 'string') {
+        return sortOrder === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+      }
+      if (typeof av === 'number' && typeof bv === 'number') {
+        return sortOrder === 'asc' ? av - bv : bv - av;
+      }
+      return 0;
+    });
+  }, [records, sortKey, sortOrder]);
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) setSortOrder(o => o === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortOrder('asc'); }
+  };
+
+  const Th: React.FC<{ col: SortKey; label: string; right?: boolean }> = ({ col, label, right }) => (
+    <th
+      className={`px-4 py-3 text-xs font-semibold cursor-pointer select-none ${right ? 'text-right' : 'text-left'}`}
+      onClick={() => toggleSort(col)}
+    >
+      {label} {sortKey === col ? (sortOrder === 'asc' ? '↑' : '↓') : <span className="text-blue-300">⇅</span>}
+    </th>
+  );
+
+  const changeCss = (v: number) => ({ color: v >= 0 ? '#dc2626' : '#16a34a' });
+
+  return (
+    <div className="overflow-x-auto rounded-[10px]" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+      <table className="min-w-full bg-white text-sm">
+        <thead style={{ backgroundColor: '#1e3a8a', color: 'white' }}>
           <tr>
-            <th className={styles.th} scope="col">Title</th>
-            <th className={styles.th} scope="col">Type</th>
-            <th className={styles.th} scope="col">Severity</th>
-            <th className={styles.th} scope="col">Status</th>
-            <th className={styles.th} scope="col">Risk Score</th>
-            <th className={styles.th} scope="col">Created</th>
+            <Th col="material_name"        label="Material" />
+            <Th col="material_category"    label="Category" />
+            <Th col="supplier_name"        label="Supplier" />
+            <Th col="region"               label="Region" />
+            <Th col="province"             label="Province" />
+            <Th col="price_zar"            label="Price (ZAR)"   right />
+            <th className="px-4 py-3 text-xs font-semibold text-left">Unit</th>
+            <Th col="price_per_kg_zar"     label="Per Kg"        right />
+            <Th col="price_change_mom_pct" label="MoM %"         right />
+            <Th col="price_change_yoy_pct" label="YoY %"         right />
+            <th className="px-4 py-3 text-xs font-semibold text-left">Stock</th>
+            <th className="px-4 py-3 text-xs font-semibold text-left">Bulk</th>
+            <Th col="date"                 label="Date" />
           </tr>
         </thead>
         <tbody>
-          {incidents.map(inc => (
+          {sorted.map((r, i) => (
             <tr
-              key={inc.incident_id}
-              className={styles.row}
-              onClick={() => onRowClick && onRowClick(inc)}
-              style={{ cursor: onRowClick ? 'pointer' : 'default' }}
-              tabIndex={onRowClick ? 0 : undefined}
-              onKeyDown={e => e.key === 'Enter' && onRowClick && onRowClick(inc)}
-              aria-label={`Incident: ${inc.title}`}
+              key={r.record_id}   // ← uses record_id (not id which doesn't exist)
+              className={i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
+              style={{ borderBottom: '1px solid #e5e7eb' }}
             >
-              <td className={styles.td}>{inc.title}</td>
-              <td className={styles.td}>{inc.incident_type?.replace(/_/g, ' ')}</td>
-              <td className={styles.td}><RiskBadge level={inc.severity} /></td>
-              <td className={styles.td}>
-                <span className={`${styles.statusBadge} ${styles[inc.status?.replace('_', '-')]}`}>
-                  {inc.status?.replace('_', ' ')}
-                </span>
+              <td className="px-4 py-3 font-medium text-gray-900">{r.material_name}</td>
+              <td className="px-4 py-3 text-gray-600">{r.material_category}</td>
+              <td className="px-4 py-3 text-gray-600">{r.supplier_name}</td>
+              <td className="px-4 py-3 text-gray-600">{r.region}</td>
+              <td className="px-4 py-3 text-gray-600">{r.province}</td>
+              <td className="px-4 py-3 text-right font-semibold" style={{ color: '#2563eb' }}>
+                R{r.price_zar.toFixed(2)}
               </td>
-              <td className={styles.td}>
-                <strong style={{ color: inc.risk_score >= 8 ? '#dc2626' : inc.risk_score >= 5 ? '#d97706' : '#166534' }}>
-                  {inc.risk_score ?? '—'}
-                </strong>/10
+              <td className="px-4 py-3 text-gray-600">{r.unit}</td>
+              <td className="px-4 py-3 text-right text-gray-600">R{r.price_per_kg_zar.toFixed(2)}</td>
+              <td className="px-4 py-3 text-right font-medium" style={changeCss(r.price_change_mom_pct)}>
+                {r.price_change_mom_pct >= 0 ? '+' : ''}{r.price_change_mom_pct.toFixed(1)}%
               </td>
-              <td className={styles.td}>{fmt(inc.created_at)}</td>
+              <td className="px-4 py-3 text-right font-medium" style={changeCss(r.price_change_yoy_pct)}>
+                {r.price_change_yoy_pct >= 0 ? '+' : ''}{r.price_change_yoy_pct.toFixed(1)}%
+              </td>
+              <td className="px-4 py-3"><StockBadge status={r.stock_status} /></td>
+              <td className="px-4 py-3 text-gray-600">{r.bulk_discount_available}</td>
+              <td className="px-4 py-3 text-gray-500">{r.date}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
-}
-
-export default IncidentTable;
+};
 ```
 
-```css
-/* src/components/IncidentTable.module.css */
-.tableWrapper { overflow-x: auto; border-radius: 10px; border: 1px solid #e5e7eb; }
-.table        { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-.th           { padding: 12px 16px; background: #f9fafb; text-align: left; font-weight: 700; color: #374151; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
-.td           { padding: 12px 16px; color: #111827; border-bottom: 1px solid #f3f4f6; }
-.row:hover    { background: #f9fafb; }
-.row:focus    { outline: 2px solid #3b82f6; outline-offset: -2px; }
-.statusBadge  { padding: 3px 8px; border-radius: 10px; font-size: 0.78rem; font-weight: 700; background: #e5e7eb; color: #374151; }
-.open         { background: #dbeafe; color: #1d4ed8; }
-.in-progress  { background: #fef9c3; color: #854d0e; }
-.resolved     { background: #dcfce7; color: #166534; }
-.closed       { background: #f3f4f6; color: #6b7280; }
-.empty        { text-align: center; color: #9ca3af; padding: 48px; font-size: 0.95rem; }
+---
+
+## 🧭 Layout & Navigation
+
+```tsx
+// src/components/layout/Header.tsx
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+
+export const Header: React.FC = () => (
+  <header className="bg-primary-900 text-white shadow-lg">
+    <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+      <span className="text-xl font-bold tracking-tight">🏗️ BuildMat Intelligence</span>
+      <div className="flex gap-6 text-sm font-medium">
+        {[
+          { to: '/dashboard',  label: 'Dashboard'  },
+          { to: '/materials',  label: 'Materials'  },
+          { to: '/compare',    label: 'Compare'    },
+          { to: '/forecasts',  label: 'Forecasts'  },
+        ].map(({ to, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              isActive
+                ? 'text-white border-b-2 border-white pb-1'
+                : 'text-blue-200 hover:text-white transition-colors'
+            }
+          >
+            {label}
+          </NavLink>
+        ))}
+      </div>
+    </nav>
+  </header>
+);
+
+// src/components/layout/Layout.tsx
+export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="min-h-screen bg-gray-50">
+    <Header />
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {children}
+    </main>
+  </div>
+);
 ```
 
-### src/components/IncidentForm.jsx + CSS
+---
 
-```jsx
-// src/components/IncidentForm.jsx
-import { useState } from 'react';
-import { createIncident, uploadPhoto } from '../services/incidentService';
-import styles from './IncidentForm.module.css';
+## 📄 Pages
 
-const INCIDENT_TYPES = ['phishing','malware','unauthorised_access','data_breach','other'];
-const SEVERITIES     = ['low','medium','high','critical'];
+### MaterialsPage
 
-function IncidentForm({ onCreated }) {
-  const [form, setForm]           = useState({ title: '', incident_type: '', severity: '', description: '' });
-  const [photoFile, setPhotoFile] = useState(null);
-  const [photoPreview, setPreview] = useState(null);
-  const [error, setError]         = useState('');
-  const [loading, setLoading]     = useState(false);
+```tsx
+// src/pages/MaterialsPage.tsx
+import React, { useState } from 'react';
+import { usePrices } from '../hooks/usePrices';
+import { PriceCard } from '../components/features/PriceCard';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { ErrorMessage } from '../components/common/ErrorMessage';
 
-  const update = (key) => (e) => setForm(prev => ({ ...prev, [key]: e.target.value }));
+const CATEGORIES = ['All', 'Cement', 'Building', 'Steel', 'Timber', 'Electrical'];
+const REGIONS    = ['All', 'Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape'];
 
-  const handlePhoto = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (photoPreview) URL.revokeObjectURL(photoPreview);
-      setPhotoFile(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
+export const MaterialsPage: React.FC = () => {
+  const [category, setCategory] = useState('');
+  const [region,   setRegion]   = useState('');
+  const [search,   setSearch]   = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    if (!form.title || !form.incident_type || !form.severity) {
-      setError('Title, type, and severity are required.');
-      return;
-    }
-    setLoading(true);
-    try {
-      let photo_url = null;
-      if (photoFile) photo_url = await uploadPhoto(photoFile);
-      await createIncident({ ...form, photo_url });
-      onCreated && onCreated();
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create incident.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, isLoading, error, refetch } = usePrices({
+    material_category: category || undefined,
+    region:            region   || undefined,
+    per_page: 48,
+  });
+
+  const records = (data?.data ?? []).filter((r) =>
+    !search || r.material_name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (isLoading) return <LoadingSpinner size="lg" />;
+  if (error)     return <ErrorMessage message="Failed to load materials" onRetry={refetch} />;
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form} aria-label="Log new incident">
-      <h2 className={styles.heading}>Log New Incident</h2>
+    <div className="space-y-6">
+      {/* Filters */}
+      <div className="flex flex-wrap gap-4 items-center">
+        <input
+          type="text"
+          placeholder="Search materials..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border border-gray-300 rounded-lg px-4 py-2 text-sm flex-1 min-w-48 focus:outline-none focus:ring-2 focus:ring-primary-500"
+        />
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+        >
+          {CATEGORIES.map((c) => <option key={c} value={c === 'All' ? '' : c}>{c}</option>)}
+        </select>
+        <select
+          value={region}
+          onChange={(e) => setRegion(e.target.value)}
+          className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+        >
+          {REGIONS.map((r) => <option key={r} value={r === 'All' ? '' : r}>{r}</option>)}
+        </select>
+      </div>
 
-      <label className={styles.label} htmlFor="inc-title">Title *</label>
-      <input
-        id="inc-title"
-        className={styles.input}
-        value={form.title}
-        onChange={update('title')}
-        placeholder="Brief description of the incident"
-        aria-label="Incident title"
-        maxLength={255}
-      />
+      {/* Count */}
+      <p className="text-sm text-gray-500">{records.length} records</p>
 
-      <label className={styles.label} htmlFor="inc-type">Incident Type *</label>
-      <select id="inc-type" className={styles.input} value={form.incident_type}
-        onChange={update('incident_type')} aria-label="Incident type">
-        <option value="">Select type...</option>
-        {INCIDENT_TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>)}
-      </select>
+      {/* Grid */}
+      {records.length === 0
+        ? <p className="text-center text-gray-400 py-16">No materials found.</p>
+        : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {records.map((r) => (
+              <PriceCard key={r.record_id} record={r} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  );
+};
+```
 
-      <label className={styles.label} htmlFor="inc-sev">Severity *</label>
-      <select id="inc-sev" className={styles.input} value={form.severity}
-        onChange={update('severity')} aria-label="Severity level">
-        <option value="">Select severity...</option>
-        {SEVERITIES.map(s => <option key={s} value={s}>{s}</option>)}
-      </select>
+### MaterialDetailPage
 
-      <label className={styles.label} htmlFor="inc-desc">Description</label>
-      <textarea id="inc-desc" className={`${styles.input} ${styles.textarea}`}
-        value={form.description} onChange={update('description')}
-        placeholder="What happened? Include any relevant details..." rows={4}
-        aria-label="Incident description" />
+```tsx
+// src/pages/MaterialDetailPage.tsx
+import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { usePriceHistory } from '../hooks/usePrices';
+import { useForecasts } from '../hooks/useForecasts';
+import { Card } from '../components/common/Card';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { ErrorMessage } from '../components/common/ErrorMessage';
+import { PriceHistoryChart } from '../components/charts/PriceHistoryChart';
+import { ForecastChart } from '../components/charts/ForecastChart';
 
-      <label className={styles.label} htmlFor="inc-photo">Photo Evidence (optional)</label>
-      <input id="inc-photo" type="file" accept="image/*" onChange={handlePhoto}
-        className={styles.fileInput} aria-label="Photo upload" />
-      {photoPreview && (
-        <img src={photoPreview} alt="Preview" className={styles.preview} />
-      )}
+export const MaterialDetailPage: React.FC = () => {
+  // Route: /materials/:materialName (URL-encoded)
+  const { materialName: encodedName } = useParams<{ materialName: string }>();
+  const materialName = decodeURIComponent(encodedName ?? '');
 
-      {error && <p className={styles.error} role="alert">{error}</p>}
-      <button className={styles.button} type="submit" disabled={loading}>
-        {loading ? 'Submitting...' : 'Log Incident'}
+  const [historyDays, setHistoryDays] = useState(90);
+
+  const { data: histData, isLoading: histLoading, error: histError } =
+    usePriceHistory(materialName, historyDays);
+
+  const { data: fcastData, isLoading: fcastLoading } =
+    useForecasts(materialName, 30);
+
+  if (histLoading) return <LoadingSpinner size="lg" />;
+  if (histError)   return <ErrorMessage message={`Failed to load data for ${materialName}`} />;
+
+  const history  = histData?.history ?? [];
+
+  // Stats derived from the history aggregates returned by the API
+  const prices   = history.map((h) => h.avg_price);
+  const latest   = prices[prices.length - 1] ?? 0;
+  const previous = prices[prices.length - 2] ?? latest;
+  const change   = latest - previous;
+  const changePct = previous ? ((change / previous) * 100).toFixed(1) : '0';
+  const avg      = prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
+  const minPrice = prices.length ? Math.min(...prices) : 0;
+  const maxPrice = prices.length ? Math.max(...prices) : 0;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <Card>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{materialName}</h1>
+            <p className="text-gray-500 mt-1">Last {historyDays} days of price history</p>
+          </div>
+          <div className="text-right">
+            <p className="text-3xl font-bold" style={{ color: '#2563eb' }}>R{latest.toFixed(2)}</p>
+            <p className={`text-sm font-medium ${change >= 0 ? 'text-red-600' : 'text-green-600'}`}>
+              {change >= 0 ? '▲' : '▼'} {Math.abs(change).toFixed(2)} ({changePct}%) vs prev period
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card title="Average Price">
+          <p className="text-2xl font-bold text-gray-900">R{avg.toFixed(2)}</p>
+        </Card>
+        <Card title="Lowest Price">
+          <p className="text-2xl font-bold text-green-600">R{minPrice.toFixed(2)}</p>
+        </Card>
+        <Card title="Highest Price">
+          <p className="text-2xl font-bold text-red-600">R{maxPrice.toFixed(2)}</p>
+        </Card>
+      </div>
+
+      {/* History chart */}
+      <div>
+        <div className="flex gap-2 mb-4">
+          {[30, 60, 90, 180].map((d) => (
+            <button
+              key={d}
+              onClick={() => setHistoryDays(d)}
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                historyDays === d
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {d}d
+            </button>
+          ))}
+        </div>
+        <PriceHistoryChart data={history} materialName={materialName} showRange />
+      </div>
+
+      {/* Forecast chart */}
+      {!fcastLoading && fcastData?.forecasts?.length ? (
+        <ForecastChart
+          historical={history.map((h) => ({ date: h.date, price_zar: h.avg_price }))}
+          forecasts={fcastData.forecasts}
+          materialName={materialName}
+        />
+      ) : fcastLoading ? (
+        <Card title="Price Forecast"><LoadingSpinner /></Card>
+      ) : null}
+    </div>
+  );
+};
+```
+
+### ComparisonPage
+
+```tsx
+// src/pages/ComparisonPage.tsx
+import React, { useState } from 'react';
+import { usePriceComparison } from '../hooks/usePrices';
+import { SupplierComparisonChart } from '../components/charts/SupplierComparisonChart';
+import { MaterialsTable } from '../components/features/MaterialsTable';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { Card } from '../components/common/Card';
+
+const MATERIALS = [
+  'PPC Cement 50kg', 'River Sand', 'Crusher Stone 19mm',
+  'Steel Rebar 12mm', 'Timber Pine 76x38', 'PVC Conduit 20mm',
+];
+const REGIONS = ['Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape'];
+
+export const ComparisonPage: React.FC = () => {
+  const [material, setMaterial] = useState(MATERIALS[0]);
+  const [region,   setRegion]   = useState('Gauteng');
+
+  const { data, isLoading, error } = usePriceComparison(material, region);
+
+  return (
+    <div className="space-y-6">
+      <Card title="Supplier Price Comparison">
+        <div className="flex flex-wrap gap-4 mb-6">
+          <select
+            value={material}
+            onChange={(e) => setMaterial(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            {MATERIALS.map((m) => <option key={m}>{m}</option>)}
+          </select>
+          <select
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            {REGIONS.map((r) => <option key={r}>{r}</option>)}
+          </select>
+        </div>
+
+        {isLoading && <LoadingSpinner />}
+        {error     && <p className="text-red-500">Failed to load comparison data.</p>}
+
+        {data?.suppliers && (
+          <>
+            <SupplierComparisonChart data={data.suppliers} materialName={material} />
+            <div className="mt-6">
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">All Supplier Records</h4>
+              <MaterialsTable records={data.suppliers} />
+            </div>
+          </>
+        )}
+      </Card>
+    </div>
+  );
+};
+```
+
+---
+
+## 📅 WEEK 1 — March 9–15, 2026
+### Project Setup & Design System
+
+**Monday (March 9):** Complete all setup steps above. Verify `npm start` and `npm run build` both pass.
+
+**Tuesday–Wednesday (March 10–11):** Build the design system — `Button`, `Card`, `LoadingSpinner`, `ErrorMessage`, `StockBadge`, `BulkDiscountTag`. Write a simple `src/pages/DesignSystemPage.tsx` that renders all components side-by-side so you can visually verify them.
+
+**Thursday–Friday (March 12–13):** Build `Header`, `Layout`, and wire up `react-router-dom` routes. Create stub pages for each route so navigation works end-to-end.
+
+```tsx
+// src/App.tsx
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Layout } from './components/layout/Layout';
+import { MaterialsPage }   from './pages/MaterialsPage';
+import { MaterialDetailPage } from './pages/MaterialDetailPage';
+import { ComparisonPage }  from './pages/ComparisonPage';
+
+const App: React.FC = () => (
+  <Layout>
+    <Routes>
+      <Route path="/"              element={<Navigate to="/materials" replace />} />
+      <Route path="/materials"     element={<MaterialsPage />} />
+      <Route path="/materials/:materialName" element={<MaterialDetailPage />} />
+      <Route path="/compare"       element={<ComparisonPage />} />
+      <Route path="/forecasts"     element={<div>Forecasts coming Week 3</div>} />
+    </Routes>
+  </Layout>
+);
+
+export default App;
+```
+
+**Deliverable:** React project running with navigation, design system components visible.
+
+---
+
+## 📅 WEEK 2 — March 16–22, 2026
+### API Integration & State Management
+
+**Monday–Tuesday (March 16–17):** Wire up `apiService.ts` and both hook files. Point `REACT_APP_API_URL` at Member 1's running backend. Verify `usePrices()` returns real data in browser DevTools.
+
+**Wednesday–Friday (March 18–20):** Build `MaterialsPage` with working filters. Each card should show real `price_zar`, `stock_status`, and `bulk_discount_available` from the API.
+
+**Deliverable:** Materials listing page populated with live API data.
+
+---
+
+## 📅 WEEK 3 — March 23–29, 2026
+### Charts + D1
+
+**Monday–Tuesday (March 23–24):** Build `PriceHistoryChart` and `SupplierComparisonChart`. Wire up `MaterialDetailPage` and `ComparisonPage` with real data.
+
+#### D1 Demo — Wednesday (March 25) 🎯
+
+Demo flow:
+1. Open Materials page — show cards with real prices, stock status, bulk discount tags
+2. Click a material — navigate to Detail page showing the history chart
+3. Switch to Compare page — show bar chart with cheapest supplier highlighted
+4. Toggle history range (30/60/90d) — chart updates live
+
+**Thursday–Friday (March 26–27):** Build `ForecastChart`. Wire `useForecasts` to `MaterialDetailPage`.
+
+**Deliverable:** Dashboard with live charts and working navigation.
+
+---
+
+## 📅 WEEKS 4–5 — March 30–April 12, 2026
+### Advanced Features + ST1/D2
+
+#### Dashboard Page (Week 4, Monday–Tuesday)
+
+```tsx
+// src/pages/DashboardPage.tsx
+import React from 'react';
+import { usePrices }          from '../hooks/usePrices';
+import { Card }               from '../components/common/Card';
+import { LoadingSpinner }     from '../components/common/LoadingSpinner';
+import { PriceCard }          from '../components/features/PriceCard';
+import { useNavigate }        from 'react-router-dom';
+
+const HIGHLIGHT_MATERIALS = [
+  'PPC Cement 50kg', 'River Sand', 'Steel Rebar 12mm', 'Timber Pine 76x38',
+];
+
+export const DashboardPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { data, isLoading } = usePrices({ per_page: 12 });
+  const records = data?.data ?? [];
+
+  const inStock    = records.filter((r) => r.stock_status === 'In Stock').length;
+  const lowStock   = records.filter((r) => r.stock_status === 'Low Stock').length;
+  const withBulk   = records.filter((r) => r.bulk_discount_available === 'Yes').length;
+  const avgPrice   = records.length
+    ? records.reduce((s, r) => s + r.price_zar, 0) / records.length
+    : 0;
+
+  return (
+    <div className="space-y-8">
+      {/* KPI row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'In Stock',       value: inStock,             color: '#16a34a' },
+          { label: 'Low Stock',      value: lowStock,            color: '#f59e0b' },
+          { label: 'Bulk Deals',     value: withBulk,            color: '#2563eb' },
+          { label: 'Avg Price (ZAR)',value: `R${avgPrice.toFixed(0)}`, color: '#7c3aed' },
+        ].map(({ label, value, color }) => (
+          <Card key={label} className="text-center">
+            <p className="text-sm text-gray-500 mb-1">{label}</p>
+            <p className="text-3xl font-bold" style={{ color }}>{value}</p>
+          </Card>
+        ))}
+      </div>
+
+      {/* Quick-access material cards */}
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-gray-900">Latest Prices</h2>
+          <button
+            onClick={() => navigate('/materials')}
+            className="text-sm text-primary-600 hover:underline font-medium"
+          >
+            View all →
+          </button>
+        </div>
+        {isLoading
+          ? <LoadingSpinner />
+          : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {records.slice(0, 6).map((r) => (
+                <PriceCard
+                  key={r.record_id}
+                  record={r}
+                  onClick={() => navigate(`/materials/${encodeURIComponent(r.material_name)}`)}
+                />
+              ))}
+            </div>
+          )
+        }
+      </div>
+
+      {/* Quick links */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[
+          { label: '🔍 Compare Suppliers', to: '/compare',   desc: 'Find cheapest supplier per material' },
+          { label: '📈 Price Forecasts',   to: '/forecasts', desc: 'ML predictions for next 30 days'    },
+          { label: '🚨 Price Alerts',      to: '/alerts',    desc: 'Set threshold notifications'         },
+        ].map(({ label, to, desc }) => (
+          <Card
+            key={to}
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            // @ts-ignore — onClick works on Card's outer div
+            onClick={() => navigate(to)}
+          >
+            <p className="text-lg font-semibold text-gray-900">{label}</p>
+            <p className="text-sm text-gray-500 mt-1">{desc}</p>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+```
+
+#### Pagination Component (Week 4, Wednesday)
+
+```tsx
+// src/components/common/Pagination.tsx
+import React from 'react';
+
+interface PaginationProps {
+  page:        number;
+  totalPages:  number;
+  onPageChange: (p: number) => void;
+}
+
+export const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onPageChange }) => {
+  if (totalPages <= 1) return null;
+
+  // Show up to 5 page numbers centred around current
+  const pages: number[] = [];
+  const start = Math.max(1, page - 2);
+  const end   = Math.min(totalPages, page + 2);
+  for (let i = start; i <= end; i++) pages.push(i);
+
+  const btn = (label: React.ReactNode, target: number, disabled = false) => (
+    <button
+      key={String(label)}
+      onClick={() => !disabled && onPageChange(target)}
+      disabled={disabled}
+      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+        target === page && !disabled
+          ? 'bg-primary-600 text-white'
+          : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
+      } disabled:opacity-40 disabled:cursor-not-allowed`}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <div className="flex items-center justify-center gap-1 mt-6">
+      {btn('‹ Prev', page - 1, page === 1)}
+      {start > 1 && <>{btn(1, 1)}{start > 2 && <span className="px-1 text-gray-400">…</span>}</>}
+      {pages.map((p) => btn(p, p))}
+      {end < totalPages && <>{end < totalPages - 1 && <span className="px-1 text-gray-400">…</span>}{btn(totalPages, totalPages)}</>}
+      {btn('Next ›', page + 1, page === totalPages)}
+    </div>
+  );
+};
+```
+
+Wire pagination into `MaterialsPage`:
+
+```tsx
+// Add to MaterialsPage.tsx — replace the existing page state and grid
+const [page, setPage] = useState(1);
+const PER_PAGE = 18;
+
+const { data, isLoading, error, refetch } = usePrices({
+  material_category: category || undefined,
+  region:            region   || undefined,
+  page,
+  per_page: PER_PAGE,
+});
+
+// After the grid closing tag, add:
+// <Pagination
+//   page={page}
+//   totalPages={data?.pagination.total_pages ?? 1}
+//   onPageChange={setPage}
+// />
+// Reset to page 1 when filters change:
+// useEffect(() => setPage(1), [category, region, search]);
+```
+
+#### Price Alert Form (Week 4, Thursday–Friday)
+
+```tsx
+// src/components/features/PriceAlertForm.tsx
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { apiService } from '../../services/apiService';
+
+interface AlertFormData {
+  material_name:   string;
+  threshold_price: number;
+  threshold_type:  'above' | 'below';
+  region:          string;
+}
+
+const MATERIALS = [
+  'PPC Cement 50kg', 'River Sand', 'Crusher Stone 19mm',
+  'Steel Rebar 12mm', 'Timber Pine 76x38', 'PVC Conduit 20mm',
+];
+const REGIONS = ['Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape'];
+
+export const PriceAlertForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }) => {
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } =
+    useForm<AlertFormData>({ defaultValues: { threshold_type: 'below' } });
+
+  const onSubmit = async (data: AlertFormData) => {
+    try {
+      await apiService['client' as any].post('/auth/alerts', data);
+      reset();
+      onSuccess?.();
+    } catch (e) {
+      console.error('Alert creation failed:', e);
+    }
+  };
+
+  const fieldCls = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500';
+  const errCls   = 'text-xs text-red-500 mt-1';
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
+        <select className={fieldCls} {...register('material_name', { required: true })}>
+          <option value="">Select material…</option>
+          {MATERIALS.map((m) => <option key={m}>{m}</option>)}
+        </select>
+        {errors.material_name && <p className={errCls}>Material is required</p>}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Alert when price is</label>
+          <select className={fieldCls} {...register('threshold_type')}>
+            <option value="below">Below</option>
+            <option value="above">Above</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Threshold (ZAR)</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            className={fieldCls}
+            placeholder="e.g. 85.00"
+            {...register('threshold_price', { required: true, min: 0 })}
+          />
+          {errors.threshold_price && <p className={errCls}>Valid price required</p>}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Region (optional)</label>
+        <select className={fieldCls} {...register('region')}>
+          <option value="">All regions</option>
+          {REGIONS.map((r) => <option key={r}>{r}</option>)}
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full btn-primary disabled:opacity-50"
+      >
+        {isSubmitting ? 'Creating…' : '🔔 Create Alert'}
       </button>
     </form>
   );
-}
-
-export default IncidentForm;
+};
 ```
 
-```css
-/* src/components/IncidentForm.module.css */
-.form      { display: flex; flex-direction: column; gap: 10px; }
-.heading   { font-size: 1.35rem; font-weight: 700; color: #111827; margin: 0 0 8px; }
-.label     { font-size: 0.875rem; font-weight: 600; color: #374151; }
-.input     { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; width: 100%; box-sizing: border-box; }
-.input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
-.textarea  { resize: vertical; font-family: inherit; }
-.fileInput { font-size: 0.88rem; color: #374151; }
-.preview   { width: 120px; height: 90px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; }
-.error     { color: #dc2626; font-size: 0.875rem; padding: 8px 12px; background: #fee2e2; border-radius: 6px; margin: 0; }
-.button    { background: #1e3a5f; color: #fff; border: none; padding: 13px; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 4px; }
-.button:hover:not(:disabled) { background: #162e4d; }
-.button:disabled { opacity: 0.6; cursor: not-allowed; }
+#### Anomaly Indicator on PriceCard (Week 5, Monday)
+
+Extend `PriceCard` to accept an optional `isAnomaly` flag — the parent page fetches anomaly data from `GET /api/anomalies` and passes it down:
+
+```tsx
+// src/hooks/useAnomalies.ts
+import { useQuery } from '@tanstack/react-query';
+import { apiService } from '../services/apiService';
+
+export const useAnomalies = (materialName?: string, threshold = 20) => {
+  return useQuery({
+    queryKey:  ['anomalies', materialName, threshold],
+    queryFn:   async () => {
+      const { data } = await (apiService as any)['client'].get('/anomalies', {
+        params: { material_name: materialName, threshold },
+      });
+      return data as { anomalies: Array<{ record_id: string; deviation_pct: number }> };
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+};
 ```
 
-### src/pages/IncidentsPage.jsx + CSS
+```tsx
+// Updated PriceCard signature — add isAnomaly prop and red ring
+// In PriceCard.tsx, update the outer div:
+// <div
+//   className={`bg-white rounded-[10px] p-6 cursor-pointer hover:shadow-xl transition-shadow
+//     ${isAnomaly ? 'ring-2 ring-red-400' : ''}`}
+//   ...
+// >
+//   {isAnomaly && (
+//     <div className="flex items-center gap-1 mb-2 text-xs text-red-600 font-semibold">
+//       ⚠️ Price anomaly detected
+//     </div>
+//   )}
 
-```jsx
-// src/pages/IncidentsPage.jsx
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import NavBar from '../components/NavBar';
-import IncidentTable from '../components/IncidentTable';
-import IncidentForm  from '../components/IncidentForm';
-import { useIncidents } from '../hooks/useIncidents';
-import styles from './IncidentsPage.module.css';
-
-function IncidentsPage() {
-  const navigate = useNavigate();
-  const [filters, setFilters] = useState({ severity: '', incident_type: '', status: '' });
-  const [showForm, setShowForm] = useState(false);
-  const { incidents, loading, error, refresh } = useIncidents(filters);
-
-  const setFilter = (key) => (e) => setFilters(prev => ({ ...prev, [key]: e.target.value }));
-
-  return (
-    <div>
-      <NavBar />
-      <div className={styles.page}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>Incidents</h1>
-          <button className={styles.newBtn} onClick={() => setShowForm(true)}>
-            + New Incident
-          </button>
-        </div>
-
-        <div className={styles.filterBar} role="group" aria-label="Filter incidents">
-          <select aria-label="Filter by severity" value={filters.severity} onChange={setFilter('severity')} className={styles.filter}>
-            <option value="">All Severities</option>
-            {['critical','high','medium','low'].map(v => <option key={v} value={v}>{v}</option>)}
-          </select>
-          <select aria-label="Filter by type" value={filters.incident_type} onChange={setFilter('incident_type')} className={styles.filter}>
-            <option value="">All Types</option>
-            {['phishing','malware','unauthorised_access','data_breach','other'].map(v =>
-              <option key={v} value={v}>{v.replace(/_/g,' ')}</option>)}
-          </select>
-          <select aria-label="Filter by status" value={filters.status} onChange={setFilter('status')} className={styles.filter}>
-            <option value="">All Statuses</option>
-            {['open','in_progress','resolved','closed'].map(v =>
-              <option key={v} value={v}>{v.replace(/_/g,' ')}</option>)}
-          </select>
-        </div>
-
-        {error   && <p className={styles.error} role="alert">Failed to load incidents: {error}</p>}
-        {loading ? <p className={styles.loading}>Loading incidents...</p>
-                 : <IncidentTable incidents={incidents} onRowClick={inc => navigate(`/incidents/${inc.incident_id}`)} />}
-
-        {showForm && (
-          <div className={styles.modal} role="dialog" aria-label="Create incident">
-            <div className={styles.modalContent}>
-              <button className={styles.closeBtn} onClick={() => setShowForm(false)} aria-label="Close modal">✕</button>
-              <IncidentForm onCreated={() => { setShowForm(false); refresh(); }} />
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export default IncidentsPage;
+// Updated interface:
+// interface PriceCardProps {
+//   record:     PriceRecord;
+//   isAnomaly?: boolean;
+//   onClick?:   () => void;
+// }
 ```
 
-```css
-/* src/pages/IncidentsPage.module.css */
-.page        { padding: 24px; max-width: 1200px; margin: 0 auto; }
-.header      { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.title       { font-size: 1.75rem; font-weight: 800; color: #111827; margin: 0; }
-.newBtn      { background: #1e3a5f; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.95rem; }
-.newBtn:hover { background: #162e4d; }
-.filterBar   { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-.filter      { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.88rem; background: #fff; }
-.error       { color: #dc2626; padding: 12px; background: #fee2e2; border-radius: 8px; margin-bottom: 16px; }
-.loading     { color: #6b7280; text-align: center; padding: 48px; }
-.modal       { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; }
-.modalContent { background: #fff; border-radius: 12px; padding: 32px; width: 100%; max-width: 560px; position: relative; max-height: 90vh; overflow-y: auto; }
-.closeBtn    { position: absolute; top: 14px; right: 14px; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #6b7280; padding: 4px; }
-.closeBtn:hover { color: #111827; }
-```
+#### CSV Export Utility (Week 5, Tuesday)
 
----
+```typescript
+// src/utils/exportCsv.ts
+import { PriceRecord } from '../types/PriceRecord';
 
-## 🗓️ MONTH 3 — MVP 3: Checklist
+const HEADERS: (keyof PriceRecord)[] = [
+  'record_id', 'date', 'year', 'month', 'material_name', 'material_category',
+  'supplier_name', 'region', 'province', 'price_zar', 'unit', 'price_per_kg_zar',
+  'price_change_mom_pct', 'price_change_yoy_pct', 'stock_status', 'bulk_discount_available',
+];
 
-### src/components/ChecklistPanel.jsx + CSS
-
-```jsx
-// src/components/ChecklistPanel.jsx
-import { useState, useEffect } from 'react';
-import api from '../services/api';
-import styles from './ChecklistPanel.module.css';
-
-function ChecklistPanel({ incidentId, readOnly = false }) {
-  const [checklist, setChecklist] = useState(null);
-  const [progress, setProgress]   = useState([]);
-  const [loading, setLoading]     = useState(true);
-
-  useEffect(() => {
-    api.get(`/api/incidents/${incidentId}/checklist`)
-      .then(r => {
-        setChecklist(r.data.checklist);
-        setProgress(r.data.progress || []);
-      })
-      .finally(() => setLoading(false));
-  }, [incidentId]);
-
-  const toggle = async (stepIndex) => {
-    if (readOnly) return;
-    const current = progress.find(p => p.step_index === stepIndex);
-    const completed = !(current?.completed);
-    try {
-      const { data } = await api.patch(
-        `/api/incidents/${incidentId}/checklist/${stepIndex}`,
-        { completed }
-      );
-      setProgress(prev =>
-        prev.some(p => p.step_index === stepIndex)
-          ? prev.map(p => p.step_index === stepIndex ? data : p)
-          : [...prev, data]
-      );
-    } catch {
-      alert('Failed to update step — please retry.');
-    }
+export const exportToCsv = (records: PriceRecord[], filename = 'buildmat-prices.csv') => {
+  const escape = (v: string | number) => {
+    const s = String(v);
+    return s.includes(',') || s.includes('"') || s.includes('\n')
+      ? `"${s.replace(/"/g, '""')}"`
+      : s;
   };
 
-  if (loading)      return <p className={styles.empty}>Loading checklist...</p>;
-  if (!checklist)   return <p className={styles.empty}>No checklist assigned to this incident.</p>;
+  const rows = [
+    HEADERS.join(','),
+    ...records.map((r) => HEADERS.map((h) => escape(r[h])).join(',')),
+  ];
 
-  const steps         = checklist.steps || [];
-  const completedCount = progress.filter(p => p.completed).length;
-  const pct           = steps.length > 0 ? Math.round((completedCount / steps.length) * 100) : 0;
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+```
 
-  return (
-    <div className={styles.panel} aria-label="Response checklist">
-      <h3 className={styles.heading}>{checklist.title}</h3>
+Add export button to `MaterialsTable`:
 
-      <div className={styles.progressBar} role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
-        <div className={styles.progressFill} style={{ width: `${pct}%` }} />
-      </div>
-      <p className={styles.progressText}>
-        {completedCount}/{steps.length} steps complete ({pct}%)
-      </p>
+```tsx
+// Add above the table in MaterialsTable.tsx
+// <div className="flex justify-between items-center mb-3">
+//   <p className="text-sm text-gray-500">{records.length} records</p>
+//   <button
+//     onClick={() => exportToCsv(records)}
+//     className="btn-secondary text-sm flex items-center gap-2"
+//   >
+//     ⬇️ Export CSV
+//   </button>
+// </div>
+```
 
-      <ul className={styles.stepList}>
-        {steps.map((step, idx) => {
-          const done = progress.find(p => p.step_index === idx)?.completed ?? false;
-          return (
-            <li
-              key={idx}
-              onClick={() => toggle(idx)}
-              className={`${styles.step} ${done ? styles.done : ''} ${readOnly ? '' : styles.clickable}`}
-              aria-label={`Step ${idx + 1}: ${step.text}. ${done ? 'Completed' : 'Not completed'}`}
-              role={readOnly ? 'listitem' : 'checkbox'}
-              aria-checked={done}
-              tabIndex={readOnly ? undefined : 0}
-              onKeyDown={e => !readOnly && e.key === 'Enter' && toggle(idx)}
-            >
-              <span className={styles.icon}>{done ? '✅' : '⬜'}</span>
-              <span className={styles.stepText}>{step.text}</span>
-            </li>
-          );
-        })}
-      </ul>
+#### Lazy Route Splitting + Skeleton Screens (Week 5, Wednesday–Friday)
+
+```tsx
+// src/App.tsx — replace static imports with lazy ones
+import React, { lazy, Suspense } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Layout }       from './components/layout/Layout';
+import { CardSkeleton } from './components/common/CardSkeleton';
+
+const DashboardPage     = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
+const MaterialsPage     = lazy(() => import('./pages/MaterialsPage').then(m => ({ default: m.MaterialsPage })));
+const MaterialDetailPage = lazy(() => import('./pages/MaterialDetailPage').then(m => ({ default: m.MaterialDetailPage })));
+const ComparisonPage    = lazy(() => import('./pages/ComparisonPage').then(m => ({ default: m.ComparisonPage })));
+const ForecastsPage     = lazy(() => import('./pages/ForecastsPage').then(m => ({ default: m.ForecastsPage })));
+const AlertsPage        = lazy(() => import('./pages/AlertsPage').then(m => ({ default: m.AlertsPage })));
+
+const PageFallback = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+    {[...Array(6)].map((_, i) => <CardSkeleton key={i} />)}
+  </div>
+);
+
+const App: React.FC = () => (
+  <Layout>
+    <Suspense fallback={<PageFallback />}>
+      <Routes>
+        <Route path="/"                          element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard"                 element={<DashboardPage />} />
+        <Route path="/materials"                 element={<MaterialsPage />} />
+        <Route path="/materials/:materialName"   element={<MaterialDetailPage />} />
+        <Route path="/compare"                   element={<ComparisonPage />} />
+        <Route path="/forecasts"                 element={<ForecastsPage />} />
+        <Route path="/alerts"                    element={<AlertsPage />} />
+      </Routes>
+    </Suspense>
+  </Layout>
+);
+
+export default App;
+```
+
+```tsx
+// src/components/common/CardSkeleton.tsx
+// Content-shaped skeleton — matches PriceCard dimensions
+import React from 'react';
+
+export const CardSkeleton: React.FC = () => (
+  <div
+    className="bg-white rounded-[10px] p-6 animate-pulse"
+    style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+  >
+    <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
+    <div className="h-3 bg-gray-100 rounded w-1/3 mb-4" />
+    <div className="h-8 bg-gray-200 rounded w-1/2 mb-1" />
+    <div className="h-3 bg-gray-100 rounded w-1/4 mb-4" />
+    <div className="flex gap-2 mb-3">
+      <div className="h-5 bg-gray-100 rounded-lg w-20" />
+      <div className="h-5 bg-gray-100 rounded-lg w-20" />
     </div>
-  );
-}
-
-export default ChecklistPanel;
+    <div className="flex gap-2 mb-3">
+      <div className="h-5 bg-green-100 rounded-full w-20" />
+    </div>
+    <div className="h-3 bg-gray-100 rounded w-2/3" />
+  </div>
+);
 ```
 
-```css
-/* src/components/ChecklistPanel.module.css */
-.panel        { border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; background: #fff; }
-.heading      { margin: 0 0 14px; font-size: 1.1rem; font-weight: 700; color: #111827; }
-.progressBar  { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
-.progressFill { height: 100%; background: #22c55e; border-radius: 4px; transition: width 0.3s ease; }
-.progressText { font-size: 0.85rem; color: #6b7280; margin: 0 0 16px; }
-.stepList     { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-.step         { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px; border: 1px solid #f3f4f6; font-size: 0.9rem; color: #374151; }
-.clickable    { cursor: pointer; }
-.clickable:hover { background: #f9fafb; }
-.clickable:focus { outline: 2px solid #3b82f6; outline-offset: 1px; }
-.done         { color: #9ca3af; background: #f9fafb; }
-.done .stepText { text-decoration: line-through; }
-.icon         { font-size: 1rem; flex-shrink: 0; }
-.stepText     { flex: 1; }
-.empty        { text-align: center; color: #9ca3af; font-size: 0.9rem; padding: 20px 0; }
-```
+**ST1 Demo — April 1 🎯** — Full UI with live data, pagination, sorting, responsive layout, API integration.
+
+**D2 Demo — April 8 🎯** — Dashboard KPIs, forecast chart live, CSV export, price alert form, anomaly indicators.
 
 ---
 
-## 🗓️ MONTH 4 — MVP 4: Risk Dashboard
+## 📅 WEEKS 6–8 — April 13–May 3, 2026
+### Polish + PWA + MVP
 
-### src/services/dashboardService.js + cveService.js
+#### Offline Detection Banner (Week 6)
 
-```javascript
-// src/services/dashboardService.js
-import api from './api';
-
-export const getRiskSummary = async () => {
-  const { data } = await api.get('/api/dashboard/risk-summary');
-  return data;
-  // Expected shape: { total_open, by_severity:[{severity,count}],
-  //                   by_status:[...], avg_risk_score, max_risk_score }
-};
-
-export const getTrends = async () => {
-  const { data } = await api.get('/api/dashboard/trends');
-  return data;   // [{date, count}]
-};
-
-export const getRiskByType = async () => {
-  const { data } = await api.get('/api/dashboard/risk-by-type');
-  return data;   // [{incident_type, avg_risk, count}]
-};
-```
-
-```javascript
-// src/services/cveService.js
-import api from './api';
-
-export const getCVEs = async () => {
-  const { data } = await api.get('/api/cves');
-  return data;
-};
-
-export const updateCVE = async (id, updates) => {
-  const { data } = await api.patch(`/api/cves/${id}`, updates);
-  return data;
-};
-```
-
-### src/components/RiskSummaryCard.jsx + CSS
-
-```jsx
-// src/components/RiskSummaryCard.jsx
-import RiskBadge from './RiskBadge';
-import styles from './RiskSummaryCard.module.css';
-
-function RiskSummaryCard({ summary }) {
-  if (!summary) return null;
-
-  // Map avg_risk_score → riskLevel label for RiskBadge
-  const avg  = parseFloat(summary.avg_risk_score ?? 0);
-  const level = avg >= 7 ? 'high' : avg >= 4 ? 'medium' : 'low';
-
-  return (
-    <div className={styles.card}>
-      <h2 className={styles.heading}>Current Risk Level</h2>
-      <RiskBadge level={level} />
-      <div className={styles.stats}>
-        <div className={styles.stat}>
-          <span className={styles.value}>{summary.total_open ?? '—'}</span>
-          <span className={styles.statLabel}>Open Incidents</span>
-        </div>
-        <div className={styles.stat}>
-          <span className={styles.value}>
-            {avg.toFixed(1)}
-            <span className={styles.unit}>/10</span>
-          </span>
-          <span className={styles.statLabel}>Avg Risk Score</span>
-        </div>
-        <div className={styles.stat}>
-          <span className={styles.value}>{summary.max_risk_score ?? '—'}</span>
-          <span className={styles.statLabel}>Max Risk Score</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default RiskSummaryCard;
-```
-
-```css
-/* src/components/RiskSummaryCard.module.css */
-.card      { background: #fff; border-radius: 12px; padding: 24px; border: 1px solid #e5e7eb; }
-.heading   { font-size: 0.95rem; font-weight: 700; color: #6b7280; margin: 0 0 12px; }
-.stats     { display: flex; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
-.stat      { display: flex; flex-direction: column; }
-.value     { font-size: 2rem; font-weight: 800; color: #111827; line-height: 1; }
-.unit      { font-size: 1rem; color: #9ca3af; }
-.statLabel { font-size: 0.78rem; color: #9ca3af; margin-top: 4px; }
-```
-
-### src/pages/DashboardPage.jsx + CSS
-
-```jsx
-// src/pages/DashboardPage.jsx
+```tsx
+// src/hooks/useOnlineStatus.ts
 import { useState, useEffect } from 'react';
-import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
-import { getRiskSummary, getTrends, getRiskByType } from '../services/dashboardService';
-import NavBar from '../components/NavBar';
-import RiskSummaryCard from '../components/RiskSummaryCard';
-import styles from './DashboardPage.module.css';
 
-const SEV_COLORS = { critical: '#dc2626', high: '#ea580c', medium: '#d97706', low: '#16a34a' };
-const PIE_COLORS = ['#dc2626', '#ea580c', '#d97706', '#16a34a', '#6366f1'];
-
-function DashboardPage() {
-  const [summary,   setSummary]   = useState(null);
-  const [trends,    setTrends]    = useState([]);
-  const [byType,    setByType]    = useState([]);
-  const [loading,   setLoading]   = useState(true);
-  const [error,     setError]     = useState(null);
-
+export const useOnlineStatus = () => {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   useEffect(() => {
-    Promise.all([getRiskSummary(), getTrends(), getRiskByType()])
-      .then(([s, t, bt]) => { setSummary(s); setTrends(t); setByType(bt); })
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
+    const on  = () => setIsOnline(true);
+    const off = () => setIsOnline(false);
+    window.addEventListener('online',  on);
+    window.addEventListener('offline', off);
+    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
   }, []);
+  return isOnline;
+};
+```
 
-  if (loading) return <><NavBar /><p className={styles.loading}>Loading dashboard...</p></>;
-  if (error)   return <><NavBar /><p className={styles.error} role="alert">Dashboard error: {error}</p></>;
+```tsx
+// src/components/layout/OfflineBanner.tsx
+import React from 'react';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 
-  // Pie chart data from summary.by_severity
-  const pieData = (summary?.by_severity ?? []).map((entry, i) => ({
-    name:  entry.severity,
-    value: parseInt(entry.count, 10),
-    fill:  SEV_COLORS[entry.severity] || PIE_COLORS[i],
-  }));
-
-  // Bar chart data from getRiskByType
-  const barData = byType.map(bt => ({ type: bt.incident_type?.replace(/_/g, ' '), count: parseInt(bt.count, 10) }));
-
-  // Line chart data — last 30 days
-  const lineData = [...trends].sort((a, b) => a.date.localeCompare(b.date)).slice(-30);
-
+export const OfflineBanner: React.FC = () => {
+  const isOnline = useOnlineStatus();
+  if (isOnline) return null;
   return (
-    <div>
-      <NavBar />
-      <div className={styles.dashboard}>
-        <h1 className={styles.pageTitle}>Risk Dashboard</h1>
-
-        <div className={styles.grid}>
-          <div className={styles.span2}>
-            <RiskSummaryCard summary={summary} />
-          </div>
-
-          <div className={styles.chartCard}>
-            <h3 className={styles.chartTitle}>Incidents by Type</h3>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={barData} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                <XAxis dataKey="type" tick={{ fontSize: 11 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#3b82f6" radius={[4,4,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className={styles.chartCard}>
-            <h3 className={styles.chartTitle}>30-Day Incident Trend</h3>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={lineData} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Line type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={2} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className={styles.chartCard}>
-            <h3 className={styles.chartTitle}>By Severity</h3>
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" outerRadius={80}
-                     dataKey="value" nameKey="name" label>
-                  {pieData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
+    <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-sm text-amber-800 flex items-center gap-2">
+      ⚠️ You are offline — showing cached data. Prices may be outdated.
     </div>
   );
-}
-
-export default DashboardPage;
+};
+// Add <OfflineBanner /> to Layout.tsx, between <Header /> and <main>
 ```
 
-```css
-/* src/pages/DashboardPage.module.css */
-.dashboard { padding: 24px; max-width: 1400px; margin: 0 auto; }
-.pageTitle { font-size: 1.75rem; font-weight: 800; color: #111827; margin: 0 0 24px; }
-.loading   { text-align: center; color: #6b7280; padding: 80px; font-size: 1rem; }
-.error     { color: #dc2626; padding: 16px; background: #fee2e2; border-radius: 8px; margin: 24px; }
-.grid      { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px; }
-.span2     { grid-column: 1 / -1; }
-.chartCard {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #e5e7eb;
-}
-.chartTitle { font-size: 0.92rem; font-weight: 700; color: #374151; margin: 0 0 14px; }
-```
+#### Forecasts Page (Week 6)
 
-#### [MINIMAL] DashboardPage — no Recharts (SVG bar chart from scratch)
+```tsx
+// src/pages/ForecastsPage.tsx
+import React, { useState } from 'react';
+import { useForecasts }     from '../hooks/useForecasts';
+import { usePriceHistory }  from '../hooks/usePrices';
+import { ForecastChart }    from '../components/charts/ForecastChart';
+import { Card }             from '../components/common/Card';
+import { LoadingSpinner }   from '../components/common/LoadingSpinner';
 
-```jsx
-// src/pages/DashboardPage.minimal.jsx
-// No recharts — renders a basic SVG bar chart using only React + CSS
-// Use this if recharts is restricted
+const MATERIALS = [
+  'PPC Cement 50kg', 'River Sand', 'Crusher Stone 19mm',
+  'Steel Rebar 12mm', 'Timber Pine 76x38',
+];
 
-import { useState, useEffect } from 'react';
-import { getRiskSummary, getTrends } from '../services/dashboardService';
-import NavBar from '../components/NavBar';
-import RiskSummaryCard from '../components/RiskSummaryCard';
-import styles from './DashboardPage.module.css';
+export const ForecastsPage: React.FC = () => {
+  const [material, setMaterial] = useState(MATERIALS[0]);
+  const [days,     setDays]     = useState(30);
 
-function SVGBarChart({ data, dataKey, labelKey, color = '#3b82f6', height = 200 }) {
-  if (!data || data.length === 0) return <p style={{ color: '#9ca3af', textAlign: 'center' }}>No data</p>;
-  const maxVal = Math.max(...data.map(d => d[dataKey]));
-  const barW   = Math.floor(360 / data.length) - 4;
+  const { data: hist,   isLoading: histLoading  } = usePriceHistory(material, 90);
+  const { data: fcast,  isLoading: fcastLoading } = useForecasts(material, days);
+
+  const isLoading = histLoading || fcastLoading;
 
   return (
-    <svg width="100%" height={height} viewBox={`0 0 360 ${height}`}>
-      {data.map((d, i) => {
-        const barH  = maxVal > 0 ? Math.round((d[dataKey] / maxVal) * (height - 40)) : 0;
-        const x     = i * (barW + 4) + 2;
-        const y     = height - 30 - barH;
-        return (
-          <g key={i}>
-            <rect x={x} y={y} width={barW} height={barH} fill={color} rx={3} />
-            <text x={x + barW / 2} y={height - 14} textAnchor="middle"
-                  fontSize="10" fill="#6b7280" style={{ fontFamily: 'inherit' }}>
-              {String(d[labelKey]).slice(0, 8)}
-            </text>
-            <text x={x + barW / 2} y={y - 4} textAnchor="middle"
-                  fontSize="10" fill="#374151" fontWeight="600">
-              {d[dataKey]}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
-function DashboardPage() {
-  const [summary, setSummary] = useState(null);
-  const [trends,  setTrends]  = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    Promise.all([getRiskSummary(), getTrends()])
-      .then(([s, t]) => { setSummary(s); setTrends(t); })
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <><NavBar /><p className={styles.loading}>Loading dashboard...</p></>;
-
-  const trendData = [...trends].sort((a, b) => a.date.localeCompare(b.date)).slice(-14);
-  const byType    = (summary?.by_severity ?? []).map(d => ({ ...d, count: parseInt(d.count, 10) }));
-
-  return (
-    <div>
-      <NavBar />
-      <div className={styles.dashboard}>
-        <h1 className={styles.pageTitle}>Risk Dashboard</h1>
-        <div className={styles.grid}>
-          <div className={styles.span2}><RiskSummaryCard summary={summary} /></div>
-          <div className={styles.chartCard}>
-            <h3 className={styles.chartTitle}>By Severity (no-libs bar chart)</h3>
-            <SVGBarChart data={byType} dataKey="count" labelKey="severity" color="#3b82f6" />
-          </div>
-          <div className={styles.chartCard}>
-            <h3 className={styles.chartTitle}>14-Day Trend (no-libs)</h3>
-            <SVGBarChart data={trendData} dataKey="count" labelKey="date" color="#22c55e" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default DashboardPage;
-```
-
----
-
-## 🗓️ MONTH 5 — MVP 5: Reports
-
-### src/pages/ReportsPage.jsx + CSS (already shown above in roadmap — reproduced here for completeness)
-
-```jsx
-// src/pages/ReportsPage.jsx
-import { useState } from 'react';
-import NavBar from '../components/NavBar';
-import api    from '../services/api';
-import styles from './ReportsPage.module.css';
-
-function ReportsPage() {
-  const [startDate, setStartDate] = useState('');
-  const [endDate,   setEndDate]   = useState('');
-  const [loading,   setLoading]   = useState({ csv: false, pdf: false });
-  const [error,     setError]     = useState('');
-
-  const downloadBlob = (data, filename, mimeType) => {
-    const url = window.URL.createObjectURL(new Blob([data], { type: mimeType }));
-    const a   = document.createElement('a');
-    a.href = url; a.download = filename; a.click();
-    window.URL.revokeObjectURL(url);
-  };
-
-  const download = (type) => async () => {
-    if (!startDate || !endDate) { setError('Please select both start and end dates.'); return; }
-    setError('');
-    setLoading(prev => ({ ...prev, [type]: true }));
-    try {
-      const endpoint = type === 'csv' ? '/api/reports/csv' : '/api/reports/pdf';
-      const mime     = type === 'csv' ? 'text/csv' : 'application/pdf';
-      const filename = `cysentinel-${startDate}-to-${endDate}.${type}`;
-      const response = await api.post(endpoint, { from_date: startDate, to_date: endDate },
-        { responseType: 'blob' });
-      downloadBlob(response.data, filename, mime);
-    } catch {
-      setError(`Failed to download ${type.toUpperCase()}. Please try again.`);
-    } finally {
-      setLoading(prev => ({ ...prev, [type]: false }));
-    }
-  };
-
-  return (
-    <div>
-      <NavBar />
-      <div className={styles.page}>
-        <h1 className={styles.title}>Reports</h1>
-        <div className={styles.controls}>
-          {[['startDate', 'From', startDate, setStartDate], ['endDate', 'To', endDate, setEndDate]]
-            .map(([id, label, val, setter]) => (
-              <div key={id} className={styles.dateGroup}>
-                <label className={styles.label} htmlFor={id}>{label}</label>
-                <input id={id} type="date" value={val} onChange={e => setter(e.target.value)}
-                  className={styles.dateInput} aria-label={`${label} date`} />
-              </div>
+    <div className="space-y-6">
+      <Card title="Price Forecast">
+        <div className="flex flex-wrap gap-4 mb-6">
+          <select
+            value={material}
+            onChange={(e) => setMaterial(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            {MATERIALS.map((m) => <option key={m}>{m}</option>)}
+          </select>
+          <div className="flex gap-2">
+            {[7, 14, 30].map((d) => (
+              <button
+                key={d}
+                onClick={() => setDays(d)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  days === d
+                    ? 'bg-primary-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {d}d
+              </button>
             ))}
+          </div>
         </div>
-        {error && <p className={styles.error} role="alert">{error}</p>}
-        <div className={styles.buttons}>
-          <button className={`${styles.btn} ${styles.csvBtn}`} onClick={download('csv')}
-            disabled={loading.csv} aria-label="Export CSV">
-            {loading.csv ? 'Exporting...' : '📄 Export CSV'}
-          </button>
-          <button className={`${styles.btn} ${styles.pdfBtn}`} onClick={download('pdf')}
-            disabled={loading.pdf} aria-label="Export PDF">
-            {loading.pdf ? 'Generating...' : '📋 Export PDF'}
-          </button>
-        </div>
-      </div>
+
+        {isLoading && <LoadingSpinner />}
+
+        {!isLoading && fcast?.forecasts?.length ? (
+          <>
+            <ForecastChart
+              historical={hist?.history?.map((h) => ({ date: h.date, price_zar: h.avg_price })) ?? []}
+              forecasts={fcast.forecasts}
+              materialName={material}
+            />
+            {/* Forecast table */}
+            <div className="mt-6 overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 text-left text-gray-500">
+                    <th className="pb-2 pr-4">Date</th>
+                    <th className="pb-2 pr-4">Forecast</th>
+                    <th className="pb-2 pr-4">Lower CI</th>
+                    <th className="pb-2 pr-4">Upper CI</th>
+                    <th className="pb-2">Model</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {fcast.forecasts.map((f) => (
+                    <tr key={f.forecast_date} className="border-b border-gray-100">
+                      <td className="py-2 pr-4 text-gray-600">{f.forecast_date}</td>
+                      <td className="py-2 pr-4 font-semibold" style={{ color: '#7c3aed' }}>
+                        R{f.predicted_price.toFixed(2)}
+                      </td>
+                      <td className="py-2 pr-4 text-gray-400">
+                        R{f.confidence_interval_lower?.toFixed(2) ?? '—'}
+                      </td>
+                      <td className="py-2 pr-4 text-gray-400">
+                        R{f.confidence_interval_upper?.toFixed(2) ?? '—'}
+                      </td>
+                      <td className="py-2 text-gray-400 text-xs">{f.model_name}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : !isLoading ? (
+          <p className="text-center text-gray-400 py-8">No forecast data available yet.</p>
+        ) : null}
+      </Card>
     </div>
   );
-}
-
-export default ReportsPage;
-```
-
-```css
-/* src/pages/ReportsPage.module.css */
-.page      { padding: 24px; max-width: 800px; margin: 0 auto; }
-.title     { font-size: 1.75rem; font-weight: 800; color: #111827; margin: 0 0 24px; }
-.controls  { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
-.dateGroup { display: flex; flex-direction: column; gap: 6px; }
-.label     { font-size: 0.875rem; font-weight: 600; color: #374151; }
-.dateInput { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; }
-.error     { color: #dc2626; padding: 10px 14px; background: #fee2e2; border-radius: 6px; margin-bottom: 16px; }
-.buttons   { display: flex; gap: 12px; flex-wrap: wrap; }
-.btn       { padding: 12px 24px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.95rem; }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
-.csvBtn    { background: #059669; color: #fff; }
-.csvBtn:hover:not(:disabled) { background: #047857; }
-.pdfBtn    { background: #dc2626; color: #fff; }
-.pdfBtn:hover:not(:disabled) { background: #b91c1c; }
-```
-
----
-
-## 🗓️ MONTH 7 (Optional) — Dark Mode
-
-### src/hooks/useDarkMode.js
-
-```javascript
-// src/hooks/useDarkMode.js
-import { useState, useEffect } from 'react';
-
-function useDarkMode() {
-  const [dark, setDark] = useState(
-    () => localStorage.getItem('cysentinel_theme') === 'dark'
-  );
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-    localStorage.setItem('cysentinel_theme', dark ? 'dark' : 'light');
-  }, [dark]);
-
-  return [dark, setDark];
-}
-
-export default useDarkMode;
-```
-
-```css
-/* src/App.css — CSS variables for light/dark themes */
-:root {
-  --bg-primary:    #ffffff;
-  --bg-secondary:  #f3f4f6;
-  --bg-card:       #ffffff;
-  --text-primary:  #111827;
-  --text-secondary: #6b7280;
-  --border:        #e5e7eb;
-  --nav-bg:        #1e3a5f;
-  --accent:        #3b82f6;
-}
-
-[data-theme="dark"] {
-  --bg-primary:    #111827;
-  --bg-secondary:  #1f2937;
-  --bg-card:       #1f2937;
-  --text-primary:  #f9fafb;
-  --text-secondary: #9ca3af;
-  --border:        #374151;
-  --nav-bg:        #0f1f35;
-  --accent:        #60a5fa;
-}
-
-body { background: var(--bg-primary); color: var(--text-primary); transition: background 0.2s, color 0.2s; }
-```
-
----
-
-## 🧪 Tests
-
-### [WITH LIBS] src/pages/LoginPage.test.js — React Testing Library
-
-```javascript
-// src/pages/LoginPage.test.js
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import LoginPage from './LoginPage';
-import { login } from '../services/authService';
-
-jest.mock('../services/authService');
-
-const renderLogin = () => render(<MemoryRouter><LoginPage /></MemoryRouter>);
-
-describe('LoginPage', () => {
-  beforeEach(() => jest.clearAllMocks());
-
-  it('renders email and password inputs', () => {
-    renderLogin();
-    expect(screen.getByLabelText('Email address')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password')).toBeInTheDocument();
-  });
-
-  it('shows "Sign In" button', () => {
-    renderLogin();
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
-  });
-
-  it('shows validation error when fields are empty', async () => {
-    renderLogin();
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('Email and password are required');
-    });
-  });
-
-  it('calls login service with correct credentials', async () => {
-    login.mockResolvedValue({ token: 'mock.jwt.token' });
-    renderLogin();
-    fireEvent.change(screen.getByLabelText('Email address'), { target: { value: 'user@test.com' } });
-    fireEvent.change(screen.getByLabelText('Password'),      { target: { value: 'password123' } });
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
-    await waitFor(() => expect(login).toHaveBeenCalledWith('user@test.com', 'password123'));
-  });
-
-  it('shows API error on login failure', async () => {
-    login.mockRejectedValue({ response: { data: { error: 'Invalid email or password' } } });
-    renderLogin();
-    fireEvent.change(screen.getByLabelText('Email address'), { target: { value: 'bad@test.com' } });
-    fireEvent.change(screen.getByLabelText('Password'),      { target: { value: 'wrong' } });
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('Invalid email or password');
-    });
-  });
-
-  it('disables button while loading', async () => {
-    login.mockImplementation(() => new Promise(() => {})); // never resolves
-    renderLogin();
-    fireEvent.change(screen.getByLabelText('Email address'), { target: { value: 'a@b.com' } });
-    fireEvent.change(screen.getByLabelText('Password'),      { target: { value: 'pass1234' } });
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /signing in/i })).toBeDisabled();
-    });
-  });
-});
-```
-
-### [WITH LIBS] src/components/IncidentTable.test.js
-
-```javascript
-// src/components/IncidentTable.test.js
-import { render, screen, fireEvent } from '@testing-library/react';
-import IncidentTable from './IncidentTable';
-
-const mockIncidents = [
-  {
-    incident_id: 'aaa-111',
-    title: 'Phishing Campaign',
-    incident_type: 'phishing',
-    severity: 'high',
-    status: 'open',
-    risk_score: 7,
-    created_at: '2026-03-01T08:00:00Z',
-  },
-  {
-    incident_id: 'bbb-222',
-    title: 'Data Breach Detected',
-    incident_type: 'data_breach',
-    severity: 'critical',
-    status: 'in_progress',
-    risk_score: 10,
-    created_at: '2026-03-02T14:30:00Z',
-  },
-];
-
-describe('IncidentTable', () => {
-  it('renders column headers', () => {
-    render(<IncidentTable incidents={mockIncidents} />);
-    expect(screen.getByText('Title')).toBeInTheDocument();
-    expect(screen.getByText('Severity')).toBeInTheDocument();
-    expect(screen.getByText('Risk Score')).toBeInTheDocument();
-  });
-
-  it('renders all incident rows', () => {
-    render(<IncidentTable incidents={mockIncidents} />);
-    expect(screen.getByText('Phishing Campaign')).toBeInTheDocument();
-    expect(screen.getByText('Data Breach Detected')).toBeInTheDocument();
-  });
-
-  it('renders risk_score values', () => {
-    render(<IncidentTable incidents={mockIncidents} />);
-    expect(screen.getByText('7')).toBeInTheDocument();
-    expect(screen.getByText('10')).toBeInTheDocument();
-  });
-
-  it('shows "No incidents found" when list is empty', () => {
-    render(<IncidentTable incidents={[]} />);
-    expect(screen.getByText('No incidents found.')).toBeInTheDocument();
-  });
-
-  it('calls onRowClick with incident when row clicked', () => {
-    const handler = jest.fn();
-    render(<IncidentTable incidents={mockIncidents} onRowClick={handler} />);
-    fireEvent.click(screen.getByText('Phishing Campaign'));
-    expect(handler).toHaveBeenCalledWith(mockIncidents[0]);
-  });
-
-  it('renders severity badge for each row', () => {
-    render(<IncidentTable incidents={mockIncidents} />);
-    expect(screen.getByLabelText('Severity: high')).toBeInTheDocument();
-    expect(screen.getByLabelText('Severity: critical')).toBeInTheDocument();
-  });
-});
-```
-
-### [WITH LIBS] src/components/ChecklistPanel.test.js
-
-```javascript
-// src/components/ChecklistPanel.test.js
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ChecklistPanel from './ChecklistPanel';
-import api from '../services/api';
-
-jest.mock('../services/api');
-
-const mockChecklist = {
-  checklist_id: 'cl-1',
-  title: 'Phishing Response Checklist',
-  steps: [
-    { index: 0, text: 'Block sender domain' },
-    { index: 1, text: 'Warn all users' },
-  ],
 };
-const mockProgress = [
-  { step_index: 0, completed: false },
-  { step_index: 1, completed: true },
-];
-
-describe('ChecklistPanel', () => {
-  beforeEach(() => {
-    api.get.mockResolvedValue({
-      data: { checklist: mockChecklist, progress: mockProgress, percent_complete: 50 },
-    });
-    api.patch.mockResolvedValue({
-      data: { step_index: 0, completed: true },
-    });
-  });
-
-  it('renders checklist title', async () => {
-    render(<ChecklistPanel incidentId="inc-1" />);
-    await waitFor(() => {
-      expect(screen.getByText('Phishing Response Checklist')).toBeInTheDocument();
-    });
-  });
-
-  it('renders steps', async () => {
-    render(<ChecklistPanel incidentId="inc-1" />);
-    await waitFor(() => {
-      expect(screen.getByText('Block sender domain')).toBeInTheDocument();
-      expect(screen.getByText('Warn all users')).toBeInTheDocument();
-    });
-  });
-
-  it('shows progress percentage', async () => {
-    render(<ChecklistPanel incidentId="inc-1" />);
-    await waitFor(() => {
-      expect(screen.getByText(/50%/)).toBeInTheDocument();
-    });
-  });
-
-  it('calls PATCH when step is toggled', async () => {
-    render(<ChecklistPanel incidentId="inc-1" />);
-    await waitFor(() => screen.getByText('Block sender domain'));
-    fireEvent.click(screen.getByLabelText(/Step 1: Block sender domain/i));
-    await waitFor(() => {
-      expect(api.patch).toHaveBeenCalledWith(
-        '/api/incidents/inc-1/checklist/0',
-        { completed: true }
-      );
-    });
-  });
-
-  it('does not call PATCH when readOnly is true', async () => {
-    render(<ChecklistPanel incidentId="inc-1" readOnly />);
-    await waitFor(() => screen.getByText('Block sender domain'));
-    fireEvent.click(screen.getByText('Block sender domain'));
-    expect(api.patch).not.toHaveBeenCalled();
-  });
-
-  it('shows empty state when no checklist assigned', async () => {
-    api.get.mockResolvedValue({ data: { checklist: null, progress: [] } });
-    render(<ChecklistPanel incidentId="inc-2" />);
-    await waitFor(() => {
-      expect(screen.getByText('No checklist assigned to this incident.')).toBeInTheDocument();
-    });
-  });
-});
 ```
 
-### [WITH LIBS] src/components/IncidentForm.test.js
+#### Alerts Page (Week 7)
 
-```javascript
-// src/components/IncidentForm.test.js
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import IncidentForm from './IncidentForm';
-import { createIncident } from '../services/incidentService';
+```tsx
+// src/pages/AlertsPage.tsx
+import React from 'react';
+import { Card }           from '../components/common/Card';
+import { PriceAlertForm } from '../components/features/PriceAlertForm';
 
-jest.mock('../services/incidentService');
-
-describe('IncidentForm', () => {
-  beforeEach(() => jest.clearAllMocks());
-
-  it('renders all required fields', () => {
-    render(<IncidentForm />);
-    expect(screen.getByLabelText('Incident title')).toBeInTheDocument();
-    expect(screen.getByLabelText('Incident type')).toBeInTheDocument();
-    expect(screen.getByLabelText('Severity level')).toBeInTheDocument();
-  });
-
-  it('shows error when required fields missing', async () => {
-    render(<IncidentForm />);
-    fireEvent.click(screen.getByRole('button', { name: /log incident/i }));
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('Title, type, and severity are required');
-    });
-  });
-
-  it('calls createIncident with form data on submit', async () => {
-    createIncident.mockResolvedValue({ incident_id: 'new-1', risk_score: 7 });
-    render(<IncidentForm onCreated={jest.fn()} />);
-
-    fireEvent.change(screen.getByLabelText('Incident title'),   { target: { value: 'Phishing test' } });
-    fireEvent.change(screen.getByLabelText('Incident type'),    { target: { value: 'phishing' } });
-    fireEvent.change(screen.getByLabelText('Severity level'),   { target: { value: 'high' } });
-    fireEvent.change(screen.getByLabelText('Incident description'), { target: { value: 'Test desc' } });
-    fireEvent.click(screen.getByRole('button', { name: /log incident/i }));
-
-    await waitFor(() => {
-      expect(createIncident).toHaveBeenCalledWith(expect.objectContaining({
-        title: 'Phishing test',
-        incident_type: 'phishing',
-        severity: 'high',
-      }));
-    });
-  });
-
-  it('calls onCreated callback after successful submit', async () => {
-    createIncident.mockResolvedValue({ incident_id: 'new-2' });
-    const onCreated = jest.fn();
-    render(<IncidentForm onCreated={onCreated} />);
-
-    fireEvent.change(screen.getByLabelText('Incident title'),  { target: { value: 'Malware alert' } });
-    fireEvent.change(screen.getByLabelText('Incident type'),   { target: { value: 'malware' } });
-    fireEvent.change(screen.getByLabelText('Severity level'),  { target: { value: 'critical' } });
-    fireEvent.click(screen.getByRole('button', { name: /log incident/i }));
-
-    await waitFor(() => expect(onCreated).toHaveBeenCalled());
-  });
-});
+export const AlertsPage: React.FC = () => {
+  return (
+    <div className="max-w-xl mx-auto space-y-6">
+      <Card title="Price Alerts" subtitle="Get notified when a material crosses your threshold">
+        <PriceAlertForm onSuccess={() => alert('Alert created!')} />
+      </Card>
+      <Card title="How it works">
+        <ol className="space-y-3 text-sm text-gray-600 list-decimal list-inside">
+          <li>Choose a material and set your price threshold</li>
+          <li>The backend checks new scraper data each night</li>
+          <li>You receive a notification when the price crosses your threshold</li>
+          <li>Alerts auto-deactivate after triggering once (re-enable manually)</li>
+        </ol>
+      </Card>
+    </div>
+  );
+};
 ```
 
-### [WITH LIBS] src/components/RiskBadge.test.js
-
-```javascript
-// src/components/RiskBadge.test.js
-import { render, screen } from '@testing-library/react';
-import RiskBadge from './RiskBadge';
-
-describe('RiskBadge', () => {
-  it.each(['low','medium','high','critical'])('renders %s severity', (level) => {
-    render(<RiskBadge level={level} />);
-    expect(screen.getByText(level.charAt(0).toUpperCase() + level.slice(1))).toBeInTheDocument();
-  });
-
-  it('renders "Unknown" for null level', () => {
-    render(<RiskBadge level={null} />);
-    expect(screen.getByText('Unknown')).toBeInTheDocument();
-  });
-
-  it('has correct aria-label', () => {
-    render(<RiskBadge level="critical" />);
-    expect(screen.getByLabelText('Severity: critical')).toBeInTheDocument();
-  });
-});
-```
-
-### [MINIMAL / NO LIBS] Plain DOM tests — no React Testing Library
-
-```javascript
-// src/__tests__/utils.no-libs.test.js
-// Run: npm test -- --testPathPattern=no-libs
-// Tests pure utility logic that does not require a React renderer
-
-// ── useAuth logic (pure function extraction) ──────────────────────────────────
-function decodeToken(token) {
-  if (!token) return null;
-  try { return JSON.parse(atob(token.split('.')[1])); }
-  catch { return null; }
-}
-
-describe('decodeToken (useAuth logic)', () => {
-  it('returns null for null token', () => {
-    expect(decodeToken(null)).toBeNull();
-  });
-
-  it('returns null for malformed token', () => {
-    expect(decodeToken('not.a.token')).toBeNull();
-  });
-
-  it('decodes valid JWT payload', () => {
-    // Create a fake JWT with known payload
-    const payload   = { sub: 'user-1', role: 'admin', org: 'org-1' };
-    const b64       = btoa(JSON.stringify(payload));
-    const fakeToken = `header.${b64}.signature`;
-    const decoded   = decodeToken(fakeToken);
-    expect(decoded.sub).toBe('user-1');
-    expect(decoded.role).toBe('admin');
-  });
-});
-
-// ── Date formatter (used in IncidentTable) ────────────────────────────────────
-function formatDate(dateStr) {
-  if (!dateStr) return '—';
-  return new Date(dateStr).toLocaleDateString('en-ZA', {
-    year: 'numeric', month: 'short', day: 'numeric'
-  });
-}
-
-describe('formatDate', () => {
-  it('returns em-dash for null', () => {
-    expect(formatDate(null)).toBe('—');
-  });
-
-  it('returns formatted date string', () => {
-    const result = formatDate('2026-03-01T08:00:00Z');
-    expect(result).toMatch(/2026/);
-    expect(result).toMatch(/Mar/);
-  });
-});
-
-// ── Filter utility (used in incidentService) ─────────────────────────────────
-function buildQueryString(filters) {
-  return new URLSearchParams(
-    Object.fromEntries(Object.entries(filters).filter(([, v]) => v))
-  ).toString();
-}
-
-describe('buildQueryString', () => {
-  it('returns empty string for empty filters', () => {
-    expect(buildQueryString({})).toBe('');
-  });
-
-  it('excludes empty values', () => {
-    const qs = buildQueryString({ severity: 'high', status: '', incident_type: '' });
-    expect(qs).toBe('severity=high');
-  });
-
-  it('includes multiple non-empty values', () => {
-    const qs = buildQueryString({ severity: 'high', status: 'open' });
-    expect(qs).toContain('severity=high');
-    expect(qs).toContain('status=open');
-  });
-});
-```
-
----
-
-## 🗓️ Run All Tests
+#### PWA Setup (Week 8)
 
 ```bash
-# Run all React Testing Library tests (requires CRA default setup)
-cd cysentinel-web
-npm test -- --watchAll=false
+# Rebuild with the PWA template (one-time only — do this on a fresh create-react-app)
+npx create-react-app buildmat-dashboard --template cra-template-pwa --typescript
 
-# Run with coverage report
-npm test -- --watchAll=false --coverage
-
-# Run only a specific file
-npm test -- --watchAll=false --testPathPattern=LoginPage
-
-# Run no-libs utility tests
-npm test -- --watchAll=false --testPathPattern=no-libs
+# OR add manually to existing project:
+npm install workbox-core workbox-precaching workbox-routing workbox-strategies
 ```
+
+```json
+// public/manifest.json
+{
+  "short_name": "BuildMat",
+  "name": "BuildMat Price Intelligence",
+  "description": "Real-time SA building materials price intelligence",
+  "icons": [
+    { "src": "favicon.ico",  "sizes": "64x64",   "type": "image/x-icon" },
+    { "src": "logo192.png",  "sizes": "192x192", "type": "image/png"    },
+    { "src": "logo512.png",  "sizes": "512x512", "type": "image/png"    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1e3a8a",
+  "background_color": "#f9fafb"
+}
+```
+
+```typescript
+// src/serviceWorkerRegistration.ts (included in cra-template-pwa)
+// Call serviceWorkerRegistration.register() in src/index.tsx to enable offline caching.
+// The default workbox setup will cache the app shell — price data remains live via API.
+```
+
+**D3 (May 1) — MVP Complete** 🎉
 
 ---
 
-*End of File 03 — Frontend Developer Code Blocks*  
-*Next: 04_Mobile_Testing_Code_Blocks.md*
+## 📅 WEEKS 9–13 — May 4–June 9, 2026
+### Testing & Final Polish
+
+#### Unit Tests (Week 9)
+
+```tsx
+// src/hooks/__tests__/usePrices.test.ts
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { usePrices } from '../usePrices';
+import { apiService } from '../../services/apiService';
+
+jest.mock('../../services/apiService');
+
+const wrapper = ({ children }: { children: React.ReactNode }) => {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
+};
+
+it('returns price records from API', async () => {
+  const mockData = {
+    success: true,
+    data: [{ record_id: 'REC_001', material_name: 'PPC Cement 50kg', price_zar: 89.99 }],
+    pagination: { page: 1, per_page: 30, total: 1, total_pages: 1 },
+  };
+  (apiService.getPrices as jest.Mock).mockResolvedValue(mockData);
+
+  const { result } = renderHook(() => usePrices(), { wrapper });
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+  expect(result.current.data?.data[0].material_name).toBe('PPC Cement 50kg');
+  expect(result.current.data?.data[0].price_zar).toBe(89.99);
+});
+```
+
+```tsx
+// src/components/__tests__/PriceCard.test.tsx
+import { render, screen } from '@testing-library/react';
+import { PriceCard } from '../features/PriceCard';
+import { PriceRecord } from '../../types/PriceRecord';
+
+const record: PriceRecord = {
+  record_id: 'REC_001', date: '2026-03-09', year: 2026, month: 3,
+  material_name: 'PPC Cement 50kg', material_category: 'Cement',
+  supplier_name: 'Builders Warehouse', region: 'Gauteng', province: 'Johannesburg',
+  price_zar: 89.99, unit: '50kg bag', price_per_kg_zar: 1.7998,
+  price_change_mom_pct: 2.3, price_change_yoy_pct: -1.1,
+  stock_status: 'In Stock', bulk_discount_available: 'Yes',
+};
+
+it('renders material name and price', () => {
+  render(<PriceCard record={record} />);
+  expect(screen.getByText('PPC Cement 50kg')).toBeInTheDocument();
+  expect(screen.getByText(/R89\.99/)).toBeInTheDocument();
+});
+
+it('shows bulk discount tag when available', () => {
+  render(<PriceCard record={record} />);
+  expect(screen.getByText('Bulk Discount')).toBeInTheDocument();
+});
+
+it('shows In Stock badge', () => {
+  render(<PriceCard record={record} />);
+  expect(screen.getByText('In Stock')).toBeInTheDocument();
+});
+```
+
+```bash
+# Run all tests
+npm test -- --watchAll=false --coverage
+
+# Lighthouse audit (run against production build)
+npm run build && npx serve -s build
+# Open Chrome → DevTools → Lighthouse → Generate report
+# Targets: Performance >90, Accessibility >95, Best Practices >90
+```
+
+**ST2 (May 6)** — Testing report: Lighthouse scores, hook test coverage, cross-browser results  
+**D4 (May 13)** — Final polish  
+**Final (June 10)** — Championship demo
+
+---
+
+## 🎯 Performance Targets
+
+| Metric | Target |
+|---|---|
+| Lighthouse Performance | > 90 |
+| First Contentful Paint | < 1.5 s |
+| Time to Interactive | < 3 s |
+| Accessibility Score | > 95 |
+| Bundle size (main chunk) | < 250 KB gzip |
+
+---
+
+## ⚠️ Bugs Fixed in This Version
+
+| Original bug | Fix applied |
+|---|---|
+| `useQuery('key', fn, opts)` — v4 positional arg style | All hooks use v5 options-object: `useQuery({ queryKey, queryFn, ...opts })` |
+| `cacheTime` in `usePriceComparison` — renamed in v5 | Changed to `gcTime` throughout |
+| `usePriceHistory(materialId)` — used material_id, backend uses material_name | All hooks use `materialName: string` |
+| `forecastsAPI.get()` called `/forecasts` — backend route is `/forecast` | Corrected to `/forecast` in `apiService.ts` |
+| `getPriceHistory` sent `{ months }` param — backend accepts `days` | Changed to `days` parameter |
+| `ForecastResponse` used `confidence_interval_lower/upper` conflicting with backend column names | Frontend keeps the readable names; `NOTE FOR MEMBER 1` added to type file to rename DB columns |
+| `MaterialDetailPage` read `priceHistory?.prices` — API returns `{ history: [...] }` | Corrected to `histData?.history` matching the `HistoryResponse` shape |
+| `PriceChart` plotted `dataKey="price"` — schema field is `price_zar` | All chart dataKeys updated to `price_zar`, `avg_price`, etc. |
+| `MultiMaterialChart` used hardcoded dataKeys `"cement"`, `"bricks"` — API never returns that shape | Removed; replaced by `PriceHistoryChart` which uses the actual API response shape |
+| `MaterialsPage` used `material.id` as React key — schema has `record_id`, not `id` | All `.map()` keys use `r.record_id` |
+| `ForecastChart` rendered both `<Area>` bands with identical `fill="#7c3aed"` — lower erased upper | Lower band now uses `fill="white"` so purple upper band remains visible |
+| `SupplierComparisonChart` plotted `price` field — schema uses `price_zar` | Changed to `price_zar` |
+
+---
+
+**Last Updated:** March 9, 2026  
+**Status:** 🟢 Active | **Next Milestone:** D1 — March 25, 2026
